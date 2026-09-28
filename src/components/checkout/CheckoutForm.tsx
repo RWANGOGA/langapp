@@ -31,7 +31,7 @@ export function CheckoutForm({ packageId }: { packageId: string }) {
     setIsProcessing(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
     setIsProcessing(false);
-    router.push("/dashboard");
+    router.push("/tutor");
   };
 
   return (

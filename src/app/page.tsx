@@ -4,7 +4,12 @@ import { BadgeCheck, CalendarDays, PlayCircle, Star, Users } from "lucide-react"
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import styles from "./page.module.css";
 
-const NAV = ["Home", "Features", "Pricing", "Tutors", "Resources", "Blog"];
+const NAV = ["Home", "Features", "Pricing", "Resources", "Blog"];
+
+const PORTALS = [
+  { href: "/tutor", label: "Tutor" },
+  { href: "/admin", label: "Admin" },
+];
 
 function Logo() {
   return (
@@ -30,8 +35,15 @@ export default function HomePage() {
             </Link>
           ))}
         </nav>
+        <nav className={styles.portals} aria-label="Portals">
+          {PORTALS.map((p) => (
+            <Link key={p.href} href={p.href} className={styles.portalLink}>
+              {p.label}
+            </Link>
+          ))}
+        </nav>
         <div className={styles.actions}>
-          <Link href="/register" className={`${styles.btn} ${styles.solid} ${styles.small}`}>Get Started</Link>
+          <Link href="/tutor" className={`${styles.btn} ${styles.solid} ${styles.small}`}>Get Started</Link>
           <LanguageSwitcher />
         </div>
       </header>
@@ -48,8 +60,8 @@ export default function HomePage() {
             fluency goals faster with native experts.
           </p>
           <div className={styles.cta}>
-            <Link href="/register?role=learner" className={`${styles.btn} ${styles.solid}`}>Start Learning Today</Link>
-            <Link href="/register?role=tutor" className={`${styles.btn} ${styles.outline}`}>Become a Tutor</Link>
+            <Link href="/tutor" className={`${styles.btn} ${styles.solid}`}>Start Learning Today</Link>
+            <Link href="/tutors" className={`${styles.btn} ${styles.outline}`}>Become a Tutor</Link>
           </div>
           <ul className={styles.trust}>
             <li>

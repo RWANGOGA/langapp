@@ -73,6 +73,52 @@
   flex-shrink: 0;
 }
 
+/* portal links: quiet secondary routes to the role screens */
+.portals {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-right: 20px;
+  margin-right: 4px;
+  border-right: 1px solid rgba(255, 255, 255, 0.16);
+  flex-shrink: 0;
+}
+
+.portalLink {
+  position: relative;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color var(--transition-fast);
+}
+
+.portalLink:hover {
+  color: var(--lb-teal-bright);
+}
+
+.portalLink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--lb-teal-bright);
+  transition: width var(--transition-fast);
+}
+
+.portalLink:hover::after {
+  width: 100%;
+}
+
+.portalLink:focus-visible {
+  outline: 2px solid var(--lb-teal-bright);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
 /* ===== BUTTONS ===== */
 .btn {
   display: inline-flex;
@@ -252,6 +298,11 @@
     gap: 22px;
   }
 
+  .portals {
+    gap: 14px;
+    padding-right: 14px;
+  }
+
   .hero {
     gap: 32px;
     padding: 44px 32px 24px;
@@ -272,8 +323,12 @@
     display: none;
   }
 
-  .actions {
+  .portals {
     margin-left: auto;
+  }
+
+  .actions {
+    margin-left: 0;
   }
 
   .hero {
@@ -316,10 +371,23 @@
   .header {
     padding: 14px 18px;
     gap: 14px;
+    flex-wrap: wrap;
   }
 
   .brand {
     font-size: 21px;
+  }
+
+  .portals {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+    padding-top: 10px;
+    padding-right: 0;
+    border-right: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    justify-content: space-between;
+    gap: 10px;
   }
 
   .actions {
