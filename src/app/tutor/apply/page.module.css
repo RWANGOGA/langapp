@@ -1,0 +1,355 @@
+/* ===== TUTOR APPLICATION ===== */
+
+.tutorApplyLayout {
+  min-height: 100vh;
+  background: var(--bg-light);
+}
+
+.tutorHeader {
+  background: var(--white);
+  border-bottom: 1px solid var(--border-light);
+  padding: 0 var(--space-lg);
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.tutorHeader .headerBrand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+  padding: var(--space-md) 0;
+}
+
+.tutorHeader .brandDot {
+  color: var(--teal);
+  font-size: 28px;
+}
+
+.tutorHeader .headerNav {
+  display: flex;
+  gap: var(--space-xl);
+  padding: var(--space-md) 0;
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+  margin: 0 calc(var(--space-lg) * -1);
+  padding-left: var(--space-lg);
+  padding-right: var(--space-lg);
+}
+
+.tutorHeader .headerNavLink {
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--text-body);
+  padding: var(--space-xs) 0;
+  border-bottom: 3px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.tutorHeader .headerNavLink:hover,
+.tutorHeader .headerNavLink.active {
+  color: var(--teal);
+  border-bottom-color: var(--teal);
+}
+
+.tutorHeader .headerUser {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  font-size: 15px;
+  color: var(--navy);
+}
+
+.tutorMain {
+  padding: var(--space-2xl) var(--space-lg);
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.tutorContainer {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.tutorApplyContainer {
+  padding: var(--space-2xl);
+}
+
+.tutorApplyHeader {
+  margin-bottom: var(--space-2xl);
+}
+
+.tutorApplyHeader h2 {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: var(--space-sm);
+}
+
+.tutorApplyHeader p {
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+.tutorApplyGrid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: var(--space-2xl);
+}
+
+.tutorApplySidebar {
+  position: sticky;
+  top: var(--space-2xl);
+  height: fit-content;
+}
+
+.tutorApplyMain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+/* Progress Steps Card */
+.progressStepsCard {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.stepsTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: var(--space-xl);
+}
+
+.stepsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.stepItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font-size: 19px;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+
+.stepDot {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 2px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  background: var(--white);
+  transition: all var(--transition-fast);
+}
+
+.stepItem.completed .stepDot,
+.stepItem.current .stepDot {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: var(--white);
+}
+
+.stepItem.current {
+  color: var(--teal);
+  font-weight: 600;
+}
+
+.stepCheck {
+  color: var(--teal);
+  font-weight: 700;
+  margin-left: auto;
+}
+
+/* Form Card */
+.formCard {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.formSectionTitle {
+  color: var(--teal);
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 var(--space-lg);
+}
+
+.formSectionTitle:not(:first-child) {
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-md);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.formLabel {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--navy);
+}
+
+.formInput {
+  padding: var(--space-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 17px;
+  background: var(--white);
+  color: var(--navy);
+  transition: border-color var(--transition-fast);
+}
+
+.formInput:focus {
+  border-color: var(--teal);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 128, 128, 0.1);
+}
+
+.formInputHighlighted {
+  background: #e8edfb;
+}
+
+/* Drop Zone */
+.dropZone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  background: var(--bg-light);
+  margin-bottom: var(--space-sm);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.dropZone:hover,
+.dropZone.dragOver {
+  border-color: var(--teal);
+  background: var(--teal-bg);
+}
+
+.dropZone.hasFile {
+  border-color: var(--teal);
+  border-style: solid;
+  background: var(--white);
+}
+
+.dropIcon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.dropText {
+  flex: 1;
+  font-size: 15px;
+  color: var(--text-body);
+}
+
+.dropInput {
+  display: none;
+}
+
+.dropBtn {
+  flex-shrink: 0;
+}
+
+/* Submit Section */
+.submitSection {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--border);
+  text-align: right;
+}
+
+.submitBtn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border-radius: var(--radius-md);
+  text-align: center;
+  line-height: 1.2;
+  padding: var(--space-lg) var(--space-xl);
+}
+
+.submitBtn small {
+  display: block;
+  font-weight: 400;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .tutorApplyGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tutorApplySidebar {
+    position: static;
+  }
+
+  .stepsList {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: var(--space-md);
+  }
+
+  .stepItem {
+    flex-direction: column;
+    gap: var(--space-xs);
+    min-width: 120px;
+  }
+
+  .stepLabel {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .tutorApplyContainer {
+    padding: var(--space-lg);
+  }
+
+  .tutorApplyHeader h2 {
+    font-size: 24px;
+  }
+
+  .formSectionTitle {
+    font-size: 20px;
+  }
+}

@@ -1,0 +1,111 @@
+.root {
+  position: relative;
+  display: inline-flex;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  min-width: 118px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--white);
+  background: transparent;
+  border: 2px solid var(--teal-light);
+  border-radius: 8px;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.trigger:hover {
+  border-color: var(--teal-light);
+  background: rgba(0, 128, 128, 0.18);
+}
+
+.code {
+  letter-spacing: 0.4px;
+}
+
+.chevron {
+  margin-left: auto;
+  transition: transform var(--transition-fast);
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 168px;
+  padding: 6px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  z-index: 60;
+  animation: lbMenuIn 0.16s ease;
+}
+
+@keyframes lbMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  border-radius: 7px;
+  text-align: left;
+  transition: background var(--transition-fast);
+}
+
+.option:hover {
+  background: var(--teal-bg);
+}
+
+.optionActive {
+  background: var(--teal-bg);
+  color: var(--teal-dark);
+  font-weight: 600;
+}
+
+.globe {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.optionActive .globe {
+  color: var(--teal);
+}
+
+.flag {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.optionCode {
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.check {
+  margin-left: auto;
+  color: var(--teal);
+  flex-shrink: 0;
+}
