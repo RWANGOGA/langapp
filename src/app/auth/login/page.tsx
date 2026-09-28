@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
@@ -9,13 +9,26 @@ import styles from "./page.module.css";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, isAuthenticated, isTutor, isAdmin, user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const callbackUrl = searchParams.get("callbackUrl") || "/tutor";
+
+  // Redirect based on role after login
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      if (isAdmin) {
+        router.push("/admin");
+      } else if (isTutor) {
+        router.push("/tutor");
+      } else {
+        router.push(callbackUrl);
+      }
+    }
+  }, [isAuthenticated, isLoading, isAdmin, isTutor, router, callbackUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,8 +37,7 @@ function LoginForm() {
 
     try {
       await login(email, password);
-      router.push(callbackUrl);
-      router.refresh();
+      // Redirect is handled by useEffect above
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
