@@ -1,3 +1,5 @@
+import { apiGet } from "@/lib/api";
+
 export type FeatureIcon = "clock" | "list" | "content" | "video" | "cert" | "mentor";
 export interface Plan {
   id: "starter" | "intensive" | "mastery";
@@ -15,14 +17,8 @@ const PLANS: Plan[] = [
     features: [{ icon: "clock", label: "6 Months Access" }, { icon: "content", label: "All Content" }, { icon: "cert", label: "Certification" }, { icon: "mentor", label: "1-on-1 Mentoring" }] },
 ];
 
-/** FastAPI: GET {API_URL}/api/packages, else mock. */
+/** GET {API_URL}/api/packages (public). The plans live in the database; PLANS below is only a fallback. */
 export async function getPlans(): Promise<Plan[]> {
-  const base = process.env.API_URL;
-  if (base) {
-    try {
-      const res = await fetch(`${base}/api/packages`, { next: { revalidate: 600 } });
-      if (res.ok) return (await res.json()) as Plan[];
-    } catch { /* mock */ }
-  }
-  return PLANS;
+  const data = await apiGet<Plan[]>("/packages", { public: true, revalidate: 600 });
+  return data && data.length ? data : PLANS; // remove `PLANS` once the backend seed has run
 }

@@ -9,7 +9,7 @@ import styles from "./page.module.css";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login, isLoading, isAuthenticated, isTutor, isAdmin, user } = useAuth();
+  const { login, isLoading, isAuthenticated, isTutor, isAdmin } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");

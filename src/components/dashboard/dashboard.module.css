@@ -1,0 +1,111 @@
+.page {
+  min-height: 100vh; padding: clamp(0px, 3vw, 44px);
+  display: grid; place-items: center;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(191, 227, 223, .55) 0 160px, transparent 161px),
+    radial-gradient(circle at 96% 8%, rgba(191, 227, 223, .5) 0 220px, transparent 221px),
+    radial-gradient(circle at 12% 96%, rgba(242, 84, 27, .16) 0 90px, transparent 91px),
+    linear-gradient(120deg, #eef5f6, #f8fbfb 55%, #fdf1ec);
+}
+.window {
+  width: 100%; max-width: 1240px; overflow: hidden; background: #fff;
+  border-radius: 22px; box-shadow: 0 14px 44px rgba(11, 37, 69, .16);
+}
+
+/* ---- top bar ---- */
+.topbar { display: flex; align-items: center; gap: 2.4rem; padding: .9rem 2rem; background: #132b50; color: #fff; }
+.brand { display: flex; align-items: center; gap: .6rem; font-weight: 600; line-height: 1.15; font-size: 1.05rem; color: #fff; text-decoration: none; }
+.topNav { display: flex; gap: 2.2rem; margin-right: auto; }
+.topLink { color: rgba(255, 255, 255, .72); text-decoration: none; font-weight: 500; font-size: .95rem; letter-spacing: .02em; text-transform: uppercase; padding: 1.2rem 0; border-bottom: 3px solid transparent; }
+.topLink.active { color: #fff; border-bottom-color: #fff; }
+.topLink:hover { color: #fff; }
+.userBox { display: flex; align-items: center; gap: .8rem; }
+.userBox strong { display: block; font-size: .98rem; }
+.userBox small { color: rgba(255, 255, 255, .8); font-size: .8rem; }
+.userBox small b { color: #f5b301; }
+.avatar { border-radius: 50%; object-fit: cover; }
+.bell { position: relative; margin-left: 1rem; background: none; border: 0; color: #fff; cursor: pointer; }
+.badge { position: absolute; top: -8px; right: -8px; min-width: 18px; height: 18px; border-radius: 50%; background: var(--coral); font-size: .7rem; font-weight: 700; display: grid; place-items: center; }
+
+/* ---- body ---- */
+.body { display: grid; grid-template-columns: 210px 1fr; background: #f5f9fa; }
+.sideNav { display: flex; flex-direction: column; background: #fff; padding-top: 1.2rem; }
+.sideLink { display: flex; align-items: center; gap: .8rem; padding: 1rem 1.4rem; color: #16233a; text-decoration: none; font-weight: 500; font-size: .92rem; letter-spacing: .02em; text-transform: uppercase; border-left: 4px solid transparent; }
+.sideLink svg { color: var(--teal); }
+.sideLink.active { background: #e9f1f2; border-left-color: var(--teal); }
+.sideLink:hover { background: #f0f6f7; }
+.topLink:focus-visible, .sideLink:focus-visible, .bell:focus-visible { outline: 2px solid var(--teal-light); outline-offset: 2px; }
+.content { padding: 1.6rem; min-width: 0; }
+
+/* ---- grid ---- */
+.grid { display: grid; gap: 1.4rem; grid-template-columns: 1fr 1.65fr 1.2fr; grid-template-areas: "tutor upcoming calendar" "progress progress calendar"; }
+.tutorCard { grid-area: tutor; } .upcoming { grid-area: upcoming; } .calendar { grid-area: calendar; } .progress { grid-area: progress; }
+.card { background: #fff; border-radius: 16px; padding: 1.4rem; box-shadow: 0 2px 12px rgba(11, 37, 69, .07); min-width: 0; }
+.cardTitle { font-size: 1.3rem; font-weight: 600; color: #0f1c33; display: flex; align-items: center; gap: .6rem; }
+.tealIcon { color: var(--teal); }
+.card small { color: #4a5a70; }
+
+/* my tutor */
+.tutorCard { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .2rem; }
+.tutorCard .cardTitle { align-self: flex-start; margin-bottom: .9rem; }
+.portrait { border-radius: 50%; object-fit: cover; width: 100px; height: 100px; }
+.tutorName { margin-top: .5rem; font-size: 1.1rem; }
+.btnOutline { width: 100%; margin-top: .6rem; padding: .7rem; border: 1px solid #d5dde3; border-radius: 8px; color: #0f1c33; text-decoration: none; font-weight: 600; font-size: .85rem; text-transform: uppercase; background: #fff; }
+.btnOutline:hover { border-color: var(--teal); }
+.tutorCard small + .btnOutline { margin-top: .9rem; }
+
+/* upcoming class */
+.cardTop { display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; }
+.clockRing { color: var(--teal); padding: 4px; border: 2px solid var(--coral); border-radius: 50%; box-sizing: content-box; }
+.classTitle { font-size: 1.5rem; line-height: 1.2; font-weight: 600; margin: .1rem 0 1rem; color: #0f1c33; }
+.classRow { display: flex; align-items: center; gap: 1.2rem; }
+.miniTutor { display: flex; flex-direction: column; align-items: center; padding-right: 1.2rem; border-right: 1px solid #dfe6ea; font-size: .85rem; }
+.miniTutor img { border-radius: 50%; object-fit: cover; }
+.countdown { flex: 1; display: flex; flex-direction: column; align-items: center; }
+.countLabel { font-size: .85rem; font-weight: 500; color: #16233a; }
+.countTime { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 700; letter-spacing: .02em; color: #0f1c33; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.countUnits { display: flex; gap: 1.6rem; font-size: .75rem; color: #4a5a70; }
+.countUnits i { font-style: normal; }
+.joinRow { display: flex; gap: .9rem; margin: 1.1rem 0 .9rem; }
+.btnCoral { flex: 1; text-align: center; padding: .85rem .4rem; border-radius: 8px; background: #f26a3d; color: #fff; text-decoration: none; font-weight: 600; font-size: .85rem; text-transform: uppercase; }
+.btnCoral:hover { background: var(--coral); }
+.pkgRow { display: flex; align-items: center; gap: .8rem; }
+.pkg { display: inline-flex; align-items: center; gap: .5rem; padding: .45rem 1rem; border: 2px solid var(--teal); border-radius: 999px; color: #0f1c33; font-weight: 600; font-size: .82rem; text-transform: uppercase; }
+.award { color: var(--coral); }
+
+/* calendar */
+.calHead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.calNav { display: flex; justify-content: space-between; align-items: center; margin-bottom: .6rem; font-size: .92rem; }
+.calNav button { background: none; border: 0; cursor: pointer; color: #16233a; }
+.calGrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: .35rem 0; text-align: center; }
+.calDow { font-weight: 600; font-size: .85rem; padding: .3rem 0; }
+.calDay { font-size: .88rem; font-weight: 500; padding: .5rem 0; border-radius: 8px; }
+.calOut { color: #b6c0c8; }
+.calClass { background: #d3e9e6; }
+.calToday { background: var(--teal); color: #fff; font-weight: 700; }
+.rule { border: 0; border-top: 1px solid #e3e9ee; margin: 1.1rem 0; }
+.subTitle { font-size: 1.1rem; font-weight: 600; margin-bottom: .7rem; }
+.upList { list-style: none; display: grid; gap: .6rem; }
+.upList li { padding: .65rem .8rem; background: #f4f8f9; border-left: 4px solid var(--teal); border-radius: 6px; font-weight: 500; font-size: .85rem; }
+
+/* progress */
+.progress .cardTitle { margin-bottom: 1rem; }
+.bar { height: 20px; background: #e6ecef; border-radius: 10px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: #3a9488; border-radius: 10px; color: #fff; font-style: normal; font-size: .72rem; line-height: 20px; text-align: right; padding-right: .7rem; }
+.progMeta { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: .7rem; font-size: .85rem; font-weight: 500; }
+
+/* responsive */
+@media (max-width: 1050px) {
+  .grid { grid-template-columns: 1fr 1fr; grid-template-areas: "tutor upcoming" "calendar calendar" "progress progress"; }
+  .topNav { display: none; }
+}
+@media (max-width: 720px) {
+  .body { grid-template-columns: 1fr; }
+  .sideNav { flex-direction: row; overflow-x: auto; padding: 0; }
+  .sideLink { white-space: nowrap; border-left: 0; border-bottom: 3px solid transparent; }
+  .sideLink.active { border-bottom-color: var(--teal); }
+  .grid { grid-template-columns: 1fr; grid-template-areas: "tutor" "upcoming" "calendar" "progress"; }
+  .topbar { padding: .8rem 1rem; } .userBox small { display: none; }
+  .classRow { flex-direction: column; } .miniTutor { border-right: 0; padding-right: 0; }
+  .joinRow { flex-direction: column; }
+}

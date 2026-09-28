@@ -6,27 +6,28 @@
 
 :root {
   /* — Brand Colors — */
-  --navy: #0B2545;
-  --navy-light: #13315C;
+  --navy: #0b2545;
+  --navy-light: #132b50;
   --navy-dark: #081C36;
-  --coral: #FF4500;
-  --coral-hover: #E63E00;
-  --coral-light: #FF6A33;
-  --teal: #008080;
-  --teal-light: #00A3A3;
-  --teal-dark: #006666;
-  --teal-bg: #E6F7F7;
+  --coral: #f2541b;
+  --coral-hover: #d9470f;
+  --coral-light: #f47a52;
+  --teal: #2a8c82;
+  --teal-light: #3fb8ad;
+  --teal-dark: #1d6d66;
+  --teal-bg: #e9f1f2;
+  --mint: #e4f3f2;
+  --ink: #0b1b33;
 
   /* — Neutral Palette — */
   --white: #FFFFFF;
-  --ink: #0B1B33;
-  --mut: #5B6B7C;
-  --bg-light: #F5F7FA;
-  --bg-warm: #FFF8F5;
+  --mut: #5b6b7c;
+  --bg-light: #f5f7fa;
+  --bg-warm: #fdf1ec;
   --bg-card: #FFFFFF;
-  --border: #E5E7EB;
-  --border-light: #F0F0F0;
-  --text-dark: #1A1A2E;
+  --border: #e3e9ee;
+  --border-light: #f0f0f0;
+  --text-dark: #0f1c33;
   --text-body: #374151;
   --text-muted: #6B7280;
   --text-light: #9CA3AF;
