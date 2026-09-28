@@ -12,8 +12,13 @@ export interface LearnerDashboard {
 
 /** GET {API_URL}/api/learner/dashboard (needs the login cookie). */
 export async function getLearnerDashboard(): Promise<LearnerDashboard> {
-  const data = await apiGet<LearnerDashboard>("/learner/dashboard");
-  return data ?? DEV_FALLBACK(); // DELETE this fallback (and DEV_FALLBACK) once the backend is running
+  try {
+    const data = await apiGet<LearnerDashboard>("/learner/dashboard");
+    if (data) return data;
+  } catch {
+    // API not available or 404 - use dev fallback
+  }
+  return DEV_FALLBACK(); // DELETE this fallback (and DEV_FALLBACK) once the backend is running
 }
 
 // ---- development fallback that reproduces the mockup; remove when the API is live ----

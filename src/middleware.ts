@@ -14,11 +14,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const tutorPaths = ["/tutor"];
-  const adminPaths = ["/admin"];
+  const protectedPaths = ["/tutor", "/admin"];
+  const isProtectedPath = protectedPaths.some((path) => pathname === path || pathname.startsWith(path + "/"));
 
-  const isTutorPath = tutorPaths.some((path) => pathname === path || pathname.startsWith(path + "/"));
-  const isAdminPath = adminPaths.some((path) => pathname === path || pathname.startsWith(path + "/"));
+  if (!isProtectedPath) {
+    return NextResponse.next();
+  }
 
   const accessToken = request.cookies.get("access_token");
 
