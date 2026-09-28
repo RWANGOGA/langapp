@@ -63,14 +63,7 @@ const MOCK: AdminDashboard = {
   ],
 };
 
-/** Server-side loader. Point API_URL at FastAPI (GET /api/admin/dashboard); falls back to mock data. */
-export async function getAdminDashboard(): Promise<AdminDashboard> {
-  const base = process.env.API_URL;
-  if (base) {
-    try {
-      const res = await fetch(`${base}/api/admin/dashboard`, { cache: "no-store" });
-      if (res.ok) return (await res.json()) as AdminDashboard;
-    } catch { /* fall through to mock */ }
-  }
+/** Synchronous helper returning mock data (or real data when integrated with the API). */
+export function getAdminDashboard(): AdminDashboard {
   return MOCK;
 }

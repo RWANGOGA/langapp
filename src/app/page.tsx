@@ -1,7 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { BadgeCheck, CalendarDays, PlayCircle, Star, Users } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useAuth } from "@/lib/auth";
 import styles from "./page.module.css";
 
 const NAV = ["Home", "Features", "Pricing", "Resources", "Blog"];
@@ -21,6 +25,14 @@ function Logo() {
 }
 
 export default function HomePage() {
+  const router = useRouter();
+  const { user, logout, isAuthenticated, isLoading, isTutor, isAdmin } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
+  };
+
   return (
     <main className={styles.page}>
       <header className={styles.header}>
@@ -35,15 +47,29 @@ export default function HomePage() {
             </Link>
           ))}
         </nav>
-        <nav className={styles.portals} aria-label="Portals">
-          {PORTALS.map((p) => (
-            <Link key={p.href} href={p.href} className={styles.portalLink}>
-              {p.label}
-            </Link>
-          ))}
-        </nav>
+        {isAuthenticated && (isTutor || isAdmin) && (
+          <nav className={styles.portals} aria-label="Portals">
+            {PORTALS.map((p) => (
+              <Link key={p.href} href={p.href} className={styles.portalLink}>
+                {p.label}
+              </Link>
+            ))}
+          </nav>
+        )}
         <div className={styles.actions}>
-          <Link href="/tutor" className={`${styles.btn} ${styles.solid} ${styles.small}`}>Get Started</Link>
+          {isLoading ? (
+            <span className={styles.loading}>Loading...</span>
+          ) : isAuthenticated ? (
+            <>
+              <span className={styles.welcome}>Hi, {user?.full_name}</span>
+              <button onClick={handleLogout} className={`${styles.btn} ${styles.outline} ${styles.small}`}>Logout</button>
+            </>
+          ) : (
+            <>
+              <Link href="/auth/login" className={`${styles.btn} ${styles.outline} ${styles.small}`}>Sign In</Link>
+              <Link href="/auth/register" className={`${styles.btn} ${styles.solid} ${styles.small}`}>Get Started</Link>
+            </>
+          )}
           <LanguageSwitcher />
         </div>
       </header>

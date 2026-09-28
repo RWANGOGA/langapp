@@ -1,20 +1,43 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Clock } from "lucide-react";
 import Calendar from "@/components/tutor/Calendar";
 import Countdown from "@/components/tutor/Countdown";
 import DashboardLayout from "@/components/tutor/DashboardLayout";
 import DashboardShell from "@/components/tutor/DashboardShell";
-import styles from "@/components/tutor/tutor.module.css";
+import { useAuth } from "@/lib/auth";
 import { getTutorDashboard } from "@/lib/tutor-data";
+import styles from "@/components/tutor/tutor.module.css";
 
-export const metadata: Metadata = { title: "Tutor Dashboard" };
+export default function TutorPage() {
+  const router = useRouter();
+  const { isAuthenticated, isLoading, isTutor } = useAuth();
 
-const initials = (n: string) => n.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  useEffect(() => {
+    if (!isLoading) {
+      if (!isAuthenticated) {
+        router.push(`/auth/login?callbackUrl=${encodeURIComponent("/tutor")}`);
+      } else if (!isTutor) {
+        router.push("/auth/login");
+      }
+    }
+  }, [isAuthenticated, isTutor, isLoading, router]);
 
-export default async function TutorPage() {
-  const { tutor, next, learners, today, sessions } = await getTutorDashboard();
+  const { tutor, next, learners, today, sessions } = getTutorDashboard();
   const todays = sessions.filter((s) => s.date === today);
+
+  if (isLoading || !isAuthenticated || !isTutor) {
+    return (
+      <div className={styles.loading}>
+        <div className={styles.loadingSpinner}>Loading...</div>
+      </div>
+    );
+  }
+
+  const initials = (n: string) => n.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
   return (
     <DashboardLayout>
@@ -55,7 +78,6 @@ export default async function TutorPage() {
             {next.meetingUrl ? (
               <a className={`${styles.btnCoral} ${styles.startLink}`} href={next.meetingUrl} target="_blank" rel="noopener noreferrer">Start class</a>
             ) : (
-              // TODO: implement POST /api/tutor/meeting-link -> FastAPI (Google Meet / Zoom API / Teams Graph)
               <form className={styles.linkForm} method="post" action="/api/tutor/meeting-link">
                 <input type="hidden" name="sessionId" value={next.sessionId} />
                 <select className={styles.select} name="provider" aria-label="Meeting provider" defaultValue="Google Meet">
@@ -93,7 +115,6 @@ export default async function TutorPage() {
           {/* Lesson notes & feedback (plain form -> your API route) */}
           <section className={`${styles.card} ${styles.notes}`} aria-labelledby="notes-h">
             <h3 id="notes-h" className={styles.cardTitle}>Lesson Notes & Feedback</h3>
-            {/* TODO: implement POST /api/tutor/feedback -> FastAPI */}
             <form className={styles.form} method="post" action="/api/tutor/feedback">
               <label>Learner
                 <select className={styles.select} name="learnerId" required defaultValue="">

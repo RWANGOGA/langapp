@@ -73,6 +73,18 @@
   flex-shrink: 0;
 }
 
+.loading {
+  color: var(--white);
+  font-size: var(--text-sm);
+  opacity: 0.8;
+}
+
+.welcome {
+  color: var(--white);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
 /* portal links: quiet secondary routes to the role screens */
 .portals {
   display: flex;

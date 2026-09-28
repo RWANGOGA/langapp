@@ -29,14 +29,7 @@ const MOCK = (): TutorDashboard => ({
   ],
 });
 
-/** Server loader: FastAPI `GET {API_URL}/api/tutor/dashboard` (add your auth header), else mock data. */
-export async function getTutorDashboard(): Promise<TutorDashboard> {
-  const base = process.env.API_URL;
-  if (base) {
-    try {
-      const res = await fetch(`${base}/api/tutor/dashboard`, { cache: "no-store" });
-      if (res.ok) return (await res.json()) as TutorDashboard;
-    } catch { /* fall back to mock */ }
-  }
+/** Synchronous helper returning mock data (or real data when integrated with the API). */
+export function getTutorDashboard(): TutorDashboard {
   return MOCK();
 }

@@ -121,3 +121,9 @@
 .footer a:hover {
   text-decoration: underline;
 }
+
+.loading {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--muted);
+}
