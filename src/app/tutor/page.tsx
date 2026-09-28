@@ -21,7 +21,7 @@ export default function TutorPage() {
       if (!isAuthenticated) {
         router.push(`/auth/login?callbackUrl=${encodeURIComponent("/tutor")}`);
       } else if (!isTutor) {
-        router.push("/auth/login");
+        router.push("/dashboard");
       }
     }
   }, [isAuthenticated, isTutor, isLoading, router]);
