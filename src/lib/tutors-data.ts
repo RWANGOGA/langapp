@@ -15,13 +15,26 @@ const TUTORS: DirectoryTutor[] = [
   { id: "daniel-wright", name: "Daniel Wright", headline: "IELTS band 7+ and interview skills", country: "Ireland", rating: 4.8, reviews: 221, years: 9, speaks: ["English", "Vietnamese"], specialties: ["IELTS", "Business"] },
 ];
 
-/** Server loader: FastAPI `GET {API_URL}/api/tutors`, else the mocks above. */
+/** Server loader: FastAPI `GET {API_URL}/api/v1/tutors`, else the mocks above. */
 export async function getTutorDirectory(): Promise<DirectoryTutor[]> {
-  const base = process.env.API_URL;
+  const base = process.env.NEXT_PUBLIC_API_URL;
   if (base) {
     try {
-      const res = await fetch(`${base}/api/tutors`, { next: { revalidate: 300 } });
-      if (res.ok) return (await res.json()) as DirectoryTutor[];
+      const res = await fetch(`${base}/tutors`, { next: { revalidate: 300 } });
+      if (res.ok) {
+        const data = await res.json() as { tutors: Array<{ id: string; name: string; headline: string; country: string; rating: number; reviews: number; years_experience: number; languages: string[]; specialties: string[] }> };
+        return data.tutors.map((t) => ({
+          id: t.id,
+          name: t.name,
+          headline: t.headline,
+          country: t.country,
+          rating: t.rating,
+          reviews: t.reviews,
+          years: t.years_experience,
+          speaks: t.languages,
+          specialties: t.specialties,
+        })) as DirectoryTutor[];
+      }
     } catch { /* fall back to mock */ }
   }
   return TUTORS;

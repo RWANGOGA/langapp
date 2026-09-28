@@ -1,0 +1,74 @@
+from pydantic import BaseModel, ConfigDict
+from typing import List, Optional
+from datetime import datetime
+from app.models.package import PlanName, PaymentMethod, OrderStatus
+
+
+class Feature(BaseModel):
+    icon: str
+    label: str
+
+
+class PackageBase(BaseModel):
+    name: str
+    months: int
+    popular: bool = False
+    price_jpy: int
+    price_vnd: int
+    price_usd: int
+    features: List[Feature]
+
+
+class PackageCreate(PackageBase):
+    id: PlanName
+
+
+class PackageUpdate(BaseModel):
+    name: Optional[str] = None
+    months: Optional[int] = None
+    popular: Optional[bool] = None
+    price_jpy: Optional[int] = None
+    price_vnd: Optional[int] = None
+    price_usd: Optional[int] = None
+    features: Optional[List[Feature]] = None
+
+
+class PackageRead(PackageBase):
+    id: PlanName
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class OrderCreate(BaseModel):
+    package_id: PlanName
+    payment_method: PaymentMethod
+
+
+class OrderRead(BaseModel):
+    id: int
+    package_id: PlanName
+    user_id: Optional[int] = None
+    status: OrderStatus
+    payment_method: Optional[PaymentMethod] = None
+    amount_jpy: int
+    amount_vnd: int
+    amount_usd: int
+    external_payment_id: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CheckoutRequest(BaseModel):
+    package_id: PlanName
+    payment_method: PaymentMethod
+    user_email: str
+
+
+class CheckoutResponse(BaseModel):
+    order_id: int
+    status: OrderStatus
+    payment_url: Optional[str] = None

@@ -11,6 +11,8 @@ const n = (v: number) => v.toLocaleString("en-US");
 const yen = (v: number) => `¥${n(v)}`, dong = (v: number) => `₫${n(v)}`, usd = (v: number) => `$${n(v)}`;
 type Method = "card" | "line" | "paypay" | "zalopay" | "paypal";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8004/api/v1";
+
 export default function CheckoutClient({ plans }: { plans: Plan[] }) {
   const router = useRouter();
   const [planId, setPlanId] = useState<Plan["id"]>(plans.find((p) => p.popular)?.id ?? plans[0].id);
@@ -22,10 +24,10 @@ export default function CheckoutClient({ plans }: { plans: Plan[] }) {
   async function pay() {
     setBusy(true); setError(null);
     try {
-      // TODO: implement POST /api/checkout -> FastAPI (create order + payment session)
-      const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ packageId: plan.id, method }) });
+      const res = await fetch(`${API_URL}/checkout`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ packageId: plan.id, method }) });
       if (!res.ok) throw new Error();
-      router.push("/matching");
+      const order = await res.json();
+      router.push(`/matching?order=${order.id}`);
     } catch {
       setError("We couldn't start your payment. Please try again.");
       setBusy(false);
