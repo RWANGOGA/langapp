@@ -32,7 +32,7 @@ export default function TutorRoster({ tutors }: { tutors: Tutor[] }) {
       </div>
       <label className={styles.searchWrap}>
         <Search size={16} aria-hidden />
-        <input className={styles.searchInput} type="search" placeholder="Search…" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <input className={styles.searchInput} type="search" placeholder="Search&hellip;" value={query} onChange={(e) => setQuery(e.target.value)} />
       </label>
       <div className={styles.tableContainer}>
         <table className={styles.adminTable}>
@@ -43,7 +43,7 @@ export default function TutorRoster({ tutors }: { tutors: Tutor[] }) {
                   Tutor Name {asc ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
                 </button>
               </th>
-              <th>Email</th><th>Status</th><th>Language</th><th>Rating</th><th>Current Assignments</th>
+              <th>Email</th><th>Status</th><th>Language</th><th>Rating</th><th>Current Assignments</th><th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -53,11 +53,12 @@ export default function TutorRoster({ tutors }: { tutors: Tutor[] }) {
                 <td>{t.email}</td>
                 <td><Badge variant={STATUS_VARIANT[t.status]} className={styles.statusBadge}>{t.status}</Badge></td>
                 <td>{t.language}</td>
-                <td><Star size={13} fill="#f5b301" stroke="#f5b301" /> {t.rating.toFixed(1)}</td>
+                <td><Star size={13} fill="#f5b301" stroke="#f5b301" /> {t.rating.toFixed(1)} <Star size={13} fill="#e3e7eb" stroke="#c5ccd3" /></td>
                 <td>{t.assignments}</td>
+                <td><button type="button" className={styles.cardMenu} aria-label={`Actions for ${t.name}`}><MoreHorizontal size={18} /></button></td>
               </tr>
             ))}
-            {rows.length === 0 && <tr><td colSpan={6}>No tutors match “{query}”.</td></tr>}
+            {rows.length === 0 && <tr><td colSpan={7}>No tutors match {query}.</td></tr>}
           </tbody>
         </table>
       </div>

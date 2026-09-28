@@ -1,33 +1,22 @@
-"use client";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ChevronDown, GraduationCap } from "lucide-react";
+import { getPlans } from "@/lib/packages-data";
+import CheckoutClient from "./CheckoutClient";
+import styles from "./checkout.module.css";
 
-import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
-import styles from "./page.module.css";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { PackageSelector } from "@/components/checkout/PackageSelector";
-import { CheckoutForm } from "@/components/checkout/CheckoutForm";
+export const metadata: Metadata = { title: "Choose your package & pay" };
 
-function CheckoutContent() {
-  const searchParams = useSearchParams();
-  const packageId = searchParams.get("package") || "intensive";
-
+export default async function CheckoutPage() {
+  const plans = await getPlans();
   return (
-    <div className={`${styles.checkoutPage}`}>
-      <Navbar />
-      <main className={`${styles.checkoutMain}`}>
-        <PackageSelector />
-        <CheckoutForm packageId={packageId} />
-      </main>
-      <Footer />
+    <div className={styles.page}>
+      <header className={styles.topbar}>
+        <Link href="/" className={styles.brand}><GraduationCap size={26} color="#f2541b" aria-hidden /> EduLearn Global</Link>
+        <nav className={styles.nav} aria-label="Main"><Link href="/courses">Courses</Link><Link href="/pricing">Pricing</Link><Link href="/support">Support</Link></nav>
+        <button type="button" className={styles.user} aria-label="Account menu"><span className={styles.avatar} aria-hidden>K</span><ChevronDown size={18} /></button>
+      </header>
+      <CheckoutClient plans={plans} />
     </div>
-  );
-}
-
-export default function CheckoutPage() {
-  return (
-    <Suspense fallback={<div className={`${styles.checkoutPage}`}>Loading...</div>}>
-      <CheckoutContent />
-    </Suspense>
   );
 }

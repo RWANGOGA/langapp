@@ -20,10 +20,10 @@ export default function AssignmentMatrix({ rows }: { rows: MatrixRow[] }) {
     <Card className={styles.adminCard}>
       <div className={styles.cardHeader}>
         <h3>Student-Tutor Assignment Matrix</h3>
-        <button type="button" className={styles.assignmentToolsBtn}>
-          <SlidersHorizontal size={14} strokeWidth={2} />
-          Assignment Tools
-        </button>
+        <div className={styles.headerTools}>
+          <select className={styles.selectSm} aria-label="Filters"><option>Filters</option><option>Pending</option><option>Alert</option></select>
+          <button type="button" className={styles.assignmentToolsBtn}><SlidersHorizontal size={14} strokeWidth={2} /> Assignment Tools</button>
+        </div>
       </div>
 
       <div className={styles.matrixContainer}>
