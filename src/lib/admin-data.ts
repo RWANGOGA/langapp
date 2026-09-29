@@ -1,12 +1,15 @@
+import { apiGet } from "@/lib/api";
+
 export type TutorStatus = "Active" | "Assigned" | "Onboarding";
 export type CellStatus = "pending" | "confirmed" | "completed" | "alert" | "assigned" | "plus" | "empty";
 export type Provider = "Google Meet" | "Zoom" | "MS Teams";
+export type PlanName = "Basic" | "Pro" | "Premium";
 
 export interface Kpi { label: string; value: string }
 export interface Tutor { id: string; name: string; email: string; status: TutorStatus; language: string; rating: number; assignments: number }
-export interface MatrixRow { tutor: string; cells: [CellStatus, CellStatus, CellStatus, CellStatus, CellStatus] }
+export interface MatrixRow { tutor: string; cells: CellStatus[] }
 export interface Meeting { provider: Provider; sessions: string[]; connected: boolean }
-export interface Plan { name: "Basic" | "Pro" | "Premium"; share: number; color: string }
+export interface Plan { name: PlanName; share: number; color: string }
 export interface Leader { name: string; value: number }
 export interface Activity { id: string; initial: string; text: string; time: string }
 export interface StatusCount { label: "Active" | "Renewing" | "Expiring" | "Cancelled"; color: string }
@@ -18,7 +21,16 @@ export interface AdminDashboard {
   statuses: StatusCount[]; bars: BarGroup[];
 }
 
-const MOCK: AdminDashboard = {
+export interface Plan { name: PlanName; share: number; color: string }
+
+/** GET {API_URL}/api/admin/dashboard (needs admin cookie). */
+export async function getAdminDashboard(): Promise<AdminDashboard> {
+  const data = await apiGet<AdminDashboard>("/admin/dashboard");
+  return data ?? MOCK_FALLBACK(); // DELETE this fallback once the API is running
+}
+
+// ---- development fallback that reproduces the mockup; remove when the API is live ----
+const MOCK_FALLBACK = (): AdminDashboard => ({
   kpis: [
     { label: "Total Tutors", value: "248" },
     { label: "Active Students", value: "1,850" },
@@ -61,9 +73,4 @@ const MOCK: AdminDashboard = {
     { label: "Pro", bars: [{ value: 35, color: "var(--navy)" }, { value: 55, color: "#f47a52" }] },
     { label: "Premium", bars: [{ value: 28, color: "var(--navy)" }, { value: 18, color: "#f47a52" }] },
   ],
-};
-
-/** Synchronous helper returning mock data (or real data when integrated with the API). */
-export function getAdminDashboard(): AdminDashboard {
-  return MOCK;
-}
+});

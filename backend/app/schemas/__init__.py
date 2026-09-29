@@ -16,6 +16,22 @@ from app.schemas.learner import (
     ProgressResponse,
     ClassItemResponse,
 )
+from app.schemas.admin import (
+    AdminDashboardResponse,
+    Kpi,
+    Tutor,
+    MatrixRow,
+    Meeting,
+    Plan,
+    Leader,
+    Activity,
+    StatusCount,
+    BarGroup,
+    TutorStatus,
+    CellStatus,
+    Provider,
+    PlanName,
+)
 
 __all__ = [
     "PackageRead",
@@ -55,4 +71,18 @@ __all__ = [
     "NextClassResponse",
     "ProgressResponse",
     "ClassItemResponse",
+    "AdminDashboardResponse",
+    "Kpi",
+    "Tutor",
+    "MatrixRow",
+    "Meeting",
+    "Plan",
+    "Leader",
+    "Activity",
+    "StatusCount",
+    "BarGroup",
+    "TutorStatus",
+    "CellStatus",
+    "Provider",
+    "PlanName",
 ]
