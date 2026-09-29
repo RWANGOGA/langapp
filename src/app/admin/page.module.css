@@ -1,0 +1,244 @@
+/* =========================================================
+   Move your CSS to components/admin/admin.module.css, then:
+   1) add the tokens (only the ones you don't already have) to globals.css
+   2) REPLACE the listed rules
+   3) APPEND the new rules
+   ========================================================= */
+
+/* ---- 1) tokens (globals.css :root) ---- */
+:root {
+  --white: #fff;
+  --bg-light: #eef3f6;
+  --text-muted: #5b6b7c;
+  --text-dark: #0b1b33;
+  --text-body: #243447;
+  --border: #e3e9ee;
+  --max-width: 1600px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 999px;
+  --shadow-sm: 0 2px 8px rgba(11, 37, 69, .06);
+  --transition-fast: .15s ease;
+}
+
+/* ---- 2) REPLACE these rules ---- */
+.adminLayout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--navy);
+  color: var(--white);
+}
+
+.adminHeader {
+  /* remove max-width + margin:0 auto so it is full-bleed */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--navy);
+}
+
+.adminBody {
+  /* remove max-width, margin and the calc() min-height */
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  flex: 1;
+}
+
+.adminSidebar {
+  display: flex;
+  flex-direction: column;
+  background: var(--navy);
+  padding: var(--space-lg) 0;
+}
+
+.adminMain {
+  /* remove min-height calc, add min-width:0 so tables can't blow the grid out */
+  min-width: 0;
+  background: var(--bg-light);
+  color: var(--ink);
+  border-radius: var(--radius-xl) 0 0 0;
+  padding: var(--space-xl);
+}
+
+/* KPIs are ONE card next to the title (as in the mockup), not four cards */
+.kpiGrid {
+  display: flex;
+  margin: 0;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md) 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.kpiCard {
+  padding: 0 var(--space-lg);
+  text-align: center;
+  background: none;
+  border: 0;
+  border-left: 1px solid var(--border);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.kpiCard:first-child {
+  border-left: 0;
+}
+
+.kpiValue {
+  margin: 0;
+}
+
+/* in both @media blocks replace `.kpiGrid{grid-template-columns:...}` with: */
+/* .kpiGrid{ flex-wrap:wrap; }  */
+
+/* ---- 3) APPEND ---- */
+.adminLeft,
+.adminRight,
+.adminCard {
+  min-width: 0;
+}
+
+.cardMenu,
+.actionIcons button,
+.sortBtn {
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.sidebarItem.push {
+  margin-top: auto;
+}
+
+.sidebarItem:focus-visible,
+.notificationBell:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: -2px;
+}
+
+.notificationBell {
+  border: 0;
+  color: var(--white);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.searchWrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  color: var(--text-muted);
+}
+
+.sortBtn {
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.actionIcons {
+  display: inline-flex;
+  gap: var(--space-sm);
+}
+
+.assignmentToolsBtn {
+  background: var(--teal);
+  color: #fff;
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 8px 14px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.createLinkBtn {
+  color: #fff;
+  border: 0;
+  cursor: pointer;
+}
+
+.chartLegend {
+  list-style: none;
+}
+
+.matrixLegend {
+  list-style: none;
+}
+
+/* status colours (tutor badges, matrix cells and legend dots share these) */
+.statusBadge {
+  display: inline-block;
+  border-radius: var(--radius-full);
+  color: #fff;
+  font-weight: 600;
+}
+
+.matrixStatus .statusBadge {
+  border-radius: var(--radius-sm);
+  min-width: 72px;
+  padding: 8px 4px;
+}
+
+.tutorActive,
+.completed {
+  background: var(--teal);
+}
+
+.tutorAssigned,
+.assigned,
+.confirmed {
+  background: var(--navy);
+}
+
+.tutorOnboarding,
+.pending {
+  background: #f47a52;
+}
+
+.alert {
+  background: #f3b04a;
+  color: #222;
+}
+
+.plus {
+  background: transparent;
+  border: 2px solid var(--teal);
+  color: var(--teal);
+}
+
+.activityItem {
+  gap: var(--space-sm);
+}
+
+.activityAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.activityText {
+  flex: 1;
+}
