@@ -1,4 +1,6 @@
-import { apiGet } from "@/lib/api";
+"use client";
+
+import { apiGetClient } from "@/lib/api-client";
 
 export type TutorStatus = "Active" | "Assigned" | "Onboarding";
 export type CellStatus = "pending" | "confirmed" | "completed" | "alert" | "assigned" | "plus" | "empty";
@@ -25,7 +27,7 @@ export interface Plan { name: PlanName; share: number; color: string }
 
 /** GET {API_URL}/api/admin/dashboard (needs admin cookie). */
 export async function getAdminDashboard(): Promise<AdminDashboard> {
-  const data = await apiGet<AdminDashboard>("/admin/dashboard");
+  const data = await apiGetClient<AdminDashboard>("/admin/dashboard");
   return data ?? MOCK_FALLBACK(); // DELETE this fallback once the API is running
 }
 
