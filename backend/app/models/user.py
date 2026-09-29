@@ -11,6 +11,15 @@ class UserRole(str, enum.Enum):
     ADMIN = "admin"
 
 
+class ProficiencyLevel(str, enum.Enum):
+    A1 = "A1"
+    A2 = "A2"
+    B1 = "B1"
+    B2 = "B2"
+    C1 = "C1"
+    C2 = "C2"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -28,6 +37,10 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    # Learner-specific fields
+    tutor_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("users.id"), nullable=True)
+    proficiency_level: Mapped[ProficiencyLevel | None] = mapped_column(SQLEnum(ProficiencyLevel), nullable=True)
+
     tutor_profile: Mapped["TutorProfile | None"] = relationship(
         back_populates="user", 
         cascade="all, delete-orphan",
@@ -38,6 +51,22 @@ class User(Base):
         back_populates="user", 
         cascade="all, delete-orphan",
         foreign_keys="TutorApplication.user_id"
+    )
+    # Learner -> assigned tutor
+    assigned_tutor: Mapped["User | None"] = relationship(
+        back_populates="learners",
+        foreign_keys="User.tutor_id"
+    )
+    # Tutor -> assigned learners
+    learners: Mapped[list["User"]] = relationship(
+        back_populates="assigned_tutor",
+        foreign_keys="User.tutor_id",
+        remote_side="User.id"
+    )
+    # Learner's classes/sessions
+    classes: Mapped[list["Class"]] = relationship(
+        back_populates="learner",
+        foreign_keys="Class.learner_id"
     )
 
 
@@ -100,4 +129,37 @@ class TutorAvailability(Base):
 
     __table_args__ = (
         Index("ix_tutor_availability_profile_day", "profile_id", "day_of_week"),
+    )
+
+
+class ClassStatus(str, enum.Enum):
+    SCHEDULED = "scheduled"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+    NO_SHOW = "no_show"
+
+
+class Class(Base):
+    __tablename__ = "classes"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    learner_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
+    tutor_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    scheduled_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    duration_minutes: Mapped[int] = mapped_column(Integer, default=60)
+    status: Mapped[ClassStatus] = mapped_column(SQLEnum(ClassStatus), default=ClassStatus.SCHEDULED, nullable=False)
+    zoom_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    meet_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    package_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    learner: Mapped["User"] = relationship(back_populates="classes", foreign_keys="Class.learner_id")
+    tutor: Mapped["User"] = relationship(foreign_keys="Class.tutor_id")
+
+    __table_args__ = (
+        Index("ix_classes_learner_scheduled", "learner_id", "scheduled_at"),
+        Index("ix_classes_tutor_scheduled", "tutor_id", "scheduled_at"),
     )

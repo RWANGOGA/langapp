@@ -8,6 +8,14 @@ from app.schemas.tutor_application import (
     TutorApplicationStep4, TutorApplicationStep5, TutorApplicationStep6,
     TutorApplicationStep7, TutorApplicationStep8,
 )
+from app.schemas.learner import (
+    LearnerDashboardResponse,
+    LearnerBasic,
+    TutorBasic,
+    NextClassResponse,
+    ProgressResponse,
+    ClassItemResponse,
+)
 
 __all__ = [
     "PackageRead",
@@ -41,4 +49,10 @@ __all__ = [
     "TutorApplicationStep6",
     "TutorApplicationStep7",
     "TutorApplicationStep8",
+    "LearnerDashboardResponse",
+    "LearnerBasic",
+    "TutorBasic",
+    "NextClassResponse",
+    "ProgressResponse",
+    "ClassItemResponse",
 ]
