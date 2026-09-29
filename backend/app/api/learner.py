@@ -5,7 +5,7 @@ from sqlalchemy import select, func, and_
 from sqlalchemy.orm import selectinload
 
 from app.db.session import get_db
-from app.models.user import User, Class, ClassStatus
+from app.models.user import User, UserRole, Class, ClassStatus, TutorProfile
 from app.api.auth import get_current_active_user
 from app.schemas.learner import LearnerDashboardResponse
 
@@ -25,11 +25,16 @@ async def get_learner_dashboard(
 
     # Get learner's assigned tutor
     tutor = None
+    tutor_profile = None
     if current_user.tutor_id:
         tutor_result = await db.execute(
-            select(User).where(User.id == current_user.tutor_id)
+            select(User)
+            .options(selectinload(User.tutor_profile))
+            .where(User.id == current_user.tutor_id)
         )
         tutor = tutor_result.scalar_one_or_none()
+        if tutor:
+            tutor_profile = tutor.tutor_profile
 
     # Get next upcoming class
     now = datetime.utcnow()
@@ -71,7 +76,7 @@ async def get_learner_dashboard(
     if tutor:
         tutor_data = {
             "name": tutor.full_name,
-            "country": tutor.native_language or "Unknown",
+            "country": tutor_profile.country if tutor_profile else "Unknown",
             "avatar": tutor.avatar_url,
         }
 

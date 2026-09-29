@@ -48,6 +48,7 @@ interface RegisterData {
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8004/api/v1";
+const PROXY = "/api/v1"; // Use relative URL so requests go through Next.js rewrite (first-party cookies)
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -57,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUser = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/auth/me`, {
+      const response = await fetch(`${PROXY}/auth/me`, {
         credentials: "include",
       });
       if (response.ok) {
@@ -79,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [fetchUser]);
 
   const login = async (email: string, password: string) => {
-    const response = await fetch(`${API_URL}/auth/login`, {
+    const response = await fetch(`${PROXY}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -95,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (data: RegisterData) => {
-    const response = await fetch(`${API_URL}/auth/register`, {
+    const response = await fetch(`${PROXY}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -111,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    await fetch(`${API_URL}/auth/logout`, {
+    await fetch(`${PROXY}/auth/logout`, {
       method: "POST",
       credentials: "include",
     });
@@ -119,7 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const refreshToken = async () => {
-    const response = await fetch(`${API_URL}/auth/refresh`, {
+    const response = await fetch(`${PROXY}/auth/refresh`, {
       method: "POST",
       credentials: "include",
     });

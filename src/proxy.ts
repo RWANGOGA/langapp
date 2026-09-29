@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Public paths that don't require authentication
@@ -14,7 +14,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const protectedPaths = ["/tutor", "/admin"];
+  const protectedPaths = ["/tutor", "/admin", "/dashboard"];
   const isProtectedPath = protectedPaths.some((path) => pathname === path || pathname.startsWith(path + "/"));
 
   if (!isProtectedPath) {
@@ -30,10 +30,3 @@ export function middleware(request: NextRequest) {
 
   return NextResponse.next();
 }
-
-export const config = {
-  matcher: [
-    "/tutor/:path*",
-    "/admin/:path*",
-  ],
-};

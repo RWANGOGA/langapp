@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-const BASE = process.env.API_URL ?? "http://localhost:8004";
+const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8004/api/v1";
 
 /** Server-side GET to FastAPI. Forwards the login cookie; sends the user to /login on 401. */
 export async function apiGet<T>(path: string, opts: { public?: boolean; revalidate?: number } = {}): Promise<T | null> {
@@ -10,7 +10,7 @@ export async function apiGet<T>(path: string, opts: { public?: boolean; revalida
     const cookieStore = await cookies();
     headers.cookie = cookieStore.toString();
   }
-  const res = await fetch(`${BASE}/api${path}`, {
+  const res = await fetch(`${BASE}${path}`, {
     headers,
     ...(opts.revalidate ? { next: { revalidate: opts.revalidate } } : { cache: "no-store" as const }),
   });

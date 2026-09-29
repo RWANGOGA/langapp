@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Clock } from "lucide-react";
@@ -9,12 +9,14 @@ import Countdown from "@/components/tutor/Countdown";
 import DashboardLayout from "@/components/tutor/DashboardLayout";
 import DashboardShell from "@/components/tutor/DashboardShell";
 import { useAuth } from "@/lib/auth";
-import { getTutorDashboard } from "@/lib/tutor-data";
+import { getTutorDashboard, TutorDashboard } from "@/lib/tutor-data";
 import styles from "@/components/tutor/tutor.module.css";
 
 export default function TutorPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading, isTutor } = useAuth();
+  const [dashboard, setDashboard] = useState<TutorDashboard | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading) {
@@ -26,8 +28,13 @@ export default function TutorPage() {
     }
   }, [isAuthenticated, isTutor, isLoading, router]);
 
-  const { tutor, next, learners, today, sessions } = getTutorDashboard();
-  const todays = sessions.filter((s) => s.date === today);
+  useEffect(() => {
+    if (isAuthenticated && isTutor) {
+      getTutorDashboard()
+        .then(setDashboard)
+        .catch((err) => setError(err.message));
+    }
+  }, [isAuthenticated, isTutor]);
 
   if (isLoading || !isAuthenticated || !isTutor) {
     return (
@@ -37,13 +44,31 @@ export default function TutorPage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className={styles.loading}>
+        <div className={styles.loadingSpinner}>Error: {error}</div>
+      </div>
+    );
+  }
+
+  if (!dashboard) {
+    return (
+      <div className={styles.loading}>
+        <div className={styles.loadingSpinner}>Loading dashboard...</div>
+      </div>
+    );
+  }
+
+  const { tutor, next, learners, today, sessions } = dashboard;
+  const todays = sessions.filter((s) => s.date === today);
+
   const initials = (n: string) => n.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
   return (
     <DashboardLayout>
       <DashboardShell tutor={tutor}>
         <div className={styles.tGrid}>
-          {/* Assigned learners */}
           <section className={`${styles.card} ${styles.roster}`} aria-labelledby="roster-h">
             <div className={styles.cardHead}>
               <h3 id="roster-h" className={styles.cardTitle}>Assigned Learners</h3>
@@ -60,7 +85,6 @@ export default function TutorPage() {
             </ul>
           </section>
 
-          {/* Next session + meeting link generator + today's list */}
           <section className={`${styles.card} ${styles.next}`} aria-labelledby="next-h">
             <div className={styles.cardTop}>
               <h3 id="next-h" className={styles.cardTitle}>Next Session</h3>
@@ -100,7 +124,6 @@ export default function TutorPage() {
             </ul>
           </section>
 
-          {/* Calendar with events */}
           <section className={`${styles.card} ${styles.calendar}`}>
             <Calendar today={today} events={sessions} />
             <hr className={styles.rule} />
@@ -112,7 +135,6 @@ export default function TutorPage() {
             </ul>
           </section>
 
-          {/* Lesson notes & feedback (plain form -> your API route) */}
           <section className={`${styles.card} ${styles.notes}`} aria-labelledby="notes-h">
             <h3 id="notes-h" className={styles.cardTitle}>Lesson Notes & Feedback</h3>
             <form className={styles.form} method="post" action="/api/tutor/feedback">

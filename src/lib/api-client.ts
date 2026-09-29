@@ -1,6 +1,6 @@
 "use client";
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8004/api/v1";
+const BASE = "/api/v1"; // Use relative URL so requests go through Next.js rewrite (first-party cookies)
 
 /** Client-side GET to FastAPI via Next.js proxy. Forwards the login cookie automatically. */
 export async function apiGetClient<T>(path: string): Promise<T | null> {

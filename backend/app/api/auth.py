@@ -21,6 +21,7 @@ SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 REFRESH_TOKEN_EXPIRE_DAYS = 7
+COOKIE_SECURE = settings.ENVIRONMENT == "production"
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -166,7 +167,7 @@ async def login(
         key="access_token",
         value=f"Bearer {access_token}",
         httponly=True,
-        secure=True,
+        secure=COOKIE_SECURE,
         samesite="lax",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
@@ -174,7 +175,7 @@ async def login(
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=True,
+        secure=COOKIE_SECURE,
         samesite="lax",
         max_age=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
     )
@@ -213,7 +214,7 @@ async def refresh_token(
         key="access_token",
         value=f"Bearer {new_access}",
         httponly=True,
-        secure=True,
+        secure=COOKIE_SECURE,
         samesite="lax",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
@@ -221,7 +222,7 @@ async def refresh_token(
         key="refresh_token",
         value=new_refresh,
         httponly=True,
-        secure=True,
+        secure=COOKIE_SECURE,
         samesite="lax",
         max_age=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
     )
