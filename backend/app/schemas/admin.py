@@ -55,13 +55,13 @@ class MatrixRow(BaseModel):
 
 
 class Meeting(BaseModel):
-    provider: Provider
+    provider: str
     sessions: List[str]
     connected: bool
 
 
 class Plan(BaseModel):
-    name: PlanName
+    name: str
     share: int
     color: str
 
@@ -81,6 +81,7 @@ class Activity(BaseModel):
 class StatusCount(BaseModel):
     label: str
     color: str
+    count: Optional[int] = None
 
 
 class BarGroup(BaseModel):
@@ -111,7 +112,7 @@ class StudentAssignmentResponse(BaseModel):
     tutor_id: int
     tutor_name: str
     assigned_at: datetime
-    assigned_by: int
+    assigned_by: Optional[int] = None
 
 
 class StudentUnassignResponse(BaseModel):

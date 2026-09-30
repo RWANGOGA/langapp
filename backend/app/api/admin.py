@@ -12,7 +12,8 @@ from app.api.auth import require_admin
 from app.schemas.admin import (
     StudentAssignmentRequest, 
     StudentAssignmentResponse,
-    StudentUnassignResponse
+    StudentUnassignResponse,
+    AdminDashboardResponse
 )
 
 router = APIRouter()
@@ -152,6 +153,9 @@ async def list_assignments(
             ))
     
     return assignments
+
+
+@router.get("/dashboard", response_model=AdminDashboardResponse)
 async def get_admin_dashboard(
     current_user: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),

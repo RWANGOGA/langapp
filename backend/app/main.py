@@ -25,7 +25,7 @@ app.include_router(tutors.router, prefix=settings.API_V1_STR, tags=["tutors"])
 app.include_router(auth.router, prefix=settings.API_V1_STR, tags=["auth"])
 app.include_router(tutor_application.router, prefix=settings.API_V1_STR, tags=["tutor-applications"])
 app.include_router(learner.router, prefix=settings.API_V1_STR, tags=["learner"])
-app.include_router(admin.router, prefix=settings.API_V1_STR, tags=["admin"])
+app.include_router(admin.router, prefix=f"{settings.API_V1_STR}/admin", tags=["admin"])
 app.include_router(tutor_dashboard.router, prefix=settings.API_V1_STR, tags=["tutor-dashboard"])
 
 
