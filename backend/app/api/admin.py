@@ -7,13 +7,149 @@ from sqlalchemy.orm import selectinload
 from app.db.session import get_db
 from app.models.user import User, UserRole, Class, ClassStatus, ProficiencyLevel
 from app.models.package import Package, Order, OrderStatus, PaymentMethod, PlanName
-from app.api.auth import require_admin
-from app.schemas.admin import AdminDashboardResponse
+from app.schemas.admin import (
+    StudentAssignmentRequest, 
+    StudentAssignmentResponse,
+    StudentUnassignResponse
+)
 
 router = APIRouter()
 
 
-@router.get("/admin/dashboard", response_model=None)
+@router.post("/assign-student", response_model=StudentAssignmentResponse)
+async def assign_student_to_tutor(
+    assignment_data: StudentAssignmentRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    """Assign a student to a tutor"""
+    # Check if student exists and is a student
+    student_result = await db.execute(
+        select(User).where(User.id == assignment_data.student_id)
+    )
+    student = student_result.scalar_one_or_none()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    if student.role != UserRole.STUDENT:
+        raise HTTPException(status_code=400, detail="User is not a student")
+    
+    # Check if tutor exists and is a tutor with approved profile
+    tutor_result = await db.execute(
+        select(User)
+        .options(selectinload(User.tutor_profile))
+        .where(User.id == assignment_data.tutor_id)
+    )
+    tutor = tutor_result.scalar_one_or_none()
+    if not tutor:
+        raise HTTPException(status_code=404, detail="Tutor not found")
+    
+    if tutor.role != UserRole.TUTOR:
+        raise HTTPException(status_code=400, detail="User is not a tutor")
+    
+    if not tutor.tutor_profile or not tutor.tutor_profile.is_approved:
+        raise HTTPException(status_code=400, detail="Tutor profile is not approved")
+    
+    # Check if student is already assigned to a different tutor
+    if student.tutor_id and student.tutor_id != assignment_data.tutor_id:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Student is already assigned to tutor {student.tutor_id}"
+        )
+    
+    # Assign student to tutor
+    previous_tutor_id = student.tutor_id
+    student.tutor_id = assignment_data.tutor_id
+    await db.commit()
+    await db.refresh(student)
+    
+    return StudentAssignmentResponse(
+        student_id=student.id,
+        student_name=student.full_name,
+        tutor_id=tutor.id,
+        tutor_name=tutor.full_name,
+        assigned_at=datetime.utcnow(),
+        assigned_by=current_user.id,
+    )
+
+
+@router.delete("/unassign-student/{student_id}", response_model=StudentUnassignResponse)
+async def unassign_student(
+    student_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    """Remove student assignment to tutor"""
+    # Find student
+    student_result = await db.execute(
+        select(User)
+        .options(selectinload(User.tutor_profile))
+        .where(User.id == student_id)
+    )
+    student = student_result.scalar_one_or_none()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    if student.role != UserRole.STUDENT:
+        raise HTTPException(status_code=400, detail="User is not a student")
+    
+    # Check if student is currently assigned
+    if not student.tutor_id:
+        raise HTTPException(status_code=400, detail="Student is not currently assigned to a tutor")
+    
+    # Get previous tutor info
+    previous_tutor_id = student.tutor_id
+    tutor_result = await db.execute(
+        select(User).where(User.id == previous_tutor_id)
+    )
+    previous_tutor = tutor_result.scalar_one_or_none()
+    previous_tutor_name = previous_tutor.full_name if previous_tutor else "Unknown"
+    
+    # Unassign student
+    student.tutor_id = None
+    await db.commit()
+    await db.refresh(student)
+    
+    return StudentUnassignResponse(
+        student_id=student.id,
+        student_name=student.full_name,
+        previous_tutor_id=previous_tutor_id,
+        previous_tutor_name=previous_tutor_name,
+        unassigned_at=datetime.utcnow(),
+        unassigned_by=current_user.id,
+    )
+
+
+@router.get("/assignments", response_model=List[StudentAssignmentResponse])
+async def list_assignments(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    """List all current student-tutor assignments"""
+    # Get all students with their assigned tutors
+    students_result = await db.execute(
+        select(User)
+        .options(
+            selectinload(User.tutor_profile),
+            selectinload(User.assigned_tutor)
+        )
+        .where(User.role == UserRole.STUDENT)
+    )
+    students = students_result.scalars().all()
+    
+    assignments = []
+    for student in students:
+        if student.tutor_id:
+            assignments.append(StudentAssignmentResponse(
+                student_id=student.id,
+                student_name=student.full_name,
+                tutor_id=student.tutor_id,
+                tutor_name=student.assigned_tutor.full_name if student.assigned_tutor else "Unknown",
+                assigned_at=datetime.utcnow(),  # Would need to track actual assignment time
+                assigned_by=student.assigned_tutor.id if student.assigned_tutor else None,
+            ))
+    
+    return assignments
 async def get_admin_dashboard(
     current_user: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),

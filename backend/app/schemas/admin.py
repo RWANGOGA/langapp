@@ -83,18 +83,24 @@ class StatusCount(BaseModel):
     color: str
 
 
-class BarGroup(BaseModel):
-    label: str
-    bars: List[dict]
+class StudentAssignmentRequest(BaseModel):
+    student_id: int
+    tutor_id: int
 
 
-class AdminDashboardResponse(BaseModel):
-    kpis: List[Kpi]
-    tutors: List[Tutor]
-    matrix: List[MatrixRow]
-    meetings: List[Meeting]
-    plans: List[Plan]
-    leaders: List[Leader]
-    activity: List[Activity]
-    statuses: List[StatusCount]
-    bars: List[BarGroup]
+class StudentAssignmentResponse(BaseModel):
+    student_id: int
+    student_name: str
+    tutor_id: int
+    tutor_name: str
+    assigned_at: datetime
+    assigned_by: int
+
+
+class StudentUnassignResponse(BaseModel):
+    student_id: int
+    student_name: str
+    previous_tutor_id: int
+    previous_tutor_name: str
+    unassigned_at: datetime
+    unassigned_by: int
