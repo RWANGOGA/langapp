@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { apiGet } from "@/lib/api";
 import Image from "next/image";
 import { Award, Package, TrendingUp, Clock } from "lucide-react";
 import Calendar from "@/components/dashboard/Calendar";
@@ -13,6 +15,9 @@ const fmt = (iso: string) =>
   new Intl.DateTimeFormat("en-US", { weekday: "short", day: "numeric", timeZone: "UTC" }).format(new Date(iso + "T00:00:00Z"));
 
 export default async function DashboardPage() {
+  const me = await apiGet<{ role: string }>("/auth/me");
+  if (me?.role === "tutor") redirect("/tutor");
+  if (me?.role === "admin") redirect("/admin");
   const { learner, tutor, nextClass, progress, today, classes } = await getLearnerDashboard();
   const upcoming = classes.filter((c) => c.date > today);
 

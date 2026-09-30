@@ -15,20 +15,21 @@ function LoginForm() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const callbackUrl = searchParams.get("callbackUrl") || "/tutor";
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const sessionExpired = searchParams.get("reason") === "session";
 
   // Redirect based on role after login
   useEffect(() => {
-    if (isAuthenticated && !isLoading) {
+    if (isAuthenticated && !isLoading && !sessionExpired) {
       if (isAdmin) {
         router.push("/admin");
       } else if (isTutor) {
         router.push("/tutor");
       } else {
-        router.push(callbackUrl);
+        router.push(callbackUrl.startsWith("/tutor") || callbackUrl.startsWith("/admin") ? "/dashboard" : callbackUrl);
       }
     }
-  }, [isAuthenticated, isLoading, isAdmin, isTutor, router, callbackUrl]);
+  }, [isAuthenticated, isLoading, isAdmin, isTutor, router, callbackUrl, sessionExpired]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

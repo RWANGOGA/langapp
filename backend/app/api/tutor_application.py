@@ -7,7 +7,7 @@ from datetime import datetime
 from math import ceil
 
 from app.db.session import get_db
-from app.models.user import User, UserRole
+from app.models.user import User, UserRole, TutorProfile
 from app.models.tutor_application import TutorApplication, ApplicationStatus
 from app.schemas.tutor_application import (
     TutorApplicationCreate, TutorApplicationUpdate, TutorApplicationStatusUpdate,
@@ -68,7 +68,6 @@ async def submit_application(
     )
     db.add(application)
 
-    current_user.role = UserRole.TUTOR
     await db.commit()
     await db.refresh(application)
     return application
@@ -204,6 +203,21 @@ async def review_application(
         user = user_result.scalar_one_or_none()
         if user:
             user.role = UserRole.TUTOR
+            existing_profile = await db.execute(select(TutorProfile).where(TutorProfile.user_id == user.id))
+            if not existing_profile.scalar_one_or_none():
+                db.add(TutorProfile(
+                    user_id=user.id,
+                    headline=None,
+                    country=application.country,
+                    bio=None,
+                    years_experience=application.years_experience or 0,
+                    rating=0,
+                    reviews_count=0,
+                    is_approved=True,
+                    approved_at=datetime.utcnow(),
+                    approved_by=current_user.id,
+                    intro_video_url=application.intro_video_url,
+                ))
 
     await db.commit()
     await db.refresh(application)

@@ -9,7 +9,7 @@ from passlib.hash import sha256_crypt
 
 from app.db.session import get_db
 from app.core.config import settings
-from app.models.user import User, UserRole
+from app.models.user import User, UserRole, TutorProfile
 from app.schemas.auth import (
     UserCreate, UserLogin, UserRead, Token, TokenPayload, 
     RefreshTokenRequest, Message
@@ -125,17 +125,21 @@ async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
     if result.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Email already registered")
 
+    role = UserRole.TUTOR if user_in.role == UserRole.TUTOR else UserRole.STUDENT
     user = User(
         email=user_in.email,
         full_name=user_in.full_name,
         hashed_password=get_password_hash(user_in.password),
-        role=user_in.role,
+        role=role,
         native_language=user_in.native_language,
         timezone=user_in.timezone,
     )
     db.add(user)
     await db.commit()
-    await db.refresh(user)
+    if role == UserRole.TUTOR:
+        db.add(TutorProfile(user_id=user.id, years_experience=0, rating=0, reviews_count=0, is_approved=False))
+        await db.commit()
+        await db.refresh(user)
     return user
 
 
@@ -179,6 +183,7 @@ async def login(
         samesite="lax",
         max_age=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
     )
+
 
     return Token(
         access_token=access_token,

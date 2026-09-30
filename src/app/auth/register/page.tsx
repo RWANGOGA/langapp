@@ -96,7 +96,7 @@ function RegisterForm() {
         native_language: formData.native_language || undefined,
         timezone: formData.timezone || undefined,
       });
-      router.push(callbackUrl);
+      router.push("/auth/login");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");

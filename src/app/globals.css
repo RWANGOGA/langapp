@@ -402,3 +402,29 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 15px;
   }
 }
+
+/* ---- Token aliases used by page CSS modules ---- */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 28px;
+  --text-3xl: 34px;
+
+  --radius: 10px;
+  --card: #ffffff;
+  --bg: var(--bg-light);
+  --muted: var(--text-muted);
+}
