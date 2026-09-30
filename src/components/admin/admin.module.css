@@ -648,6 +648,42 @@
   }
 }
 
+.loading,
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: var(--space-md);
+  color: var(--navy);
+  font-size: 18px;
+}
+
+.error h2 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.error p {
+  color: var(--text-muted);
+}
+
+.error button {
+  background: var(--navy);
+  color: var(--white);
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.error button:hover {
+  background: var(--teal);
+}
+
 /* ===== components/admin/admin.module.css - APPEND ===== */
 .selectSm { padding: .5rem .8rem; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--white); font: inherit; font-size: 13px; color: var(--ink); }
 .headerTools { display: flex; gap: var(--space-sm); align-items: center; }

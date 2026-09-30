@@ -1,7 +1,14 @@
-import { useState } from "react";
-import { AssignmentModal } from "./AssignmentModal";
+"use client";
 
+import { useState } from "react";
+import { ArrowDown, ArrowUp, Bell, Eye, Pencil, Search, Star, Trash2, MoreHorizontal } from "lucide-react";
+import { Badge } from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { AssignmentModal } from "./AssignmentModal";
+import type { Kpi, CellStatus, MatrixRow, Meeting, Plan, Leader, Activity, TutorStatus } from "@/lib/admin-data";
+import styles from "./admin.module.css";
+
 export { default as TutorRoster } from "./TutorRoster";
 
 type BadgeVariant = "coral" | "teal" | "success" | "navy";
@@ -14,10 +21,15 @@ const CELL_LABEL: Record<CellStatus, string> = {
 };
 const LEGEND: Exclude<CellStatus, "empty" | "assigned" | "plus">[] = ["pending", "confirmed", "completed", "alert"];
 
+const STATUS_VARIANT: Record<TutorStatus, "teal" | "navy" | "coral"> = {
+  Active: "teal",
+  Assigned: "navy",
+  Onboarding: "coral",
+};
+
 const formatToday = () =>
   new Intl.DateTimeFormat("en-US", { weekday: "long", month: "short", day: "numeric", year: "numeric" }).format(new Date());
 
-// Assignment Modal interfaces
 interface Student {
   id: number;
   name: string;
@@ -36,44 +48,59 @@ interface Tutor {
   specialties: string[];
 }
 
-// Mock data for assignment functionality
-const mockStudents: Student[] = [
-  { id: 1, name: "Emma Johnson", email: "emma@example.com", isAssigned: true, currentTutorId: 101, currentTutorName: "Sarah Miller" },
-  { id: 2, name: "David Chen", email: "david@example.com", isAssigned: false },
-  { id: 3, name: "Lisa Rodriguez", email: "lisa@example.com", isAssigned: true, currentTutorId: 102, currentTutorName: "Michael Brown" },
-  { id: 4, name: "James Wilson", email: "james@example.com", isAssigned: false },
-  { id: 5, name: "Maria Garcia", email: "maria@example.com", isAssigned: false },
-];
-
-const mockTutors: Tutor[] = [
-  { id: 101, name: "Sarah Miller", email: "sarah@example.com", rating: 4.9, isApproved: true, specialties: ["English", "Business"] },
-  { id: 102, name: "Michael Brown", email: "michael@example.com", rating: 4.7, isApproved: true, specialties: ["Academic", "IELTS"] },
-  { id: 103, name: "Jennifer Lee", email: "jennifer@example.com", rating: 4.8, isApproved: true, specialties: ["Conversation", "Grammar"] },
-  { id: 104, name: "Robert Davis", email: "robert@example.com", rating: 4.6, isApproved: true, specialties: ["Writing", "Reading"] },
-  { id: 105, name: "Amanda Taylor", email: "amanda@example.com", rating: 4.9, isApproved: true, specialties: ["IELTS", "Speaking"] },
-];
-
-const formatToday = () =>
-  new Intl.DateTimeFormat("en-US", { weekday: "long", month: "short", day: "numeric", year: "numeric" }).format(new Date());
-
 /* Shell: rendered once by the page. Active sidebar link comes from the URL, not a hard-coded id. */
-export function AdminLayout({ kpis, adminName, children }: { kpis: Kpi[]; adminName: string; children: ReactNode }) {
+export function AdminLayout({ kpis, adminName, children }: { kpis: Kpi[]; adminName: string; children: React.ReactNode }) {
   return (
     <div className={styles.adminLayout}>
       <header className={styles.adminHeader}>
-        <div className={styles.headerBrand}><span className={styles.brandDot} aria-hidden>◍</span>Logo</div>
+        <div className={styles.headerBrand}><span className={styles.brandMark} aria-hidden>◍</span>Logo</div>
         <div className={styles.headerActions}>
-          <Avatar size="md" fallback={adminName[0]} gradient="pink" />
+          <span className={styles.headerAvatar} aria-hidden>{adminName[0]}</span>
           <span>Admin Profile</span>
-          <button type="button" className={styles.notificationBell}><Bell size={16} aria-hidden /> Notifications</button>
+          <button type="button" className={styles.notificationBell}>
+            <Bell size={16} strokeWidth={1.8} /> Notifications
+          </button>
         </div>
       </header>
       <div className={styles.adminBody}>
-        <Sidebar />
+        <aside className={styles.adminSidebar} aria-label="Admin sections">
+          <a href="/admin/dashboard" className={`${styles.sidebarItem} ${styles.active}`}>
+            <span className={styles.sidebarIcon} aria-hidden>▦</span>
+            <span>Dashboard</span>
+          </a>
+          <a href="/admin/tutors" className={styles.sidebarItem}>
+            <span className={styles.sidebarIcon} aria-hidden>👥</span>
+            <span>Tutors</span>
+          </a>
+          <a href="/admin/students" className={styles.sidebarItem}>
+            <span className={styles.sidebarIcon} aria-hidden>👥</span>
+            <span>Students</span>
+          </a>
+          <a href="/admin/classes" className={styles.sidebarItem}>
+            <span className={styles.sidebarIcon} aria-hidden>🗓</span>
+            <span>Classes</span>
+          </a>
+          <a href="/admin/meetings" className={styles.sidebarItem}>
+            <span className={styles.sidebarIcon} aria-hidden>🎥</span>
+            <span>Meetings</span>
+          </a>
+          <a href="/admin/subscriptions" className={styles.sidebarItem}>
+            <span className={styles.sidebarIcon} aria-hidden>💳</span>
+            <span>Subscriptions</span>
+          </a>
+          <a href="/admin/reports" className={styles.sidebarItem}>
+            <span className={styles.sidebarIcon} aria-hidden>📄</span>
+            <span>Reports</span>
+          </a>
+          <a href="/admin/settings" className={`${styles.sidebarItem} ${styles.push}`}>
+            <span className={styles.sidebarIcon} aria-hidden>⚙</span>
+            <span>Settings</span>
+          </a>
+        </aside>
         <main className={styles.adminMain}>
           <div className={styles.adminHeaderContent}>
             <div>
-              <h1 className={styles.adminTitle}>Admin &amp; Tutor Management Dashboard</h1>
+              <h1 className={styles.adminTitle}>Admin & Tutor Management Dashboard</h1>
               <p className={styles.adminSubtitle}>Welcome, {adminName}! | {formatToday()}</p>
             </div>
             <dl className={styles.kpiGrid}>
@@ -116,16 +143,12 @@ export function AssignmentMatrix({ rows }: { rows: MatrixRow[] }) {
   ];
 
   const handleAssignStudent = async (studentId: number, tutorId: number) => {
-    // In a real implementation, this would call the actual API
     console.log(`Assigning student ${studentId} to tutor ${tutorId}`);
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
   };
 
   const handleUnassignStudent = async (studentId: number) => {
-    // In a real implementation, this would call the actual API
     console.log(`Unassigning student ${studentId}`);
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
   };
 
@@ -232,7 +255,7 @@ export function SubscriptionManagement({ plans, leaders }: { plans: Plan[]; lead
   const stops = plans.map((p) => `${p.color} ${acc}% ${(acc += p.share)}%`).join(", ");
   return (
     <Card className={styles.adminCard}>
-      <div className={styles.cardHeader}><h3>Package &amp; Subscription Management</h3></div>
+      <div className={styles.cardHeader}><h3>Package & Subscription Management</h3></div>
       <div className={styles.donutChart} style={{ background: `conic-gradient(${stops})` }} role="img" aria-label={plans.map((p) => `${p.name} ${p.share}%`).join(", ")} />
       <ul className={styles.chartLegend}>
         {plans.map((p) => <li key={p.name} className={styles.legendItem}><i className={styles.legendDot} style={{ background: p.color }} />{p.name}</li>)}
@@ -248,7 +271,7 @@ export function SubscriptionManagement({ plans, leaders }: { plans: Plan[]; lead
 export function ActivityLog({ items }: { items: Activity[] }) {
   return (
     <Card className={`${styles.adminCard} ${styles.activityLogCard}`}>
-      <div className={styles.cardHeader}><h3>Real-time Activity Log &amp; Notifications</h3></div>
+      <div className={styles.cardHeader}><h3>Real-time Activity Log & Notifications</h3></div>
       <ul aria-live="polite">
         {items.map((a) => (
           <li key={a.id} className={styles.activityItem}>

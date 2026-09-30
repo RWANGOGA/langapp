@@ -8,8 +8,6 @@ const LOGO: Record<string, [string, string]> = {
   "Google Meet": ["#00832d", "G"],
   "Zoom": ["#2d8cff", "Z"],
   "MS Teams": ["#5059c9", "T"],
-  "Google Meet": ["#00832d", "G"],
-  "Zoom": ["#2d8cff", "Z"],
   "Google": ["#4285F4", "G"],
   "Microsoft": ["#0078D4", "M"],
 };
