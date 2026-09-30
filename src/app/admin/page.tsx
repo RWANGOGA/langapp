@@ -34,7 +34,7 @@ export default function AdminPage() {
         .then((d) => setData(d))
         .catch((err) => {
           console.error("Admin dashboard fetch error:", err);
-          setError("Failed to load dashboard data. Please try again.");
+          setError(err instanceof Error ? err.message : "Failed to load admin dashboard data. Please try again.");
         });
     }
   }, [isAuthenticated, isAdmin, isLoading, router]);
