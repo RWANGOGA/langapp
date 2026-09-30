@@ -42,7 +42,7 @@ class Tutor(BaseModel):
     name: str
     email: str
     status: TutorStatus
-    language: str
+    language: str | None = None
     rating: float
     assignments: int
 
