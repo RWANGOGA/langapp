@@ -237,7 +237,8 @@ async def get_admin_dashboard(
             "name": t.full_name,
             "email": t.email,
             "status": status,
-            "language": t.tutor_profile.country if t.tutor_profile else "English",
+            # country is nullable, and the profile itself may be missing.
+            "language": (t.tutor_profile.country if t.tutor_profile else None) or "English",
             "rating": t.tutor_profile.rating if t.tutor_profile else 0.0,
             "assignments": assignment_count,
         })
