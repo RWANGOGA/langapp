@@ -1,13 +1,7 @@
-import type { ReactNode } from "react";
-import { Bell, Eye, Pencil, Trash2 } from "lucide-react";
-import { Avatar } from "@/components/ui/Avatar";
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import type { Activity, CellStatus, Kpi, Leader, MatrixRow, Meeting, Plan } from "@/lib/admin-data";
-import Sidebar from "./Sidebar";
-import styles from "./admin.module.css";
+import { useState } from "react";
+import { AssignmentModal } from "./AssignmentModal";
 
+import { AssignmentModal } from "./AssignmentModal";
 export { default as TutorRoster } from "./TutorRoster";
 
 type BadgeVariant = "coral" | "teal" | "success" | "navy";
@@ -19,6 +13,45 @@ const CELL_LABEL: Record<CellStatus, string> = {
   pending: "Pending", confirmed: "Confirmed", completed: "Completed", alert: "Alert", assigned: "Assigned", plus: "+", empty: "",
 };
 const LEGEND: Exclude<CellStatus, "empty" | "assigned" | "plus">[] = ["pending", "confirmed", "completed", "alert"];
+
+const formatToday = () =>
+  new Intl.DateTimeFormat("en-US", { weekday: "long", month: "short", day: "numeric", year: "numeric" }).format(new Date());
+
+// Assignment Modal interfaces
+interface Student {
+  id: number;
+  name: string;
+  email: string;
+  isAssigned: boolean;
+  currentTutorId?: number;
+  currentTutorName?: string;
+}
+
+interface Tutor {
+  id: number;
+  name: string;
+  email: string;
+  rating: number;
+  isApproved: boolean;
+  specialties: string[];
+}
+
+// Mock data for assignment functionality
+const mockStudents: Student[] = [
+  { id: 1, name: "Emma Johnson", email: "emma@example.com", isAssigned: true, currentTutorId: 101, currentTutorName: "Sarah Miller" },
+  { id: 2, name: "David Chen", email: "david@example.com", isAssigned: false },
+  { id: 3, name: "Lisa Rodriguez", email: "lisa@example.com", isAssigned: true, currentTutorId: 102, currentTutorName: "Michael Brown" },
+  { id: 4, name: "James Wilson", email: "james@example.com", isAssigned: false },
+  { id: 5, name: "Maria Garcia", email: "maria@example.com", isAssigned: false },
+];
+
+const mockTutors: Tutor[] = [
+  { id: 101, name: "Sarah Miller", email: "sarah@example.com", rating: 4.9, isApproved: true, specialties: ["English", "Business"] },
+  { id: 102, name: "Michael Brown", email: "michael@example.com", rating: 4.7, isApproved: true, specialties: ["Academic", "IELTS"] },
+  { id: 103, name: "Jennifer Lee", email: "jennifer@example.com", rating: 4.8, isApproved: true, specialties: ["Conversation", "Grammar"] },
+  { id: 104, name: "Robert Davis", email: "robert@example.com", rating: 4.6, isApproved: true, specialties: ["Writing", "Reading"] },
+  { id: 105, name: "Amanda Taylor", email: "amanda@example.com", rating: 4.9, isApproved: true, specialties: ["IELTS", "Speaking"] },
+];
 
 const formatToday = () =>
   new Intl.DateTimeFormat("en-US", { weekday: "long", month: "short", day: "numeric", year: "numeric" }).format(new Date());
@@ -60,11 +93,69 @@ export function AdminLayout({ kpis, adminName, children }: { kpis: Kpi[]; adminN
 }
 
 export function AssignmentMatrix({ rows }: { rows: MatrixRow[] }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState<number | undefined>(undefined);
+  const [selectedTutorId, setSelectedTutorId] = useState<number | undefined>(undefined);
+  const [modalMode, setModalMode] = useState<'assign' | 'unassign'>('assign');
+
+  // Mock data for students and tutors
+  const mockStudents: Student[] = [
+    { id: 1, name: "Emma Johnson", email: "emma@example.com", isAssigned: true, currentTutorId: 101, currentTutorName: "Sarah Miller" },
+    { id: 2, name: "David Chen", email: "david@example.com", isAssigned: false },
+    { id: 3, name: "Lisa Rodriguez", email: "lisa@example.com", isAssigned: true, currentTutorId: 102, currentTutorName: "Michael Brown" },
+    { id: 4, name: "James Wilson", email: "james@example.com", isAssigned: false },
+    { id: 5, name: "Maria Garcia", email: "maria@example.com", isAssigned: false },
+  ];
+
+  const mockTutors: Tutor[] = [
+    { id: 101, name: "Sarah Miller", email: "sarah@example.com", rating: 4.9, isApproved: true, specialties: ["English", "Business"] },
+    { id: 102, name: "Michael Brown", email: "michael@example.com", rating: 4.7, isApproved: true, specialties: ["Academic", "IELTS"] },
+    { id: 103, name: "Jennifer Lee", email: "jennifer@example.com", rating: 4.8, isApproved: true, specialties: ["Conversation", "Grammar"] },
+    { id: 104, name: "Robert Davis", email: "robert@example.com", rating: 4.6, isApproved: true, specialties: ["Writing", "Reading"] },
+    { id: 105, name: "Amanda Taylor", email: "amanda@example.com", rating: 4.9, isApproved: true, specialties: ["IELTS", "Speaking"] },
+  ];
+
+  const handleAssignStudent = async (studentId: number, tutorId: number) => {
+    // In a real implementation, this would call the actual API
+    console.log(`Assigning student ${studentId} to tutor ${tutorId}`);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
+  const handleUnassignStudent = async (studentId: number) => {
+    // In a real implementation, this would call the actual API
+    console.log(`Unassigning student ${studentId}`);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
+  const openAssignModal = (studentId?: number, tutorId?: number) => {
+    setSelectedStudentId(studentId);
+    setSelectedTutorId(tutorId);
+    setModalMode('assign');
+    setIsModalOpen(true);
+  };
+
+  const openUnassignModal = (studentId: number) => {
+    setSelectedStudentId(studentId);
+    setSelectedTutorId(undefined);
+    setModalMode('unassign');
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedStudentId(undefined);
+    setSelectedTutorId(undefined);
+  };
+
   return (
     <Card className={styles.adminCard}>
       <div className={styles.cardHeader}>
         <h3>Student-Tutor Assignment Matrix</h3>
-        <Button variant="teal" size="sm" className={styles.assignmentToolsBtn}>Assignment Tools</Button>
+        <Button variant="teal" size="sm" className={styles.assignmentToolsBtn} onClick={() => openAssignModal()}>
+          Assignment Tools
+        </Button>
       </div>
       <div className={styles.matrixContainer} role="table" aria-label="Student tutor assignments">
         <div className={styles.matrixHeader} role="row">
@@ -89,9 +180,9 @@ export function AssignmentMatrix({ rows }: { rows: MatrixRow[] }) {
             ))}
             <span className={styles.matrixAction} role="cell">
               <span className={styles.actionIcons}>
-                <button type="button" aria-label={`View ${r.tutor}`}><Eye size={15} /></button>
-                <button type="button" aria-label={`Edit ${r.tutor}`}><Pencil size={15} /></button>
-                <button type="button" aria-label={`Remove ${r.tutor}`}><Trash2 size={15} /></button>
+                <button type="button" aria-label={`View ${r.tutor}`} onClick={() => openAssignModal(1, 101)}><Eye size={15} /></button>
+                <button type="button" aria-label={`Edit ${r.tutor}`} onClick={() => openAssignModal(1, 101)}><Pencil size={15} /></button>
+                <button type="button" aria-label={`Remove ${r.tutor}`} onClick={() => openUnassignModal(1)}><Trash2 size={15} /></button>
               </span>
             </span>
           </div>
@@ -102,6 +193,18 @@ export function AssignmentMatrix({ rows }: { rows: MatrixRow[] }) {
           <li key={s} className={styles.legendItem}><i className={`${styles.legendDot} ${styles[s]}`} />{CELL_LABEL[s]}</li>
         ))}
       </ul>
+
+      {/* Assignment Modal */}
+      <AssignmentModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onAssign={handleAssignStudent}
+        onUnassign={handleUnassignStudent}
+        students={mockStudents}
+        tutors={mockTutors}
+        selectedStudentId={selectedStudentId}
+        selectedTutorId={selectedTutorId}
+      />
     </Card>
   );
 }
