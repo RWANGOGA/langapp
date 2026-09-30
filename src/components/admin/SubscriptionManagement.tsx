@@ -26,7 +26,14 @@ export function SubscriptionManagement({ plans, leaders, statuses, bars }: { pla
         </div>
         <div>
           <h4 className={styles.miniTitle}>Status</h4>
-          <ul className={styles.dotList}>{statuses.map((s) => <li key={s.label}><i style={{ background: s.color }} />{s.label}</li>)}</ul>
+          <ul className={styles.dotList}>
+            {statuses.map((s) => (
+              <li key={s.label}>
+                <i style={{ background: s.color }} />
+                {s.label}{s.count !== undefined ? ` (${s.count})` : ""}
+              </li>
+            ))}
+          </ul>
         </div>
         <div className={styles.barChart} role="img" aria-label="Subscriptions per plan">
           <div className={styles.yAxis}>{[60, 40, 20, 0].map((t) => <span key={t}>{t}</span>)}</div>

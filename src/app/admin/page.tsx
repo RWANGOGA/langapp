@@ -16,6 +16,7 @@ export default function AdminPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading, isAdmin } = useAuth();
   const [data, setData] = useState<AdminDashboard | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading) {
@@ -31,16 +32,27 @@ export default function AdminPage() {
       // Fetch data after auth check
       getAdminDashboard()
         .then((d) => setData(d))
-        .catch(() => {
-          router.push("/auth/login");
+        .catch((err) => {
+          console.error("Admin dashboard fetch error:", err);
+          setError("Failed to load dashboard data. Please try again.");
         });
     }
   }, [isAuthenticated, isAdmin, isLoading, router]);
 
-  if (isLoading || !isAuthenticated || !isAdmin || !data) {
+  if (isLoading || !isAuthenticated || !isAdmin) {
     return (
       <div className={styles.loading}>
         <div>Loading...</div>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className={styles.error}>
+        <h2>Error Loading Dashboard</h2>
+        <p>{error || "Failed to load admin dashboard"}</p>
+        <button onClick={() => window.location.reload()} className="btn-primary">Retry</button>
       </div>
     );
   }
