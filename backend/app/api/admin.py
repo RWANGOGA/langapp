@@ -7,6 +7,7 @@ from typing import List
 
 from app.db.session import get_db
 from app.models.user import User, UserRole, Class, ClassStatus, ProficiencyLevel
+from app.models.tutor import Tutor
 from app.models.package import Package, Order, OrderStatus, PaymentMethod, PlanName
 from app.api.auth import require_admin
 from app.schemas.admin import (
@@ -237,14 +238,21 @@ async def get_admin_dashboard(
     tutors_result = await db.execute(
         select(User)
         .where(User.role == UserRole.TUTOR)
-        .options(selectinload(User.tutor_profile))
+        .options(
+            selectinload(User.tutor_profile),
+            selectinload(User.tutor_application),
+        )
         .limit(20)
     )
     tutors = tutors_result.scalars().all()
 
+    public_tutors_result = await db.execute(select(Tutor))
+    public_tutors = {tutor.id: tutor for tutor in public_tutors_result.scalars().all()}
+
     # Get tutor statuses based on their profile approval and assignments
     tutors_data = []
     for t in tutors:
+        public_tutor = public_tutors.get(f"user-{t.id}")
         # Get assignment count (active scheduled classes)
         assignment_result = await db.execute(
             select(func.count(Class.id)).where(
@@ -274,12 +282,12 @@ async def get_admin_dashboard(
             "language": (t.tutor_profile.country if t.tutor_profile else None) or "English",
             "rating": t.tutor_profile.rating if t.tutor_profile else 0.0,
             "assignments": assignment_count,
-            "qualification_type": t.tutor_profile.user.tutor_application.qualification_type if t.tutor_profile and t.tutor_profile.user and t.tutor_profile.user.tutor_application else None,
-            "english_proof_type": t.tutor_profile.user.tutor_application.english_proof_type if t.tutor_profile and t.tutor_profile.user and t.tutor_profile.user.tutor_application else None,
-            "english_score": t.tutor_profile.user.tutor_application.english_score if t.tutor_profile and t.tutor_profile.user and t.tutor_profile.user.tutor_application else None,
-            "intro_video_url": t.tutor_profile.intro_video_url if t.tutor_profile else None,
-            "availability": None,
-            "onboarding_fee_usd": 0,
+            "qualification_type": t.tutor_application.qualification_type if t.tutor_application else None,
+            "english_proof_type": t.tutor_application.english_proof_type if t.tutor_application else None,
+            "english_score": t.tutor_application.english_score if t.tutor_application else None,
+            "intro_video_url": public_tutor.intro_video_url if public_tutor else (t.tutor_profile.intro_video_url if t.tutor_profile else None),
+            "availability": public_tutor.availability if public_tutor else None,
+            "onboarding_fee_usd": public_tutor.onboarding_fee_usd if public_tutor else 0,
         })
 
     students_result = await db.execute(
@@ -289,6 +297,7 @@ async def get_admin_dashboard(
         .order_by(User.created_at.desc())
         .limit(50)
     )
+    students = students_result.scalars().all()
     students_data = [
         {
             "id": student.id,
@@ -298,39 +307,14 @@ async def get_admin_dashboard(
             "tutor_name": student.assigned_tutor.full_name if student.assigned_tutor else None,
             "status": "Assigned" if student.tutor_id else "Awaiting tutor",
         }
-        for student in students_result.scalars().all()
+        for student in students
     ]
 
-    # Matrix - create a simple assignment matrix
-    # For each tutor, show 5 time slots with status
+    learner_names = [student.full_name for student in students]
+    # Matrix shows each tutor against the real learner roster.
     matrix = []
     for t in tutors[:10]:  # Limit to 10 tutors for matrix
-        # Get their scheduled classes for next 5 days
-        classes_result = await db.execute(
-            select(Class)
-            .where(
-                and_(
-                    Class.tutor_id == t.id,
-                    Class.status == "scheduled",
-                    Class.scheduled_at >= datetime.utcnow(),
-                    Class.scheduled_at <= datetime.utcnow() + timedelta(days=5),
-                )
-            )
-            .order_by(Class.scheduled_at)
-            .limit(5)
-        )
-        classes = classes_result.scalars().all()
-
-        cells = []
-        for i in range(5):
-            if i < len(classes):
-                c = classes[i]
-                if c.status == "scheduled":
-                    cells.append("confirmed")
-                else:
-                    cells.append(c.status.value if hasattr(c.status, 'value') else c.status)
-            else:
-                cells.append("empty")
+        cells = ["assigned" if student.tutor_id == t.id else "empty" for student in students]
 
         matrix.append({
             "tutor": t.full_name,
@@ -548,6 +532,7 @@ async def get_admin_dashboard(
         ],
         "tutors": tutors_data,
         "students": students_data,
+        "student_names": learner_names,
         "matrix": matrix,
         "meetings": [
             {"provider": m["provider"], "sessions": m["sessions"], "connected": m["connected"]}

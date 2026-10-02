@@ -66,7 +66,7 @@ export default function AdminPage() {
           <StudentRoster students={data.students} />
         </div>
         <div className={styles.adminRight}>
-          <AssignmentMatrix rows={data.matrix} />
+          <AssignmentMatrix rows={data.matrix} studentNames={data.student_names} />
         </div>
       </div>
 

@@ -23,6 +23,7 @@ export interface AdminDashboard {
   kpis: Kpi[]; 
   tutors: Tutor[]; 
   students: StudentSummary[];
+  student_names: string[];
   matrix: MatrixRow[]; 
   meetings: Meeting[];
   plans: Plan[]; 

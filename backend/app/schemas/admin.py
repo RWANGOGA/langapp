@@ -109,6 +109,7 @@ class AdminDashboardResponse(BaseModel):
     kpis: List[Kpi]
     tutors: List[Tutor]
     students: List[StudentSummary]
+    student_names: List[str] = []
     matrix: List[MatrixRow]
     meetings: List[Meeting]
     plans: List[Plan]

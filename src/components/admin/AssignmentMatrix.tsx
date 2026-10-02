@@ -3,8 +3,6 @@ import { Card } from "@/components/ui/Card";
 import type { CellStatus, MatrixRow } from "@/lib/admin-data";
 import styles from "./admin.module.css";
 
-const STUDENTS = ["Student 1", "Student 2", "Student 3", "Student 4", "Student 5"];
-
 const CELL_LABEL: Record<CellStatus, string> = {
   pending: "Pending",
   confirmed: "Confirmed",
@@ -15,7 +13,7 @@ const CELL_LABEL: Record<CellStatus, string> = {
   empty: "",
 };
 
-export default function AssignmentMatrix({ rows }: { rows: MatrixRow[] }) {
+export default function AssignmentMatrix({ rows, studentNames }: { rows: MatrixRow[]; studentNames: string[] }) {
   return (
     <Card className={styles.adminCard}>
       <div className={styles.cardHeader}>
@@ -29,7 +27,7 @@ export default function AssignmentMatrix({ rows }: { rows: MatrixRow[] }) {
       <div className={styles.matrixContainer}>
         <div className={styles.matrixHeader}>
           <span className={styles.matrixCell}>Tutor</span>
-          {STUDENTS.map((s) => (
+          {studentNames.map((s) => (
             <span key={s} className={`${styles.matrixCell} ${styles.matrixStudent}`}>{s}</span>
           ))}
           <span className={`${styles.matrixCell} ${styles.matrixAction}`}>Action</span>
