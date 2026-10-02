@@ -158,6 +158,80 @@ h1, h2, h3, h4, h5, h6 {
   padding: 0 var(--space-lg);
 }
 
+.content-page {
+  min-height: 100vh;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 96px 24px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e9f1f2 100%);
+}
+
+.content-page h1 {
+  max-width: 720px;
+  margin-top: 12px;
+  font-size: clamp(2.4rem, 6vw, 4.8rem);
+  letter-spacing: 0;
+}
+
+.eyebrow {
+  color: var(--coral);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lede {
+  max-width: 650px;
+  margin-top: 20px;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 48px 0 32px;
+}
+
+.content-item {
+  padding: 26px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: var(--shadow-sm);
+}
+
+.content-item h2 {
+  font-size: 1.2rem;
+}
+
+.content-item p {
+  margin-top: 10px;
+  color: var(--text-muted);
+}
+
+.content-link {
+  display: inline-flex;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  background: var(--coral);
+  color: var(--white);
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .content-page {
+    padding: 64px 20px;
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+    margin-top: 32px;
+  }
+}
+
 /* — Button System — */
 .btn {
   display: inline-flex;

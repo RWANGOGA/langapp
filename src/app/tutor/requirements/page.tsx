@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertTriangle, CheckCircle2, FileText, GraduationCap } from "lucide-react";
-import { getTutorRequirements } from "@/lib/tutor-requirements";
+import { getTutorRequirements } from "@/lib/tutor-requirements-server";
 import styles from "./requirements.module.css";
 
 export const metadata: Metadata = {
@@ -79,10 +79,10 @@ export default async function TutorRequirementsPage() {
         <section className={styles.section} aria-labelledby="documents-heading">
           <div className={styles.sectionHead}>
             <h2 id="documents-heading" className={styles.sectionTitle}>
-              Documents you will need
+              Documents and information you will need
             </h2>
             <p className={styles.sectionHint}>
-              Upload each item during your application. Make sure every page is legible.
+              Upload each document during your application and prepare the profile information below.
             </p>
           </div>
           <div className={styles.docs}>
