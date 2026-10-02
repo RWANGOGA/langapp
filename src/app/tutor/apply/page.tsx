@@ -390,8 +390,12 @@ export default function TutorApplicationPage() {
 
           {currentStep === 2 && (
             <>
+              <div className={styles.stepIntro}>
+                <strong>Identity and qualification documents</strong>
+                <span>Provide a Google Drive link or a secure hosted file. Make sure the review team can open it.</span>
+              </div>
               <div className={styles.field}>
-                <label htmlFor="id_verification_provider">ID Verification Provider</label>
+                <label htmlFor="id_verification_provider">ID verification provider <em>Required</em></label>
                 <select
                   id="id_verification_provider"
                   value={data.id_verification_provider}
@@ -404,7 +408,7 @@ export default function TutorApplicationPage() {
                 </select>
               </div>
               <div className={styles.field}>
-                <label htmlFor="id_verification_id">ID Verification Number</label>
+                <label htmlFor="id_verification_id">ID verification number <em>Required</em></label>
                 <input
                   id="id_verification_id"
                   type="text"
@@ -413,7 +417,7 @@ export default function TutorApplicationPage() {
                 />
               </div>
               <div className={styles.field}>
-                <label htmlFor="id_document_url">Government ID link</label>
+                <label htmlFor="id_document_url">Government ID link <em>Required</em></label>
                 <input
                   id="id_document_url"
                   type="url"
@@ -425,7 +429,7 @@ export default function TutorApplicationPage() {
                 <small>Set the sharing permission so the review team can open the file.</small>
               </div>
               <div className={styles.field}>
-                <label htmlFor="qualification_type">Qualification Type</label>
+                <label htmlFor="qualification_type">Qualification type <em>Required</em></label>
                 <input
                   id="qualification_type"
                   type="text"
@@ -435,7 +439,7 @@ export default function TutorApplicationPage() {
                 />
               </div>
               <div className={styles.field}>
-                <label htmlFor="qualification_file_url">Qualification File URL</label>
+                <label htmlFor="qualification_file_url">Qualification file link <em>Required</em></label>
                 <input
                   id="qualification_file_url"
                   type="url"
@@ -449,8 +453,12 @@ export default function TutorApplicationPage() {
 
           {currentStep === 3 && (
             <>
+              <div className={styles.stepIntro}>
+                <strong>English proficiency evidence</strong>
+                <span>Enter the test result and link to the score report or certificate.</span>
+              </div>
               <div className={styles.field}>
-                <label htmlFor="english_proof_type">English Proficiency Test</label>
+                <label htmlFor="english_proof_type">English proficiency test <em>Required</em></label>
                 <select
                   id="english_proof_type"
                   value={data.english_proof_type}
@@ -466,7 +474,7 @@ export default function TutorApplicationPage() {
                 </select>
               </div>
               <div className={styles.field}>
-                <label htmlFor="english_score">English Score</label>
+                <label htmlFor="english_score">English score <em>Required</em></label>
                 <input
                   id="english_score"
                   type="text"
@@ -476,7 +484,7 @@ export default function TutorApplicationPage() {
                 />
               </div>
               <div className={styles.field}>
-                <label htmlFor="english_proof_url">English proof link</label>
+                <label htmlFor="english_proof_url">English proof link <em>Required</em></label>
                 <input
                   id="english_proof_url"
                   type="url"
@@ -491,8 +499,12 @@ export default function TutorApplicationPage() {
 
           {currentStep === 4 && (
             <>
+              <div className={styles.stepIntro}>
+                <strong>Introduction video</strong>
+                <span>Share a 2-5 minute Google Drive, YouTube, Vimeo, or secure video link.</span>
+              </div>
               <div className={styles.field}>
-                <label htmlFor="intro_video_url">Intro Video URL</label>
+                <label htmlFor="intro_video_url">Intro video link <em>Required</em></label>
                 <input
                   id="intro_video_url"
                   type="url"
@@ -502,7 +514,7 @@ export default function TutorApplicationPage() {
                 />
               </div>
               <div className={styles.field}>
-                <label htmlFor="years_experience">Years of Teaching Experience</label>
+                <label htmlFor="years_experience">Years of teaching experience <em>Required</em></label>
                 <input
                   id="years_experience"
                   type="number"

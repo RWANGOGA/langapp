@@ -48,6 +48,9 @@
 /* my tutor */
 .tutorCard { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .2rem; }
 .tutorCard .cardTitle { align-self: flex-start; margin-bottom: .9rem; }
+.cardEmptyState { width: 100%; min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem; text-align: center; }
+.cardEmptyState small { max-width: 240px; line-height: 1.5; }
+.cardEmptyState .btnOutline { width: min(100%, 220px); }
 .portrait { border-radius: 50%; object-fit: cover; width: 100px; height: 100px; }
 .tutorName { margin-top: .5rem; font-size: 1.1rem; }
 .btnOutline { width: 100%; margin-top: .6rem; padding: .7rem; border: 1px solid #d5dde3; border-radius: 8px; color: #0f1c33; text-decoration: none; font-weight: 600; font-size: .85rem; text-transform: uppercase; background: #fff; }
@@ -113,7 +116,7 @@
 .profilePanel h2 { font-size: 1.4rem; }
 .profilePanel p { margin: .2rem 0 .7rem; color: #4a5a70; }
 .progressPanel { display: block; }
-.emptyState { padding: 1.4rem; background: #fff; border-radius: 16px; color: #4a5a70; box-shadow: 0 2px 12px rgba(11, 37, 69, .07); }
+.emptyState { min-height: 220px; display: grid; place-items: center; padding: 1.4rem; background: #fff; border-radius: 16px; color: #4a5a70; text-align: center; box-shadow: 0 2px 12px rgba(11, 37, 69, .07); }
 
 /* responsive */
 @media (max-width: 1050px) {

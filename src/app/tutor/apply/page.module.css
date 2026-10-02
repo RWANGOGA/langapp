@@ -85,6 +85,30 @@
   color: var(--ink);
 }
 
+.field label em {
+  margin-left: .35rem;
+  color: var(--coral);
+  font-size: .72rem;
+  font-style: normal;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.stepIntro {
+  display: grid;
+  gap: .3rem;
+  padding: .9rem 1rem;
+  border-left: 4px solid var(--teal);
+  border-radius: var(--radius);
+  background: var(--teal-bg, #e9f1f2);
+  color: var(--ink);
+}
+
+.stepIntro span {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
 .field input,
 .field select,
 .field textarea {

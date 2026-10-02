@@ -35,11 +35,11 @@ export default async function DashboardPage() {
               <a className={styles.btnOutline} href="/dashboard/messages">Message tutor</a>
             </>
           ) : (
-            <>
+            <div className={styles.cardEmptyState}>
               <strong className={styles.tutorName}>No tutor assigned yet</strong>
               <small>An administrator will notify you when your tutor is matched.</small>
               <a className={styles.btnOutline} href="/tutors">Browse tutors</a>
-            </>
+            </div>
           )}
         </section>
 
@@ -69,7 +69,7 @@ export default async function DashboardPage() {
               </div>
             </>
           ) : (
-            <div className={styles.emptyState}>No upcoming class is scheduled yet.</div>
+            <div className={styles.cardEmptyState}>No upcoming class is scheduled yet.</div>
           )}
         </section>
 
