@@ -18,6 +18,17 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    if inspector.has_table('classes'):
+        return
+
+    status_type = postgresql.ENUM(
+        'SCHEDULED', 'COMPLETED', 'CANCELLED', 'NO_SHOW',
+        name='classstatus',
+    )
+    status_type.create(bind, checkfirst=True)
+
     op.create_table('classes',
         sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
         sa.Column('learner_id', sa.Integer(), nullable=False),
@@ -25,7 +36,10 @@ def upgrade() -> None:
         sa.Column('title', sa.String(length=200), nullable=False),
         sa.Column('scheduled_at', sa.DateTime(), nullable=False),
         sa.Column('duration_minutes', sa.Integer(), nullable=False),
-        sa.Column('status', sa.Enum('SCHEDULED', 'COMPLETED', 'CANCELLED', 'NO_SHOW', name='classstatus'), nullable=False),
+        sa.Column('status', postgresql.ENUM(
+            'SCHEDULED', 'COMPLETED', 'CANCELLED', 'NO_SHOW',
+            name='classstatus', create_type=False,
+        ), nullable=False),
         sa.Column('zoom_url', sa.String(length=500), nullable=True),
         sa.Column('meet_url', sa.String(length=500), nullable=True),
         sa.Column('package_name', sa.String(length=100), nullable=True),
