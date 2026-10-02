@@ -1,11 +1,14 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import List
+from typing import List, Optional
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=True, extra="ignore")
 
     DATABASE_URL: str
+    # Neon migrations should use the direct (unpooled) endpoint. Runtime API
+    # traffic may continue using the pooled endpoint in DATABASE_URL.
+    DATABASE_URL_UNPOOLED: Optional[str] = None
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "LinguaBridge API"
     SECRET_KEY: str

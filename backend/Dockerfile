@@ -37,6 +37,7 @@ COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/pytho
 COPY --chown=appuser:appuser ./app ./app
 COPY --chown=appuser:appuser alembic.ini .
 COPY --chown=appuser:appuser alembic/ ./alembic/
+COPY --chown=appuser:appuser start.sh .
 
 # Create directories
 RUN mkdir -p /app/logs && chown -R appuser:appuser /app
@@ -52,4 +53,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
 # Run the application
-CMD ["sh", "-c", "alembic upgrade head && exec python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "start.sh"]

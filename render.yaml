@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: langapp-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: sh start.sh
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_URL_UNPOOLED
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: API_V1_STR
+        value: /api/v1
+      - key: PROJECT_NAME
+        value: Nile Language API
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "10080"
+      - key: BACKEND_CORS_ORIGINS
+        sync: false
+      - key: ENVIRONMENT
+        value: production

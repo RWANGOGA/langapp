@@ -16,14 +16,28 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.add_column("tutor_applications", sa.Column("id_document_url", sa.String(length=500), nullable=True))
-    op.add_column("tutor_applications", sa.Column("english_proof_url", sa.String(length=500), nullable=True))
-    op.add_column("tutors", sa.Column("qualification_type", sa.String(length=50), nullable=True))
-    op.add_column("tutors", sa.Column("english_proof_type", sa.String(length=50), nullable=True))
-    op.add_column("tutors", sa.Column("english_score", sa.String(length=50), nullable=True))
-    op.add_column("tutors", sa.Column("intro_video_url", sa.String(length=500), nullable=True))
-    op.add_column("tutors", sa.Column("availability", sa.Text(), nullable=True))
-    op.add_column("tutors", sa.Column("onboarding_fee_usd", sa.Integer(), nullable=False, server_default="0"))
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+
+    application_columns = {column["name"] for column in inspector.get_columns("tutor_applications")}
+    tutor_columns = {column["name"] for column in inspector.get_columns("tutors")}
+
+    if "id_document_url" not in application_columns:
+        op.add_column("tutor_applications", sa.Column("id_document_url", sa.String(length=500), nullable=True))
+    if "english_proof_url" not in application_columns:
+        op.add_column("tutor_applications", sa.Column("english_proof_url", sa.String(length=500), nullable=True))
+    if "qualification_type" not in tutor_columns:
+        op.add_column("tutors", sa.Column("qualification_type", sa.String(length=50), nullable=True))
+    if "english_proof_type" not in tutor_columns:
+        op.add_column("tutors", sa.Column("english_proof_type", sa.String(length=50), nullable=True))
+    if "english_score" not in tutor_columns:
+        op.add_column("tutors", sa.Column("english_score", sa.String(length=50), nullable=True))
+    if "intro_video_url" not in tutor_columns:
+        op.add_column("tutors", sa.Column("intro_video_url", sa.String(length=500), nullable=True))
+    if "availability" not in tutor_columns:
+        op.add_column("tutors", sa.Column("availability", sa.Text(), nullable=True))
+    if "onboarding_fee_usd" not in tutor_columns:
+        op.add_column("tutors", sa.Column("onboarding_fee_usd", sa.Integer(), nullable=False, server_default="0"))
 
 
 def downgrade() -> None:

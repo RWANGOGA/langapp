@@ -45,8 +45,11 @@ neon deploy
 Copy the connection string from Neon dashboard and update `backend/.env`:
 
 ```env
-# Replace with your Neon connection string
+# Runtime connection. A pooled Neon endpoint is fine for API traffic.
 DATABASE_URL=postgresql+asyncpg://user:password@ep-xxx.region.aws.neon.tech/dbname?sslmode=require
+
+# Migration connection. Use the direct/unpooled endpoint from Neon.
+DATABASE_URL_UNPOOLED=postgresql+asyncpg://user:password@ep-xxx.region.aws.neon.tech/dbname?sslmode=require
 ```
 
 ### 2. Run Migrations
@@ -81,6 +84,11 @@ For asyncpg (FastAPI), use:
 ```
 postgresql+asyncpg://user:password@ep-xxx.region.aws.neon.tech/dbname?sslmode=require
 ```
+
+Neon provides pooled and direct connection strings. Set the pooled string as
+`DATABASE_URL` for application traffic and the direct string as
+`DATABASE_URL_UNPOOLED` for Alembic. Migrations fall back to `DATABASE_URL` if
+the direct variable is not set.
 
 ---
 
