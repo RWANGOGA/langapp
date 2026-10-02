@@ -274,7 +274,32 @@ async def get_admin_dashboard(
             "language": (t.tutor_profile.country if t.tutor_profile else None) or "English",
             "rating": t.tutor_profile.rating if t.tutor_profile else 0.0,
             "assignments": assignment_count,
+            "qualification_type": t.tutor_profile.user.tutor_application.qualification_type if t.tutor_profile and t.tutor_profile.user and t.tutor_profile.user.tutor_application else None,
+            "english_proof_type": t.tutor_profile.user.tutor_application.english_proof_type if t.tutor_profile and t.tutor_profile.user and t.tutor_profile.user.tutor_application else None,
+            "english_score": t.tutor_profile.user.tutor_application.english_score if t.tutor_profile and t.tutor_profile.user and t.tutor_profile.user.tutor_application else None,
+            "intro_video_url": t.tutor_profile.intro_video_url if t.tutor_profile else None,
+            "availability": None,
+            "onboarding_fee_usd": 0,
         })
+
+    students_result = await db.execute(
+        select(User)
+        .where(User.role == UserRole.STUDENT)
+        .options(selectinload(User.assigned_tutor))
+        .order_by(User.created_at.desc())
+        .limit(50)
+    )
+    students_data = [
+        {
+            "id": student.id,
+            "name": student.full_name,
+            "email": student.email,
+            "level": student.proficiency_level.value if student.proficiency_level else "Not set",
+            "tutor_name": student.assigned_tutor.full_name if student.assigned_tutor else None,
+            "status": "Assigned" if student.tutor_id else "Awaiting tutor",
+        }
+        for student in students_result.scalars().all()
+    ]
 
     # Matrix - create a simple assignment matrix
     # For each tutor, show 5 time slots with status
@@ -522,6 +547,7 @@ async def get_admin_dashboard(
             {"label": "System Health", "value": system_health},
         ],
         "tutors": tutors_data,
+        "students": students_data,
         "matrix": matrix,
         "meetings": [
             {"provider": m["provider"], "sessions": m["sessions"], "connected": m["connected"]}

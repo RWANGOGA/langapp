@@ -36,6 +36,7 @@ class TutorApplication(Base):
 
     id_verification_provider: Mapped[str | None] = mapped_column(String(50), nullable=True)
     id_verification_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    id_document_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     id_verification_status: Mapped[VerificationStatus] = mapped_column(SQLEnum(VerificationStatus), default=VerificationStatus.PENDING)
 
     qualification_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
@@ -44,6 +45,7 @@ class TutorApplication(Base):
 
     english_proof_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
     english_score: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    english_proof_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     english_verified: Mapped[bool] = mapped_column(Boolean, default=False)
 
     intro_video_url: Mapped[str | None] = mapped_column(String(500), nullable=True)

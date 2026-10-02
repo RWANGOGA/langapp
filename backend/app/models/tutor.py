@@ -30,6 +30,12 @@ class Tutor(Base):
     years_experience: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     bio: Mapped[str] = mapped_column(Text, nullable=False, default="")
     avatar_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    qualification_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    english_proof_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    english_score: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    intro_video_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    availability: Mapped[str | None] = mapped_column(Text, nullable=True)
+    onboarding_fee_usd: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

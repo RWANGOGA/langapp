@@ -8,6 +8,8 @@ from math import ceil
 
 from app.db.session import get_db
 from app.models.user import User, UserRole, TutorProfile
+from app.models.tutor import Tutor
+from app.models.tutor import Tutor
 from app.models.tutor_application import (
     TutorApplication,
     ApplicationStatus,
@@ -249,6 +251,7 @@ async def submit_application(
     application.date_of_birth = step1.date_of_birth
     application.id_verification_provider = step2.id_verification_provider
     application.id_verification_id = step2.id_verification_id
+    application.id_document_url = str(step2.id_document_url)
     # Re-verification is required after a resubmission.
     application.id_verification_status = VerificationStatus.PENDING
     application.qualification_type = step2.qualification_type
@@ -256,6 +259,7 @@ async def submit_application(
     application.qualification_verified = False
     application.english_proof_type = step3.english_proof_type
     application.english_score = step3.english_score
+    application.english_proof_url = str(step3.english_proof_url)
     application.english_verified = False
     application.intro_video_url = str(step4.intro_video_url)
     application.years_experience = step4.years_experience or 0
@@ -510,6 +514,32 @@ async def review_application(
                     approved_by=current_user.id,
                     intro_video_url=application.intro_video_url,
                 ))
+            public_tutor_result = await db.execute(select(Tutor).where(Tutor.id == f"user-{user.id}"))
+            public_tutor = public_tutor_result.scalar_one_or_none()
+            public_data = {
+                "name": user.full_name,
+                "headline": application.qualification_type or "Certified English tutor",
+                "country": application.country,
+                "years_experience": application.years_experience or 0,
+                "bio": f"Nile Language tutor specialising in {application.specialties or 'English conversation'}.",
+                "avatar_url": user.avatar_url,
+                "qualification_type": application.qualification_type,
+                "english_proof_type": application.english_proof_type,
+                "english_score": application.english_score,
+                "intro_video_url": application.intro_video_url,
+                "availability": application.availability_json,
+                "onboarding_fee_usd": 0,
+            }
+            if public_tutor:
+                for field, value in public_data.items():
+                    setattr(public_tutor, field, value)
+                public_tutor.specialties = [s.strip() for s in application.specialties.split(",") if s.strip()]
+                public_tutor.languages = [l.strip() for l in application.languages.split(",") if l.strip()]
+            else:
+                public_tutor = Tutor(id=f"user-{user.id}", **public_data)
+                public_tutor.specialties = [s.strip() for s in application.specialties.split(",") if s.strip()]
+                public_tutor.languages = [l.strip() for l in application.languages.split(",") if l.strip()]
+                db.add(public_tutor)
         await notify_user(
             db, application.user_id, "tutor_application_approved",
             "Your tutor application was approved",

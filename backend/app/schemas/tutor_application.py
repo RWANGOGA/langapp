@@ -13,6 +13,7 @@ class TutorApplicationStep1(BaseModel):
 class TutorApplicationStep2(BaseModel):
     id_verification_provider: Optional[str] = None
     id_verification_id: Optional[str] = None
+    id_document_url: Optional[HttpUrl] = None
     qualification_type: Optional[str] = Field(None, max_length=50)
     qualification_file_url: Optional[HttpUrl] = None
 
@@ -20,6 +21,7 @@ class TutorApplicationStep2(BaseModel):
 class TutorApplicationStep3(BaseModel):
     english_proof_type: Optional[str] = Field(None, max_length=50)
     english_score: Optional[str] = Field(None, max_length=50)
+    english_proof_url: Optional[HttpUrl] = None
 
 
 class TutorApplicationStep4(BaseModel):
@@ -72,12 +74,14 @@ class TutorApplicationUpdate(BaseModel):
     date_of_birth: Optional[date] = None
     id_verification_provider: Optional[str] = None
     id_verification_id: Optional[str] = None
+    id_document_url: Optional[str] = None
     id_verification_status: Optional[VerificationStatus] = None
     qualification_type: Optional[str] = Field(None, max_length=50)
     qualification_file_url: Optional[str] = None
     qualification_verified: Optional[bool] = None
     english_proof_type: Optional[str] = Field(None, max_length=50)
     english_score: Optional[str] = Field(None, max_length=50)
+    english_proof_url: Optional[str] = None
     english_verified: Optional[bool] = None
     intro_video_url: Optional[str] = None
     years_experience: Optional[int] = Field(None, ge=0, le=50)
@@ -116,6 +120,7 @@ class TutorApplicationRead(BaseModel):
 
     id_verification_provider: Optional[str] = None
     id_verification_id: Optional[str] = None
+    id_document_url: Optional[str] = None
     id_verification_status: VerificationStatus
 
     qualification_type: Optional[str] = None
@@ -124,6 +129,7 @@ class TutorApplicationRead(BaseModel):
 
     english_proof_type: Optional[str] = None
     english_score: Optional[str] = None
+    english_proof_url: Optional[str] = None
     english_verified: bool
 
     intro_video_url: Optional[str] = None

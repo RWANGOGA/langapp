@@ -43,7 +43,7 @@ export default function TutorRoster({ tutors }: { tutors: Tutor[] }) {
                   Tutor Name {asc ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
                 </button>
               </th>
-              <th>Email</th><th>Status</th><th>Language</th><th>Rating</th><th>Current Assignments</th><th>Action</th>
+              <th>Email</th><th>Status</th><th>Language</th><th>Evidence</th><th>Fee</th><th>Rating</th><th>Current Assignments</th><th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -53,12 +53,14 @@ export default function TutorRoster({ tutors }: { tutors: Tutor[] }) {
                 <td>{t.email}</td>
                 <td><Badge variant={STATUS_VARIANT[t.status]} className={styles.statusBadge}>{t.status}</Badge></td>
                 <td>{t.language}</td>
+                <td>{t.qualification_type || t.english_proof_type ? `${t.qualification_type || "Qualification"}${t.english_score ? ` · ${t.english_score}` : ""}` : "Pending review"}</td>
+                <td>{t.onboarding_fee_usd > 0 ? `$${t.onboarding_fee_usd}` : "No fee"}</td>
                 <td><Star size={13} fill="#f5b301" stroke="#f5b301" /> {t.rating.toFixed(1)} <Star size={13} fill="#e3e7eb" stroke="#c5ccd3" /></td>
                 <td>{t.assignments}</td>
                 <td><button type="button" className={styles.cardMenu} aria-label={`Actions for ${t.name}`}><MoreHorizontal size={18} /></button></td>
               </tr>
             ))}
-            {rows.length === 0 && <tr><td colSpan={7}>No tutors match {query}.</td></tr>}
+            {rows.length === 0 && <tr><td colSpan={9}>No tutors match {query}.</td></tr>}
           </tbody>
         </table>
       </div>

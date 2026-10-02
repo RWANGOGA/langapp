@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { getAdminDashboard, type AdminDashboard } from "@/lib/admin-data";
 import AdminShell from "@/components/admin/AdminShell";
 import TutorRoster from "@/components/admin/TutorRoster";
+import StudentRoster from "@/components/admin/StudentRoster";
 import AssignmentMatrix from "@/components/admin/AssignmentMatrix";
 import { MeetingsPanel } from "@/components/admin/MeetingsPanel";
 import { SubscriptionManagement } from "@/components/admin/SubscriptionManagement";
@@ -62,6 +63,7 @@ export default function AdminPage() {
       <div className={styles.adminGrid}>
         <div className={styles.adminLeft}>
           <TutorRoster tutors={data.tutors} />
+          <StudentRoster students={data.students} />
         </div>
         <div className={styles.adminRight}>
           <AssignmentMatrix rows={data.matrix} />

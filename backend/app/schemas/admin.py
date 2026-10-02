@@ -45,6 +45,12 @@ class Tutor(BaseModel):
     language: str | None = None
     rating: float
     assignments: int
+    qualification_type: str | None = None
+    english_proof_type: str | None = None
+    english_score: str | None = None
+    intro_video_url: str | None = None
+    availability: str | None = None
+    onboarding_fee_usd: int = 0
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -52,6 +58,15 @@ class Tutor(BaseModel):
 class MatrixRow(BaseModel):
     tutor: str
     cells: List[CellStatus]
+
+
+class StudentSummary(BaseModel):
+    id: int
+    name: str
+    email: str
+    level: str
+    tutor_name: str | None = None
+    status: str
 
 
 class Meeting(BaseModel):
@@ -93,6 +108,7 @@ class AdminDashboardResponse(BaseModel):
     unread: int = 0
     kpis: List[Kpi]
     tutors: List[Tutor]
+    students: List[StudentSummary]
     matrix: List[MatrixRow]
     meetings: List[Meeting]
     plans: List[Plan]

@@ -18,10 +18,12 @@ interface TutorApplicationData {
   date_of_birth: string;
   id_verification_provider: string;
   id_verification_id: string;
+  id_document_url: string;
   qualification_type: string;
   qualification_file_url: string;
   english_proof_type: string;
   english_score: string;
+  english_proof_url: string;
   intro_video_url: string;
   years_experience: number;
   specialties: string[];
@@ -90,10 +92,12 @@ export default function TutorApplicationPage() {
     date_of_birth: "",
     id_verification_provider: "",
     id_verification_id: "",
+    id_document_url: "",
     qualification_type: "",
     qualification_file_url: "",
     english_proof_type: "",
     english_score: "",
+    english_proof_url: "",
     intro_video_url: "",
     years_experience: 0,
     specialties: [],
@@ -131,10 +135,12 @@ export default function TutorApplicationPage() {
             date_of_birth: app.date_of_birth || prev.date_of_birth,
             id_verification_provider: app.id_verification_provider || prev.id_verification_provider,
             id_verification_id: app.id_verification_id || prev.id_verification_id,
+            id_document_url: app.id_document_url || prev.id_document_url,
             qualification_type: app.qualification_type || prev.qualification_type,
             qualification_file_url: app.qualification_file_url || prev.qualification_file_url,
             english_proof_type: app.english_proof_type || prev.english_proof_type,
             english_score: app.english_score || prev.english_score,
+            english_proof_url: app.english_proof_url || prev.english_proof_url,
             intro_video_url: app.intro_video_url || prev.intro_video_url,
             years_experience: app.years_experience ?? prev.years_experience,
             specialties: app.specialties?.length ? app.specialties : prev.specialties,
@@ -192,10 +198,12 @@ export default function TutorApplicationPage() {
         date_of_birth: data.date_of_birth || undefined,
         id_verification_provider: data.id_verification_provider || undefined,
         id_verification_id: data.id_verification_id || undefined,
+        id_document_url: data.id_document_url || undefined,
         qualification_type: data.qualification_type || undefined,
         qualification_file_url: data.qualification_file_url || undefined,
         english_proof_type: data.english_proof_type || undefined,
         english_score: data.english_score || undefined,
+        english_proof_url: data.english_proof_url || undefined,
         intro_video_url: data.intro_video_url || undefined,
         years_experience: data.years_experience,
         specialties: data.specialties,
@@ -221,12 +229,14 @@ export default function TutorApplicationPage() {
         step2: {
           id_verification_provider: data.id_verification_provider || undefined,
           id_verification_id: data.id_verification_id || undefined,
+          id_document_url: data.id_document_url || undefined,
           qualification_type: data.qualification_type || undefined,
           qualification_file_url: data.qualification_file_url || undefined,
         },
         step3: {
           english_proof_type: data.english_proof_type || undefined,
           english_score: data.english_score || undefined,
+          english_proof_url: data.english_proof_url || undefined,
         },
         step4: {
           intro_video_url: data.intro_video_url || undefined,
@@ -403,6 +413,18 @@ export default function TutorApplicationPage() {
                 />
               </div>
               <div className={styles.field}>
+                <label htmlFor="id_document_url">Government ID link</label>
+                <input
+                  id="id_document_url"
+                  type="url"
+                  value={data.id_document_url}
+                  onChange={(e) => setData({ ...data, id_document_url: e.target.value })}
+                  placeholder="Google Drive or secure file URL"
+                  required
+                />
+                <small>Set the sharing permission so the review team can open the file.</small>
+              </div>
+              <div className={styles.field}>
                 <label htmlFor="qualification_type">Qualification Type</label>
                 <input
                   id="qualification_type"
@@ -451,6 +473,17 @@ export default function TutorApplicationPage() {
                   value={data.english_score}
                   onChange={(e) => setData({ ...data, english_score: e.target.value })}
                   placeholder="e.g., 8.0, 105, etc."
+                />
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="english_proof_url">English proof link</label>
+                <input
+                  id="english_proof_url"
+                  type="url"
+                  value={data.english_proof_url}
+                  onChange={(e) => setData({ ...data, english_proof_url: e.target.value })}
+                  placeholder="Google Drive or secure file URL"
+                  required
                 />
               </div>
             </>

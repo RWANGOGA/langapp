@@ -33,6 +33,7 @@ REQUIRED_BY_STEP: Dict[int, StepRequirement] = {
         required_fields=(
             "id_verification_provider",
             "id_verification_id",
+            "id_document_url",
             "qualification_type",
             "qualification_file_url",
         ),
@@ -40,7 +41,7 @@ REQUIRED_BY_STEP: Dict[int, StepRequirement] = {
     3: StepRequirement(
         step=3,
         title="English proficiency evidence",
-        required_fields=("english_proof_type", "english_score"),
+        required_fields=("english_proof_type", "english_score", "english_proof_url"),
     ),
     4: StepRequirement(
         step=4,

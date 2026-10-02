@@ -62,7 +62,7 @@ export default function TutorDirectory({ tutors }: { tutors: DirectoryTutor[] })
             <p className={styles.speaks}>Speaks: {t.speaks.join(", ")}</p>
             <ul className={styles.tags}>{t.specialties.map((s) => <li key={s}>{s}</li>)}</ul>
             <div className={styles.actions}>
-              <Link href={`/register?role=learner&tutor=${t.id}`} className={styles.primary}>Book trial</Link>
+              <Link href={`/auth/register?role=learner&tutor=${t.id}`} className={styles.primary}>Book trial</Link>
               <Link href={`/tutors/${t.id}`} className={styles.ghost}>View profile</Link>
             </div>
           </li>

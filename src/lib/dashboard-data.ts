@@ -3,8 +3,8 @@ import { apiGet } from "@/lib/api";
 export interface ClassItem { date: string; time: string; title: string }
 export interface LearnerDashboard {
   learner: { name: string; level: string; avatar: string; unread: number };
-  tutor: { name: string; country: string; avatar: string };
-  nextClass: { title: string; secondsLeft: number; zoomUrl: string; meetUrl: string; packageName: string };
+  tutor: { name: string; country: string; avatar: string } | null;
+  nextClass: { title: string; secondsLeft: number; zoomUrl?: string; meetUrl?: string; packageName?: string } | null;
   progress: { percent: number; level: string; completed: number; total: number };
   today: string;
   classes: ClassItem[];
@@ -25,6 +25,6 @@ export async function getLearnerDashboard(): Promise<LearnerDashboard> {
   return {
     ...data,
     learner: { ...data.learner, avatar: data.learner.avatar || FALLBACK_AVATAR },
-    tutor: { ...data.tutor, avatar: data.tutor.avatar || FALLBACK_AVATAR },
+    tutor: data.tutor ? { ...data.tutor, avatar: data.tutor.avatar || FALLBACK_AVATAR } : null,
   };
 }

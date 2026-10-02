@@ -8,7 +8,8 @@ export type Provider = "Google Meet" | "Zoom" | "MS Teams";
 export type PlanName = "Basic" | "Pro" | "Premium";
 
 export interface Kpi { label: string; value: string }
-export interface Tutor { id: string; name: string; email: string; status: TutorStatus; language: string; rating: number; assignments: number }
+export interface Tutor { id: string; name: string; email: string; status: TutorStatus; language: string; rating: number; assignments: number; qualification_type?: string | null; english_proof_type?: string | null; english_score?: string | null; intro_video_url?: string | null; availability?: string | null; onboarding_fee_usd: number }
+export interface StudentSummary { id: number; name: string; email: string; level: string; tutor_name: string | null; status: string }
 export interface MatrixRow { tutor: string; cells: CellStatus[] }
 export interface Meeting { provider: string; sessions: string[]; connected: boolean }
 export interface Plan { name: string; share: number; color: string }
@@ -21,6 +22,7 @@ export interface AdminDashboard {
   unread: number;
   kpis: Kpi[]; 
   tutors: Tutor[]; 
+  students: StudentSummary[];
   matrix: MatrixRow[]; 
   meetings: Meeting[];
   plans: Plan[]; 

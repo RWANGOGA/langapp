@@ -26,11 +26,21 @@ export default async function DashboardPage() {
       <div className={styles.grid}>
         <section className={`${styles.card} ${styles.tutorCard}`} aria-labelledby="tutor-h">
           <h3 id="tutor-h" className={styles.cardTitle}>My Tutor</h3>
-          <Image src={tutor.avatar} alt={tutor.name} width={100} height={100} className={styles.portrait} />
-          <strong className={styles.tutorName}>{tutor.name}</strong>
-          <small>{tutor.country}</small>
-          <a className={styles.btnOutline} href="/dashboard/book">Book new session</a>
-          <a className={styles.btnOutline} href="/dashboard/messages">Message tutor</a>
+          {tutor ? (
+            <>
+              <Image src={tutor.avatar} alt={tutor.name} width={100} height={100} className={styles.portrait} />
+              <strong className={styles.tutorName}>{tutor.name}</strong>
+              <small>{tutor.country}</small>
+              <a className={styles.btnOutline} href="/dashboard/book">Book new session</a>
+              <a className={styles.btnOutline} href="/dashboard/messages">Message tutor</a>
+            </>
+          ) : (
+            <>
+              <strong className={styles.tutorName}>No tutor assigned yet</strong>
+              <small>An administrator will notify you when your tutor is matched.</small>
+              <a className={styles.btnOutline} href="/tutors">Browse tutors</a>
+            </>
+          )}
         </section>
 
         <section className={`${styles.card} ${styles.upcoming}`} aria-labelledby="up-h">
@@ -38,23 +48,29 @@ export default async function DashboardPage() {
             <h3 id="up-h" className={styles.cardTitle}>My Upcoming Class</h3>
             <Clock size={26} className={styles.clockRing} aria-hidden />
           </div>
-          <small>Title:</small>
-          <h4 className={styles.classTitle}>{nextClass.title}</h4>
-          <div className={styles.classRow}>
-            <div className={styles.miniTutor}>
-              <Image src={tutor.avatar} alt="" width={56} height={56} />
-              <strong>{tutor.name}</strong><small>{tutor.country}</small>
-            </div>
-            <Countdown initialSeconds={nextClass.secondsLeft} />
-          </div>
-          <div className={styles.joinRow}>
-            <a className={styles.btnCoral} href={nextClass.zoomUrl} target="_blank" rel="noopener noreferrer">Join Zoom Class</a>
-            <a className={styles.btnCoral} href={nextClass.meetUrl} target="_blank" rel="noopener noreferrer">Join Google Meet</a>
-          </div>
-          <div className={styles.pkgRow}>
-            <span className={styles.pkg}><Package size={18} aria-hidden /> {nextClass.packageName}</span>
-            <Award size={26} className={styles.award} aria-hidden />
-          </div>
+          {nextClass && tutor ? (
+            <>
+              <small>Title:</small>
+              <h4 className={styles.classTitle}>{nextClass.title}</h4>
+              <div className={styles.classRow}>
+                <div className={styles.miniTutor}>
+                  <Image src={tutor.avatar} alt="" width={56} height={56} />
+                  <strong>{tutor.name}</strong><small>{tutor.country}</small>
+                </div>
+                <Countdown initialSeconds={nextClass.secondsLeft} />
+              </div>
+              <div className={styles.joinRow}>
+                {nextClass.zoomUrl && <a className={styles.btnCoral} href={nextClass.zoomUrl} target="_blank" rel="noopener noreferrer">Join Zoom Class</a>}
+                {nextClass.meetUrl && <a className={styles.btnCoral} href={nextClass.meetUrl} target="_blank" rel="noopener noreferrer">Join Google Meet</a>}
+              </div>
+              <div className={styles.pkgRow}>
+                <span className={styles.pkg}><Package size={18} aria-hidden /> {nextClass.packageName || "Class package"}</span>
+                <Award size={26} className={styles.award} aria-hidden />
+              </div>
+            </>
+          ) : (
+            <div className={styles.emptyState}>No upcoming class is scheduled yet.</div>
+          )}
         </section>
 
         <section className={`${styles.card} ${styles.calendar}`}>
@@ -75,8 +91,8 @@ export default async function DashboardPage() {
             <i style={{ width: `${progress.percent}%` }}>{progress.percent}%</i>
           </div>
           <div className={styles.progMeta}>
-            <span>OVERALL COURSE PROGRESS (Level {progress.level})</span>
-            <span>Completed Units: {progress.completed}/{progress.total}</span>
+            <span>LEARNING PROGRESS (Level {progress.level})</span>
+            <span>{progress.total ? `Completed Units: ${progress.completed}/${progress.total}` : "Progress starts after your first lesson."}</span>
           </div>
         </section>
       </div>

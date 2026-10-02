@@ -2,21 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, LayoutDashboard, Settings, Users } from "lucide-react";
+import { Bell, LayoutDashboard, TrendingUp, Users } from "lucide-react";
 import styles from "./dashboard.module.css";
 
 const TOP = [
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/courses", label: "Courses" },
+  { href: "/tutors", label: "Find a Tutor" },
   { href: "/resources", label: "Resources" },
-  { href: "/progress", label: "My Progress" },
+  { href: "/dashboard/progress", label: "My Progress" },
 ];
 const SIDE = [
   { href: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
-  { href: "/dashboard/tutors", label: "Tutors", Icon: Users },
-  { href: "/dashboard/curriculum", label: "Curriculum", Icon: BookOpen },
-  { href: "/dashboard/community", label: "Community", Icon: Users },
-  { href: "/dashboard/settings", label: "Settings", Icon: Settings },
+  { href: "/dashboard/tutors", label: "My Tutor", Icon: Users },
+  { href: "/dashboard/progress", label: "Progress", Icon: TrendingUp },
+  { href: "/dashboard/notifications", label: "Notifications", Icon: Bell },
 ];
 
 const isActive = (path: string, href: string) => (href === "/dashboard" ? path === href : path.startsWith(href));

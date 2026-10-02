@@ -11,6 +11,12 @@ class TutorBase(BaseModel):
     reviews: int
     years_experience: int
     bio: str = ""
+    qualification_type: Optional[str] = None
+    english_proof_type: Optional[str] = None
+    english_score: Optional[str] = None
+    intro_video_url: Optional[str] = None
+    availability: Optional[str] = None
+    onboarding_fee_usd: int = 0
     languages: List[str] = []
     specialties: List[str] = []
 
@@ -18,6 +24,12 @@ class TutorBase(BaseModel):
 class TutorCreate(TutorBase):
     id: str
     avatar_url: Optional[str] = None
+    qualification_type: Optional[str] = None
+    english_proof_type: Optional[str] = None
+    english_score: Optional[str] = None
+    intro_video_url: Optional[str] = None
+    availability: Optional[str] = None
+    onboarding_fee_usd: Optional[int] = None
 
 
 class TutorUpdate(BaseModel):
@@ -31,6 +43,12 @@ class TutorUpdate(BaseModel):
     avatar_url: Optional[str] = None
     languages: Optional[List[str]] = None
     specialties: Optional[List[str]] = None
+    qualification_type: Optional[str] = None
+    english_proof_type: Optional[str] = None
+    english_score: Optional[str] = None
+    intro_video_url: Optional[str] = None
+    availability: Optional[str] = None
+    onboarding_fee_usd: Optional[int] = None
 
 
 class TutorRead(TutorBase):

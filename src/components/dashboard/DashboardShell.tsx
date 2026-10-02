@@ -22,10 +22,10 @@ export default function DashboardShell({ learner, children }: { learner: Learner
           <div className={styles.userBox}>
             <Image src={learner.avatar} alt="" width={48} height={48} className={styles.avatar} />
             <div><strong>{learner.name}</strong><small>Level <b>{learner.level}</b></small></div>
-            <button type="button" className={styles.bell} aria-label={`Notifications, ${learner.unread} unread`}>
+            <Link href="/dashboard/notifications" className={styles.bell} aria-label={`Notifications, ${learner.unread} unread`}>
               <Bell size={22} />
               {learner.unread > 0 && <span className={styles.badge}>{learner.unread}</span>}
-            </button>
+            </Link>
           </div>
         </header>
         <div className={styles.body}>

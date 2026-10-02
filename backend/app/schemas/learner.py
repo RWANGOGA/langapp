@@ -24,9 +24,9 @@ class LearnerBasic(BaseModel):
 class NextClassResponse(BaseModel):
     title: str
     secondsLeft: int
-    zoomUrl: str
-    meetUrl: str
-    packageName: str
+    zoomUrl: Optional[str] = None
+    meetUrl: Optional[str] = None
+    packageName: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -50,8 +50,8 @@ class ClassItemResponse(BaseModel):
 
 class LearnerDashboardResponse(BaseModel):
     learner: LearnerBasic
-    tutor: TutorBasic
-    nextClass: NextClassResponse
+    tutor: Optional[TutorBasic] = None
+    nextClass: Optional[NextClassResponse] = None
     progress: ProgressResponse
     today: str
     classes: list[ClassItemResponse]
