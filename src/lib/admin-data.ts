@@ -18,6 +18,7 @@ export interface StatusCount { label: string; count?: number; color: string }
 export interface BarGroup { label: string; bars: { value: number; color: string }[] }
 
 export interface AdminDashboard {
+  unread: number;
   kpis: Kpi[]; 
   tutors: Tutor[]; 
   matrix: MatrixRow[]; 

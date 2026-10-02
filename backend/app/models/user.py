@@ -68,6 +68,10 @@ class User(Base):
         back_populates="learner",
         foreign_keys="Class.learner_id"
     )
+    notifications: Mapped[list["Notification"]] = relationship(
+        back_populates="recipient",
+        cascade="all, delete-orphan",
+    )
 
 
 class TutorProfile(Base):

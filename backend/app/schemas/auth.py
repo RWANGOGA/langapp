@@ -11,7 +11,13 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str = Field(..., min_length=8, max_length=128)
-    role: UserRole = UserRole.STUDENT
+    # Accepted for backwards compatibility but deliberately ignored on write:
+    # tutor access is granted only after an approved application, never
+    # self-declared at signup. See app/api/auth.py register().
+    role: Optional[UserRole] = None
+    # Analytics only - records that the applicant arrived via "Become a Tutor".
+    # Never influences the stored role.
+    intent: Optional[str] = Field(None, max_length=32)
     native_language: Optional[str] = None
     timezone: Optional[str] = None
 

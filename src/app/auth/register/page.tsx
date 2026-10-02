@@ -6,14 +6,11 @@ import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import styles from "./page.module.css";
 
-type UserRole = "student" | "tutor";
-
 interface FormData {
   email: string;
   password: string;
   confirmPassword: string;
   full_name: string;
-  role: UserRole;
   native_language: string;
   timezone: string;
 }
@@ -57,14 +54,17 @@ function RegisterForm() {
     password: "",
     confirmPassword: "",
     full_name: "",
-    role: "student",
     native_language: "",
     timezone: "",
   });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const callbackUrl = searchParams.get("callbackUrl") || "/tutor";
+  // Arriving from "Become a Tutor" (Step 0). The account is still a student
+  // account - tutor status is granted only after an approved application.
+  const tutorIntent = searchParams.get("intent") === "tutor";
+  const callbackUrl =
+    searchParams.get("callbackUrl") || (tutorIntent ? "/tutor/apply" : "/dashboard");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -92,11 +92,13 @@ function RegisterForm() {
         email: formData.email,
         password: formData.password,
         full_name: formData.full_name,
-        role: formData.role,
+        // Every account registers as a student. Tutor access is earned through
+        // the application process, never chosen at signup.
+        intent: tutorIntent ? "tutor" : undefined,
         native_language: formData.native_language || undefined,
         timezone: formData.timezone || undefined,
       });
-      router.push("/auth/login");
+      router.push(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
@@ -109,8 +111,12 @@ function RegisterForm() {
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <h1>Create Account</h1>
-          <p>Join our language learning community</p>
+          <h1>{tutorIntent ? "Create your account" : "Create Account"}</h1>
+          <p>
+            {tutorIntent
+              ? "One more step before you can apply to teach"
+              : "Join our language learning community"}
+          </p>
         </div>
 
         {error && <div className={styles.error}>{error}</div>}
@@ -144,19 +150,15 @@ function RegisterForm() {
             />
           </div>
 
-          <div className={styles.field}>
-            <label htmlFor="role">I want to</label>
-            <select
-              id="role"
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              disabled={isSubmitting}
-            >
-              <option value="student">Learn a language (Student)</option>
-              <option value="tutor">Teach a language (Tutor)</option>
-            </select>
-          </div>
+          {/* No role selector: every account is a student account. Applicants
+              start at /tutor/apply and are promoted only on approval. */}
+          {tutorIntent && (
+            <div className={styles.notice}>
+              You are applying to teach on Nile Language. Your account starts as a
+              student account — you become a tutor once your documents are reviewed
+              and your demo lesson is passed.
+            </div>
+          )}
 
           <div className={styles.field}>
             <label htmlFor="native_language">Native Language (optional)</label>

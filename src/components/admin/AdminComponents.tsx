@@ -53,7 +53,7 @@ export function AdminLayout({ kpis, adminName, children }: { kpis: Kpi[]; adminN
   return (
     <div className={styles.adminLayout}>
       <header className={styles.adminHeader}>
-        <div className={styles.headerBrand}><span className={styles.brandMark} aria-hidden>◍</span>Logo</div>
+        <div className={styles.headerBrand}><span className={styles.brandMark} aria-hidden>◍</span>Nile Language</div>
         <div className={styles.headerActions}>
           <span className={styles.headerAvatar} aria-hidden>{adminName[0]}</span>
           <span>Admin Profile</span>

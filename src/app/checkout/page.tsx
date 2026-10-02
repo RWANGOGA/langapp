@@ -13,7 +13,7 @@ export default async function CheckoutPage() {
   return (
     <div className={styles.page}>
       <header className={styles.topbar}>
-        <Link href="/" className={styles.brand}><GraduationCap size={26} color="#f2541b" aria-hidden /> EduLearn Global</Link>
+        <Link href="/" className={styles.brand}><GraduationCap size={26} color="#f2541b" aria-hidden /> Nile Language</Link>
         <nav className={styles.nav} aria-label="Main"><Link href="/courses">Courses</Link><Link href="/pricing">Pricing</Link><Link href="/support">Support</Link></nav>
         <button type="button" className={styles.user} aria-label="Account menu"><span className={styles.avatar} aria-hidden>K</span><ChevronDown size={18} /></button>
       </header>

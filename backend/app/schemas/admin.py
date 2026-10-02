@@ -90,6 +90,7 @@ class BarGroup(BaseModel):
 
 
 class AdminDashboardResponse(BaseModel):
+    unread: int = 0
     kpis: List[Kpi]
     tutors: List[Tutor]
     matrix: List[MatrixRow]

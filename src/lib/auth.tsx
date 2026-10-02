@@ -42,7 +42,9 @@ interface RegisterData {
   email: string;
   password: string;
   full_name: string;
-  role?: UserRole;
+  // No `role`: every account registers as a student. Applicants pass
+  // intent="tutor" for analytics only - it does not grant tutor access.
+  intent?: "tutor";
   native_language?: string;
   timezone?: string;
 }

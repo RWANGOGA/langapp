@@ -3,9 +3,9 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  title: "LinguaBridge — Master Fluent English with Dedicated 1-on-1 Tutors",
+  title: "Nile Language — Learn English with Dedicated 1-on-1 Tutors",
   description:
-    "Personalized online English lessons tailored for learners in Japan and Vietnam. Native expert tutors, flexible scheduling, and proven results.",
+    "Personalized online English lessons with expert tutors, flexible scheduling, and clear progress.",
   keywords:
     "English tutoring, Japanese learners, Vietnamese learners, TOEIC prep, IELTS prep, online English classes, 1-on-1 tutoring",
 };

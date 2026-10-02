@@ -38,7 +38,7 @@ export default function HomePage() {
       <header className={styles.header}>
         <Link href="/" className={styles.brand}>
           <Logo />
-          <span>LinguaBridge</span>
+          <span>Nile Language</span>
         </Link>
         <nav className={styles.nav} aria-label="Main">
           {NAV.map((n, i) => (
@@ -87,7 +87,7 @@ export default function HomePage() {
           </p>
           <div className={styles.cta}>
             <Link href="/tutor" className={`${styles.btn} ${styles.solid}`}>Start Learning Today</Link>
-            <Link href="/tutors" className={`${styles.btn} ${styles.outline}`}>Become a Tutor</Link>
+            <Link href="/tutor/requirements" className={`${styles.btn} ${styles.outline}`}>Become a Tutor</Link>
           </div>
           <ul className={styles.trust}>
             <li>

@@ -5,7 +5,7 @@ import TutorDirectory from "./TutorDirectory";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
-  title: "Our Certified English Tutors | LinguaBridge",
+  title: "Our Certified English Tutors | Nile Language",
   description: "Browse certified 1-on-1 English tutors for learners in Japan and Vietnam. Filter by goal, language support and rating.",
   alternates: { canonical: "/tutors" },
 };
@@ -15,8 +15,8 @@ export default async function TutorsPage() {
   return (
     <main className={styles.page}>
       <header className={styles.header}>
-        <Link href="/" className={styles.brand}>LinguaBridge</Link>
-        <Link href="/tutor" className={styles.headerLink}>Become a Tutor</Link>
+        <Link href="/" className={styles.brand}>Nile Language</Link>
+        <Link href="/tutor/requirements" className={styles.headerLink}>Become a Tutor</Link>
       </header>
       <section className={styles.intro}>
         <h1>Meet Our Certified Tutors</h1>

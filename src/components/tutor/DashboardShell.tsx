@@ -17,7 +17,7 @@ export default function DashboardShell({ tutor, children }: { tutor: TutorDashbo
               <circle cx="17" cy="19" r="13" stroke="#3fb8ad" /><path d="M4 19h26M17 6c-6 6-6 20 0 26M17 6c6 6 6 20 0 26" stroke="#3fb8ad" />
               <circle cx="31" cy="11" r="4" fill="#f2541b" stroke="none" />
             </svg>
-            <span>EduGlobe<br />Tutors</span>
+            <span>Nile<br />Language</span>
           </Link>
           <TopNav />
           <div className={styles.userBox}>

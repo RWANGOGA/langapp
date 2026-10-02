@@ -2,8 +2,15 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "@/lib/auth";
+import { getApplicationCompleteness, type ApplicationCompleteness } from "@/lib/tutor-requirements";
 import styles from "./page.module.css";
+
+// Relative so requests go through the Next rewrite and stay first-party.
+// Calling ${NEXT_PUBLIC_API_URL} directly is cross-origin and fails CORS
+// against the deployed frontend origin.
+const PROXY = "/api/v1";
 
 interface TutorApplicationData {
   full_name: string;
@@ -75,6 +82,7 @@ export default function TutorApplicationPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [applicationExists, setApplicationExists] = useState(false);
+  const [completeness, setCompleteness] = useState<ApplicationCompleteness | null>(null);
 
   const [data, setData] = useState<TutorApplicationData>({
     full_name: "",
@@ -91,7 +99,9 @@ export default function TutorApplicationPage() {
     specialties: [],
     languages: [],
     availability: "",
-    tech_confirmed: true,
+    // Consents start unticked. Pre-ticking a legal agreement records
+    // acceptance the applicant never gave.
+    tech_confirmed: false,
     code_of_conduct_accepted: false,
     privacy_agreement_accepted: false,
     recording_consent: false,
@@ -104,37 +114,55 @@ export default function TutorApplicationPage() {
 
   const checkExistingApplication = useCallback(async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tutor/applications/me`, {
+      const response = await fetch(`${PROXY}/tutor/applications/me`, {
         credentials: "include",
       });
       if (response.ok) {
         const app = await response.json();
-        if (app.status === "submitted" || app.status === "documents_review" || 
-            app.status === "english_test" || app.status === "demo_lesson") {
+        const editable = ["submitted", "documents_review", "rejected"].includes(app.status);
+        if (editable) {
           setApplicationExists(true);
+          // Resume where the applicant left off rather than restarting at step 1.
           setCurrentStep(app.current_step || 1);
-          // Load existing data
-          const loadedData = {
-            ...data,
-            full_name: app.full_name || data.full_name,
-            country: app.country || data.country,
-            id_verification_provider: app.id_verification_provider || data.id_verification_provider,
-            id_verification_id: app.id_verification_id || data.id_verification_id,
-            qualification_type: app.qualification_type || data.qualification_type,
-            english_proof_type: app.english_proof_type || data.english_proof_type,
-            english_score: app.english_score || data.english_score,
-            intro_video_url: app.intro_video_url || data.intro_video_url,
-            years_experience: app.years_experience || data.years_experience,
-            specialties: app.specialties || data.specialties,
-            languages: app.languages || data.languages,
-          };
-          setData(loadedData);
+          setData((prev) => ({
+            ...prev,
+            full_name: app.full_name || prev.full_name,
+            country: app.country || prev.country,
+            date_of_birth: app.date_of_birth || prev.date_of_birth,
+            id_verification_provider: app.id_verification_provider || prev.id_verification_provider,
+            id_verification_id: app.id_verification_id || prev.id_verification_id,
+            qualification_type: app.qualification_type || prev.qualification_type,
+            qualification_file_url: app.qualification_file_url || prev.qualification_file_url,
+            english_proof_type: app.english_proof_type || prev.english_proof_type,
+            english_score: app.english_score || prev.english_score,
+            intro_video_url: app.intro_video_url || prev.intro_video_url,
+            years_experience: app.years_experience ?? prev.years_experience,
+            specialties: app.specialties?.length ? app.specialties : prev.specialties,
+            languages: app.languages?.length ? app.languages : prev.languages,
+            availability: app.availability_json || prev.availability,
+            // Consents are restored only if they were genuinely recorded.
+            tech_confirmed: app.tech_confirmed === true,
+            code_of_conduct_accepted: app.code_of_conduct_accepted === true,
+            privacy_agreement_accepted: app.privacy_agreement_accepted === true,
+            recording_consent: app.recording_consent === true,
+            reference_1_name: app.reference_1_name || prev.reference_1_name,
+            reference_1_email: app.reference_1_email || prev.reference_1_email,
+            reference_2_name: app.reference_2_name || prev.reference_2_name,
+            reference_2_email: app.reference_2_email || prev.reference_2_email,
+            background_check_provider:
+              app.background_check_provider || prev.background_check_provider,
+          }));
         }
       }
     } catch {
       // No application found, continue with fresh form
     }
-  }, [data]);
+  }, []);
+
+  const refreshCompleteness = useCallback(async () => {
+    const report = await getApplicationCompleteness();
+    setCompleteness(report);
+  }, []);
 
   useEffect(() => {
     if (!authLoading) {
@@ -142,19 +170,49 @@ export default function TutorApplicationPage() {
         router.push(`/auth/login?callbackUrl=${encodeURIComponent("/tutor/apply")}`);
         return;
       }
-      if (isTutor) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        checkExistingApplication();
-      }
+      // Any signed-in applicant may have a draft to resume. This used to be
+      // gated on `isTutor`, which is inverted: only students can apply, so a
+      // student's saved application was never loaded back.
+      void checkExistingApplication();
+      void refreshCompleteness();
     }
-  }, [isAuthenticated, isTutor, authLoading, router, checkExistingApplication]);
+  }, [isAuthenticated, isTutor, authLoading, router, checkExistingApplication, refreshCompleteness]);
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     setError("");
 
     try {
-      const payload = {
+      // PATCH takes a flat payload (TutorApplicationUpdate); POST takes the
+      // nested step1..step8 shape. Previously both used the nested shape, so
+      // saving over an existing application silently changed nothing.
+      const flat = {
+        full_name: data.full_name,
+        country: data.country,
+        date_of_birth: data.date_of_birth || undefined,
+        id_verification_provider: data.id_verification_provider || undefined,
+        id_verification_id: data.id_verification_id || undefined,
+        qualification_type: data.qualification_type || undefined,
+        qualification_file_url: data.qualification_file_url || undefined,
+        english_proof_type: data.english_proof_type || undefined,
+        english_score: data.english_score || undefined,
+        intro_video_url: data.intro_video_url || undefined,
+        years_experience: data.years_experience,
+        specialties: data.specialties,
+        languages: data.languages,
+        availability_json: data.availability || undefined,
+        tech_confirmed: data.tech_confirmed,
+        code_of_conduct_accepted: data.code_of_conduct_accepted,
+        privacy_agreement_accepted: data.privacy_agreement_accepted,
+        recording_consent: data.recording_consent,
+        reference_1_name: data.reference_1_name || undefined,
+        reference_1_email: data.reference_1_email || undefined,
+        reference_2_name: data.reference_2_name || undefined,
+        reference_2_email: data.reference_2_email || undefined,
+        background_check_provider: data.background_check_provider || undefined,
+      };
+
+      const nested = {
         step1: {
           full_name: data.full_name,
           country: data.country,
@@ -196,27 +254,30 @@ export default function TutorApplicationPage() {
         },
       };
 
-      const url = applicationExists 
-        ? `${process.env.NEXT_PUBLIC_API_URL}/tutor/applications/me`
-        : `${process.env.NEXT_PUBLIC_API_URL}/tutor/applications`;
       const method = applicationExists ? "PATCH" : "POST";
+      const url = applicationExists
+        ? `${PROXY}/tutor/applications/me`
+        : `${PROXY}/tutor/applications`;
 
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(payload),
+        body: JSON.stringify(applicationExists ? flat : nested),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.detail || "Submission failed");
       }
 
       setSuccess(true);
+      await refreshCompleteness();
       setTimeout(() => {
-        router.push("/tutor");
-      }, 2000);
+        // Applicants are students until approved, so /tutor (the tutor
+        // dashboard) would bounce them. Return to the start of the journey.
+        router.push("/tutor/requirements");
+      }, 2500);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -274,6 +335,11 @@ export default function TutorApplicationPage() {
           <h1>Become a Tutor</h1>
           <p>Step {currentStep} of 8</p>
         </div>
+
+        <Link href="/tutor/requirements" className={styles.requirementsLink}>
+          <strong>Not started yet?</strong> Review the documents and checks you will
+          need before submitting this application.
+        </Link>
 
         {error && <div className={styles.error}>{error}</div>}
 
@@ -576,14 +642,45 @@ export default function TutorApplicationPage() {
               </button>
             )}
             {currentStep === 8 && (
-              <button
-                type="button"
-                className={styles.submitBtn}
-                onClick={handleSubmit}
-                disabled={isSubmitting || !data.code_of_conduct_accepted || !data.privacy_agreement_accepted || !data.recording_consent}
-              >
-                {isSubmitting ? "Submitting..." : "Submit Application"}
-              </button>
+              <>
+                {/* Same rules the API enforces, so the button never offers a
+                    submission the server would reject with 422. */}
+                {completeness && !completeness.can_submit && (
+                  <div className={styles.completenessWarning} role="status">
+                    <strong>Before you can submit:</strong>
+                    <ul>
+                      {completeness.steps
+                        .filter((s) => !s.complete)
+                        .map((s) => (
+                          <li key={s.step}>
+                            Step {s.step} — {s.title}: {s.missing.join(", ")}
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                )}
+                {completeness?.can_submit && (
+                  <div className={styles.completenessOk} role="status">
+                    All required information is present. Submitting sends your
+                    application to the review team.
+                  </div>
+                )}
+                <button
+                  type="button"
+                  className={styles.submitBtn}
+                  onClick={handleSubmit}
+                  disabled={
+                    isSubmitting ||
+                    !data.code_of_conduct_accepted ||
+                    !data.privacy_agreement_accepted ||
+                    !data.recording_consent ||
+                    // Never offer a submit the completeness gate would reject.
+                    (completeness !== null && !completeness.can_submit)
+                  }
+                >
+                  {isSubmitting ? "Submitting..." : "Submit Application"}
+                </button>
+              </>
             )}
           </div>
         </form>

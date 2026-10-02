@@ -15,6 +15,8 @@ from app.schemas.admin import (
     StudentUnassignResponse,
     AdminDashboardResponse
 )
+from app.models.notification import Notification
+from app.services.notifications import notify_admins, notify_user
 
 router = APIRouter()
 
@@ -63,6 +65,18 @@ async def assign_student_to_tutor(
     # Assign student to tutor
     previous_tutor_id = student.tutor_id
     student.tutor_id = assignment_data.tutor_id
+    await notify_user(
+        db, student.id, "tutor_assigned", "Your tutor has been assigned",
+        f"{tutor.full_name} is now your Nile Language tutor.",
+    )
+    await notify_user(
+        db, tutor.id, "learner_assigned", "A learner has been assigned to you",
+        f"{student.full_name} is now one of your Nile Language learners.",
+    )
+    await notify_admins(
+        db, "assignment_created", "Tutor assignment completed",
+        f"{student.full_name} was assigned to {tutor.full_name}.",
+    )
     await db.commit()
     await db.refresh(student)
     
@@ -110,6 +124,19 @@ async def unassign_student(
     
     # Unassign student
     student.tutor_id = None
+    await notify_user(
+        db, student.id, "tutor_unassigned", "Your tutor assignment changed",
+        f"Your assignment to {previous_tutor_name} was removed. An administrator will follow up with your next match.",
+    )
+    if previous_tutor:
+        await notify_user(
+            db, previous_tutor.id, "learner_unassigned", "A learner was unassigned",
+            f"{student.full_name} is no longer assigned to you.",
+        )
+    await notify_admins(
+        db, "assignment_removed", "Tutor assignment removed",
+        f"{student.full_name} was unassigned from {previous_tutor_name}.",
+    )
     await db.commit()
     await db.refresh(student)
     
@@ -160,6 +187,12 @@ async def get_admin_dashboard(
     current_user: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
+    unread_result = await db.execute(
+        select(func.count(Notification.id)).where(
+            Notification.recipient_id == current_user.id,
+            Notification.is_read.is_(False),
+        )
+    )
     # KPIs - Total Tutors
     tutors_count_result = await db.execute(
         select(func.count(User.id)).where(User.role == UserRole.TUTOR)
@@ -481,6 +514,7 @@ async def get_admin_dashboard(
         ]
 
     return {
+        "unread": unread_result.scalar() or 0,
         "kpis": [
             {"label": "Total Tutors", "value": str(total_tutors)},
             {"label": "Active Students", "value": str(active_students)},

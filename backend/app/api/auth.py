@@ -125,21 +125,22 @@ async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
     if result.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    role = UserRole.TUTOR if user_in.role == UserRole.TUTOR else UserRole.STUDENT
+    # Every new account starts as a STUDENT. A client-supplied `role` is
+    # ignored on purpose: tutor access is granted only when an admin approves
+    # a tutor application (see app/api/tutor_application.py review_application).
+    # Self-declaring TUTOR here previously bypassed verification entirely and,
+    # because only students may apply, also locked the user out of that path.
     user = User(
         email=user_in.email,
         full_name=user_in.full_name,
         hashed_password=get_password_hash(user_in.password),
-        role=role,
+        role=UserRole.STUDENT,
         native_language=user_in.native_language,
         timezone=user_in.timezone,
     )
     db.add(user)
     await db.commit()
-    if role == UserRole.TUTOR:
-        db.add(TutorProfile(user_id=user.id, years_experience=0, rating=0, reviews_count=0, is_approved=False))
-        await db.commit()
-        await db.refresh(user)
+    await db.refresh(user)
     return user
 
 

@@ -34,8 +34,8 @@ export function Footer() {
       <div className="footer-inner">
         <div className="footer-grid">
           <div className="footer-brand">
-            <Link href="/" className="footer-brand-name" aria-label="LinguaBridge Home">
-              Lingua<span>Bridge</span>
+            <Link href="/" className="footer-brand-name" aria-label="Nile Language Home">
+              Nile <span>Language</span>
             </Link>
             <p className="footer-brand-text">
               Master fluent English with dedicated 1-on-1 tutors.
@@ -72,7 +72,7 @@ export function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <p className="footer-copyright">© {new Date().getFullYear()} LinguaBridge. All rights reserved.</p>
+          <p className="footer-copyright">© {new Date().getFullYear()} Nile Language. All rights reserved.</p>
           <div className="footer-socials" role="list" aria-label="Social media">
             {socialLinks.map((social) => (
               <Link

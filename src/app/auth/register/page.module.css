@@ -43,6 +43,17 @@
   font-size: var(--text-sm);
 }
 
+.notice {
+  background: var(--teal-bg, #e9f1f2);
+  border: 1px solid #bcdedd;
+  color: #1d6d66;
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-4);
+  font-size: var(--text-sm, 14px);
+  line-height: 1.5;
+}
+
 .form {
   display: flex;
   flex-direction: column;

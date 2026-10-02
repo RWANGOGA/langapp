@@ -6,11 +6,15 @@ export function proxy(request: NextRequest) {
 
   // Public paths that don't require authentication
   const publicPaths = ["/", "/tutors", "/auth/login", "/auth/register", "/health"];
-  
+
+  // Step 0 of the tutor journey: requirements are shown before an account exists.
+  // /tutor/apply stays protected and is matched below.
+  const isPublicTutorRequirements = pathname === "/tutor/requirements";
+
   // Allow access to auth pages without authentication check
   const isAuthPage = pathname.startsWith("/auth/");
-  
-  if (publicPaths.some((path) => pathname === path || pathname.startsWith(path + "/")) || isAuthPage) {
+
+  if (publicPaths.some((path) => pathname === path || pathname.startsWith(path + "/")) || isAuthPage || isPublicTutorRequirements) {
     return NextResponse.next();
   }
 

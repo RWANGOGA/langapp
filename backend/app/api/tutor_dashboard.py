@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, date
 
 from app.db.session import get_db
 from app.models.user import User, UserRole, TutorProfile, Class, ClassStatus
+from app.models.notification import Notification
 from app.schemas.tutor_dashboard import TutorDashboardResponse
 from app.api.auth import get_current_user
 
@@ -25,6 +26,14 @@ async def get_tutor_dashboard(
         raise HTTPException(status_code=404, detail="Tutor profile not found")
 
     profile = current_user.tutor_profile
+
+    unread_result = await db.execute(
+        select(func.count(Notification.id)).where(
+            Notification.recipient_id == current_user.id,
+            Notification.is_read.is_(False),
+        )
+    )
+    unread = unread_result.scalar() or 0
 
     today = date.today()
     now = datetime.now()
@@ -122,7 +131,7 @@ async def get_tutor_dashboard(
         tutor={
             "name": current_user.full_name,
             "role": "Tutor",
-            "unread": 0,
+            "unread": unread,
         },
         next=next_session,
         learners=learner_summaries,

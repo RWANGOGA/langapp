@@ -8,6 +8,7 @@ from app.db.session import get_db
 from app.models.user import User, UserRole, Class, ClassStatus, TutorProfile
 from app.api.auth import get_current_active_user
 from app.schemas.learner import LearnerDashboardResponse
+from app.models.notification import Notification
 
 router = APIRouter()
 
@@ -22,6 +23,14 @@ async def get_learner_dashboard(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only learners can access this endpoint",
         )
+
+    unread_result = await db.execute(
+        select(func.count(Notification.id)).where(
+            Notification.recipient_id == current_user.id,
+            Notification.is_read.is_(False),
+        )
+    )
+    unread = unread_result.scalar() or 0
 
     # Get learner's assigned tutor
     tutor = None
@@ -111,7 +120,7 @@ async def get_learner_dashboard(
             "name": current_user.full_name,
             "level": current_user.proficiency_level.value if current_user.proficiency_level else "B1",
             "avatar": current_user.avatar_url,
-            "unread": 3,  # Mock unread messages count
+            "unread": unread,
         },
         "tutor": tutor_data or {
             "name": "Sarah J.",

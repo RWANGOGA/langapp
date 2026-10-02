@@ -17,14 +17,14 @@ export function Navbar() {
   return (
     <header className="navbar">
       <div className="nav-inner">
-        <Link href="/" className="nav-brand" aria-label="LinguaBridge Home">
+        <Link href="/" className="nav-brand" aria-label="Nile Language Home">
           <div className="brand-icon" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 40 34" fill="none" stroke="#2fb5a8" strokeWidth="2.5">
               <rect x="2" y="2" width="20" height="16" rx="5" stroke="#F2541B" />
               <rect x="16" y="12" width="20" height="16" rx="5" />
             </svg>
           </div>
-          <span className="brand-name">Lingua<span>Bridge</span></span>
+          <span className="brand-name">Nile <span>Language</span></span>
         </Link>
 
         <nav className="nav-links hidden md:flex" aria-label="Main navigation">

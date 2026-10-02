@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, HttpUrl, field_validator
-from typing import Optional, List
+from typing import Optional, List, Dict
 from datetime import datetime, date
 from app.models.tutor_application import ApplicationStatus, VerificationStatus
 
@@ -37,10 +37,14 @@ class TutorApplicationStep6(BaseModel):
 
 
 class TutorApplicationStep7(BaseModel):
-    tech_confirmed: bool = True
-    code_of_conduct_accepted: bool = True
-    privacy_agreement_accepted: bool = True
-    recording_consent: bool = True
+    # Consents must default to False. A previous `True` default (plus an
+    # `if step7 else True` fallback in the submit handler) recorded an
+    # applicant as having accepted the code of conduct, privacy agreement and
+    # recording consent even when they never supplied step 7 at all.
+    tech_confirmed: bool = False
+    code_of_conduct_accepted: bool = False
+    privacy_agreement_accepted: bool = False
+    recording_consent: bool = False
 
 
 class TutorApplicationStep8(BaseModel):
@@ -173,3 +177,46 @@ class TutorApplicationListResponse(BaseModel):
     page: int
     page_size: int
     total_pages: int
+
+
+class StepCompletion(BaseModel):
+    step: int
+    title: str
+    complete: bool
+    missing: List[str] = Field(default_factory=list)
+
+
+class ApplicationCompleteness(BaseModel):
+    steps: List[StepCompletion]
+    incomplete_steps: List[int] = Field(default_factory=list)
+    can_submit: bool
+
+
+class RequirementDocument(BaseModel):
+    id: str
+    title: str
+    description: str
+    required: bool
+    accepted_formats: List[str] = Field(default_factory=list)
+    max_size_mb: Optional[int] = None
+    examples: List[str] = Field(default_factory=list)
+
+
+class ReviewStage(BaseModel):
+    key: str
+    title: str
+    description: str
+    indicative_days: str
+
+
+class TutorRequirementsRead(BaseModel):
+    """Content for the public Step 0 requirements page (no session required)."""
+
+    version: str
+    updated_at: datetime
+    eligibility: List[str]
+    documents: List[RequirementDocument]
+    review_stages: List[ReviewStage]
+    policies: List[Dict[str, str]]
+    disclaimer: str
+    total_steps: int

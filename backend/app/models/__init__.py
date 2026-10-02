@@ -6,6 +6,7 @@ from app.models.user import (
     Class, ClassStatus
 )
 from app.models.tutor_application import TutorApplication, ApplicationStatus, VerificationStatus
+from app.models.notification import Notification
 
 __all__ = [
     "Package",
@@ -25,4 +26,5 @@ __all__ = [
     "TutorApplication",
     "ApplicationStatus",
     "VerificationStatus",
+    "Notification",
 ]

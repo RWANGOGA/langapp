@@ -16,9 +16,11 @@ const NAV = [
 
 export default function AdminShell({
   kpis,
+  unread,
   children,
 }: {
   kpis: Kpi[];
+  unread: number;
   children: React.ReactNode;
 }) {
   return (
@@ -26,14 +28,14 @@ export default function AdminShell({
       <header className={styles.adminHeader}>
         <div className={styles.headerBrand}>
           <span className={styles.brandMark} aria-hidden>◍</span>
-          Logo
+          Nile Language
         </div>
         <div className={styles.headerActions}>
           <span className={styles.headerAvatar} aria-hidden>E</span>
           <span>Admin Profile</span>
-          <button type="button" className={styles.notificationBell}>
+          <button type="button" className={styles.notificationBell} aria-label={`Notifications, ${unread} unread`}>
             <Bell size={16} strokeWidth={1.8} />
-            Notifications
+            Notifications{unread > 0 ? ` (${unread})` : ""}
           </button>
         </div>
       </header>

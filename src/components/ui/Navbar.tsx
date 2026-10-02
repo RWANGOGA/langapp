@@ -37,7 +37,7 @@ export default function Navbar() {
     <header className={styles.header}>
       <Link href="/" className={styles.brand}>
         <Logo />
-        <span>LinguaBridge</span>
+        <span>Nile Language</span>
       </Link>
 
       <nav className={styles.nav} aria-label="Main">

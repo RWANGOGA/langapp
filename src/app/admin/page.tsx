@@ -58,7 +58,7 @@ export default function AdminPage() {
   }
 
   return (
-    <AdminShell kpis={data.kpis}>
+    <AdminShell kpis={data.kpis} unread={data.unread}>
       <div className={styles.adminGrid}>
         <div className={styles.adminLeft}>
           <TutorRoster tutors={data.tutors} />
