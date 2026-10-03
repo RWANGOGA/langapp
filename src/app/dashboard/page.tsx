@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { apiGet } from "@/lib/api";
 import Image from "next/image";
-import { Award, Package, TrendingUp, Clock } from "lucide-react";
+import Link from "next/link";
+import { Award, BookOpen, CalendarDays, Package, Search, TrendingUp, Clock, Users } from "lucide-react";
 import Calendar from "@/components/dashboard/Calendar";
 import Countdown from "@/components/dashboard/Countdown";
 import DashboardShell from "@/components/dashboard/DashboardShell";
@@ -23,6 +24,15 @@ export default async function DashboardPage() {
 
   return (
     <DashboardShell learner={learner}>
+      <section className={styles.dashboardWelcome} aria-labelledby="dashboard-title">
+        <div><p className={styles.kicker}>Learner dashboard</p><h1 id="dashboard-title">Welcome back, {learner.name.split(" ")[0]}</h1><p>Here is your learning plan at a glance.</p></div>
+        <Link className={styles.headerAction} href="/tutors"><Search size={16} /> Find a tutor</Link>
+      </section>
+      <div className={styles.dashboardStats}>
+        <div><span className={styles.dashboardStatIcon}><TrendingUp size={18} /></span><span><small>Progress</small><b>{progress.percent}% complete</b></span></div>
+        <div><span className={styles.dashboardStatIcon}><BookOpen size={18} /></span><span><small>Current level</small><b>{progress.level}</b></span></div>
+        <div><span className={styles.dashboardStatIcon}><CalendarDays size={18} /></span><span><small>Upcoming classes</small><b>{upcoming.length || "None scheduled"}</b></span></div>
+      </div>
       <div className={styles.grid}>
         <section className={`${styles.card} ${styles.tutorCard}`} aria-labelledby="tutor-h">
           <h3 id="tutor-h" className={styles.cardTitle}>My Tutor</h3>
@@ -31,8 +41,8 @@ export default async function DashboardPage() {
               <Image src={tutor.avatar} alt={tutor.name} width={100} height={100} className={styles.portrait} />
               <strong className={styles.tutorName}>{tutor.name}</strong>
               <small>{tutor.country}</small>
-              <a className={styles.btnOutline} href="/dashboard/book">Book new session</a>
-              <a className={styles.btnOutline} href="/dashboard/messages">Message tutor</a>
+              <Link className={styles.btnOutline} href="/dashboard/tutors">View tutor profile</Link>
+              <Link className={styles.btnOutline} href="/dashboard/notifications">View updates</Link>
             </>
           ) : (
             <div className={styles.cardEmptyState}>
@@ -69,7 +79,7 @@ export default async function DashboardPage() {
               </div>
             </>
           ) : (
-            <div className={styles.cardEmptyState}>No upcoming class is scheduled yet.</div>
+            <div className={styles.cardEmptyState}><span className={styles.cardEmptyIcon}><CalendarDays size={24} /></span><strong>No class scheduled yet</strong><small>Your next lesson will appear here once it is booked.</small><Link className={styles.btnCoral} href="/tutors">Explore tutors</Link></div>
           )}
         </section>
 
@@ -81,12 +91,12 @@ export default async function DashboardPage() {
             {upcoming.map((c) => (
               <li key={c.date + c.time}>{fmt(c.date)} | {c.time} - {c.title}</li>
             ))}
-            {upcoming.length === 0 && <li>No classes scheduled.</li>}
+            {upcoming.length === 0 && <li className={styles.listEmpty}>No classes scheduled yet. Your calendar will fill up as lessons are booked.</li>}
           </ul>
         </section>
 
         <section className={`${styles.card} ${styles.progress}`} aria-labelledby="pg-h">
-          <h3 id="pg-h" className={styles.cardTitle}><TrendingUp size={22} className={styles.tealIcon} aria-hidden /> Learning Progress</h3>
+          <div className={styles.progressHeader}><h3 id="pg-h" className={styles.cardTitle}><TrendingUp size={22} className={styles.tealIcon} aria-hidden /> Learning Progress</h3><Link href="/dashboard/progress">View details <TrendingUp size={14} /></Link></div>
           <div className={styles.bar} role="progressbar" aria-valuenow={progress.percent} aria-valuemin={0} aria-valuemax={100}>
             <i style={{ width: `${progress.percent}%` }}>{progress.percent}%</i>
           </div>

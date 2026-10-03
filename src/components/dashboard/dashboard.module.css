@@ -36,11 +36,20 @@
 .sideLink:hover { background: #f0f6f7; }
 .topLink:focus-visible, .sideLink:focus-visible, .bell:focus-visible { outline: 2px solid var(--teal-light); outline-offset: 2px; }
 .content { padding: clamp(1.2rem, 3vw, 2.8rem); min-width: 0; }
+.dashboardWelcome { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; margin-bottom: 1.25rem; }
+.dashboardWelcome h1 { margin-top: .25rem; color: #0f1c33; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.04em; line-height: 1.05; }
+.dashboardWelcome p:not(.kicker) { margin-top: .4rem; color: #4a5a70; }
+.dashboardStats { display: grid; grid-template-columns: repeat(3, 1fr); gap: .9rem; margin-bottom: 1.4rem; }
+.dashboardStats > div { display: flex; align-items: center; gap: .75rem; padding: .9rem 1rem; background: rgba(255, 255, 255, .82); border: 1px solid #e1eaed; border-radius: 12px; }
+.dashboardStats span:last-child { display: grid; gap: .15rem; }
+.dashboardStats small { color: #728096; font-size: .76rem; }
+.dashboardStats b { color: #0f1c33; font-size: .92rem; }
+.dashboardStatIcon { display: grid; place-items: center; width: 36px; height: 36px; color: var(--teal); background: #e4f2f0; border-radius: 10px; }
 
 /* ---- grid ---- */
 .grid { display: grid; gap: 1.4rem; grid-template-columns: 1fr 1.65fr 1.2fr; grid-template-areas: "tutor upcoming calendar" "progress progress calendar"; }
 .tutorCard { grid-area: tutor; } .upcoming { grid-area: upcoming; } .calendar { grid-area: calendar; } .progress { grid-area: progress; }
-.card { background: #fff; border-radius: 16px; padding: 1.4rem; box-shadow: 0 2px 12px rgba(11, 37, 69, .07); min-width: 0; }
+.card { background: #fff; border: 1px solid #e4ebef; border-radius: 14px; padding: 1.4rem; box-shadow: 0 8px 24px rgba(11, 37, 69, .06); min-width: 0; }
 .cardTitle { font-size: 1.3rem; font-weight: 600; color: #0f1c33; display: flex; align-items: center; gap: .6rem; }
 .tealIcon { color: var(--teal); }
 .card small { color: #4a5a70; }
@@ -51,6 +60,8 @@
 .cardEmptyState { width: 100%; min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem; text-align: center; }
 .cardEmptyState small { max-width: 240px; line-height: 1.5; }
 .cardEmptyState .btnOutline { width: min(100%, 220px); }
+.cardEmptyState .btnCoral { flex: 0; width: min(100%, 180px); margin-top: .35rem; }
+.cardEmptyIcon { display: grid; place-items: center; width: 48px; height: 48px; color: var(--teal); background: #e4f2f0; border-radius: 12px; }
 .portrait { border-radius: 50%; object-fit: cover; width: 100px; height: 100px; }
 .tutorName { margin-top: .5rem; font-size: 1.1rem; }
 .btnOutline { width: 100%; margin-top: .6rem; padding: .7rem; border: 1px solid #d5dde3; border-radius: 8px; color: #0f1c33; text-decoration: none; font-weight: 600; font-size: .85rem; text-transform: uppercase; background: #fff; }
@@ -90,12 +101,16 @@
 .subTitle { font-size: 1.1rem; font-weight: 600; margin-bottom: .7rem; }
 .upList { list-style: none; display: grid; gap: .6rem; }
 .upList li { padding: .65rem .8rem; background: #f4f8f9; border-left: 4px solid var(--teal); border-radius: 6px; font-weight: 500; font-size: .85rem; }
+.upList li.listEmpty { border-left-color: #d4dde2; color: #728096; font-weight: 400; line-height: 1.45; }
 
 /* progress */
 .progress .cardTitle { margin-bottom: 1rem; }
 .bar { height: 20px; background: #e6ecef; border-radius: 10px; overflow: hidden; }
 .bar i { display: block; height: 100%; background: #3a9488; border-radius: 10px; color: #fff; font-style: normal; font-size: .72rem; line-height: 20px; text-align: right; padding-right: .7rem; }
 .progMeta { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: .7rem; font-size: .85rem; font-weight: 500; }
+.progressHeader { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.progressHeader .cardTitle { margin: 0; }
+.progressHeader a { display: inline-flex; align-items: center; gap: .35rem; color: var(--teal); font-size: .82rem; font-weight: 700; text-decoration: none; }
 
 /* learner sub-pages */
 .dashboardPage { display: grid; gap: 1.35rem; max-width: 1100px; }
@@ -160,6 +175,8 @@
   .topbar { padding: .8rem 1rem; } .userBox small { display: none; }
   .classRow { flex-direction: column; } .miniTutor { border-right: 0; padding-right: 0; }
   .joinRow { flex-direction: column; }
+  .dashboardWelcome { align-items: flex-start; flex-direction: column; }
+  .dashboardStats { grid-template-columns: 1fr; }
   .pageHeading { align-items: flex-start; flex-direction: column; }
   .statGrid, .notificationSummary, .detailGrid { grid-template-columns: 1fr; }
   .profileActions { justify-content: stretch; }
