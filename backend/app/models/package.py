@@ -1,6 +1,7 @@
 import enum
 from datetime import datetime
-from sqlalchemy import String, Integer, DateTime, Enum as SQLEnum, ForeignKey, Text, Numeric, JSON
+from sqlalchemy import String, Integer, DateTime, Enum as SQLEnum, ForeignKey, Text, Numeric, func
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.session import Base
 
@@ -21,9 +22,9 @@ class Package(Base):
     price_jpy: Mapped[int] = mapped_column(Integer, nullable=False)
     price_vnd: Mapped[int] = mapped_column(Integer, nullable=False)
     price_usd: Mapped[int] = mapped_column(Integer, nullable=False)
-    features: Mapped[list] = mapped_column(JSON, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    features: Mapped[list] = mapped_column(JSONB, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), default=datetime.utcnow, onupdate=datetime.utcnow)
 
     orders: Mapped[list["Order"]] = relationship(back_populates="package")
 
