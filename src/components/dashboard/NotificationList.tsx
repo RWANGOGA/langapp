@@ -1,6 +1,7 @@
 "use client";
 
-import { CheckCircle2, Bell } from "lucide-react";
+import { CheckCircle2, Bell, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import type { LearnerNotification } from "@/lib/notifications-data";
 import styles from "./dashboard.module.css";
@@ -18,7 +19,7 @@ export default function NotificationList({ initialNotifications }: { initialNoti
   };
 
   if (notifications.length === 0) {
-    return <p className={styles.emptyState}>There are no notifications yet.</p>;
+    return <div className={styles.emptyState}><span className={styles.emptyIcon}><CheckCircle2 size={28} /></span><h2>Nothing new here</h2><p>Updates about your tutor, lessons, and account will appear in this inbox.</p><Link className={styles.btnPrimary} href="/dashboard"><span>Back to dashboard</span><ArrowRight size={16} /></Link></div>;
   }
 
   return (

@@ -35,7 +35,7 @@
 .sideLink.active { background: #e9f1f2; border-left-color: var(--teal); }
 .sideLink:hover { background: #f0f6f7; }
 .topLink:focus-visible, .sideLink:focus-visible, .bell:focus-visible { outline: 2px solid var(--teal-light); outline-offset: 2px; }
-.content { padding: 1.6rem; min-width: 0; }
+.content { padding: clamp(1.2rem, 3vw, 2.8rem); min-width: 0; }
 
 /* ---- grid ---- */
 .grid { display: grid; gap: 1.4rem; grid-template-columns: 1fr 1.65fr 1.2fr; grid-template-areas: "tutor upcoming calendar" "progress progress calendar"; }
@@ -98,13 +98,13 @@
 .progMeta { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: .7rem; font-size: .85rem; font-weight: 500; }
 
 /* learner sub-pages */
-.dashboardPage { display: grid; gap: 1.4rem; max-width: 900px; }
-.pageHeading { padding: .6rem 0 1rem; }
-.pageHeading h1 { color: #0f1c33; font-size: clamp(1.8rem, 4vw, 2.6rem); }
+.dashboardPage { display: grid; gap: 1.35rem; max-width: 1100px; }
+.pageHeading { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; padding: .35rem 0 .7rem; }
+.pageHeading h1 { color: #0f1c33; font-size: clamp(2rem, 4vw, 3.2rem); letter-spacing: -.04em; line-height: 1.05; }
 .pageHeading p { margin-top: .35rem; color: #4a5a70; }
 .kicker { color: var(--teal) !important; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; }
 .notificationList { display: grid; gap: .8rem; }
-.notificationItem, .profilePanel, .progressPanel { display: flex; align-items: flex-start; gap: 1rem; padding: 1.2rem; background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(11, 37, 69, .07); }
+.notificationItem, .profilePanel, .progressPanel { display: flex; align-items: flex-start; gap: 1rem; padding: 1.2rem; background: #fff; border: 1px solid #e4ebef; border-radius: 14px; box-shadow: 0 8px 24px rgba(11, 37, 69, .06); }
 .notificationItem { color: var(--teal); }
 .notificationItem h2 { font-size: 1rem; }
 .notificationItem p { margin-top: .25rem; color: #4a5a70; }
@@ -113,10 +113,38 @@
 .markRead { margin-top: .65rem; padding: .35rem .65rem; border: 1px solid #d5dde3; border-radius: 6px; background: #fff; color: #0f1c33; font-size: .78rem; font-weight: 600; }
 .markRead:hover { border-color: var(--teal); color: var(--teal); }
 .profilePanel { align-items: center; }
-.profilePanel h2 { font-size: 1.4rem; }
-.profilePanel p { margin: .2rem 0 .7rem; color: #4a5a70; }
+.profilePanel h2 { margin-top: .55rem; font-size: 1.55rem; }
+.profilePanel p { display: flex; align-items: center; gap: .35rem; margin: .3rem 0 0; color: #4a5a70; }
 .progressPanel { display: block; }
-.emptyState { min-height: 220px; display: grid; place-items: center; padding: 1.4rem; background: #fff; border-radius: 16px; color: #4a5a70; text-align: center; box-shadow: 0 2px 12px rgba(11, 37, 69, .07); }
+.emptyState { min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .65rem; padding: 2.5rem 1.4rem; background: #fff; border: 1px solid #e4ebef; border-radius: 14px; color: #4a5a70; text-align: center; box-shadow: 0 8px 24px rgba(11, 37, 69, .06); }
+.emptyState h2 { color: #0f1c33; font-size: 1.35rem; }
+.emptyState p { max-width: 450px; line-height: 1.6; }
+.emptyIcon, .summaryIcon, .statIcon { display: grid; place-items: center; color: var(--teal); background: #e4f2f0; border-radius: 12px; }
+.emptyIcon { width: 58px; height: 58px; margin-bottom: .35rem; }
+.headerAction, .btnPrimary { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; text-decoration: none; font-weight: 700; }
+.headerAction { padding: .7rem .95rem; color: #fff; background: var(--teal); border-radius: 8px; white-space: nowrap; }
+.btnPrimary { width: fit-content; padding: .75rem 1rem; color: #fff; background: #132b50; border-radius: 8px; }
+.btnPrimary:hover { background: #1d416e; }
+.tutorProfile { display: grid; gap: 1rem; padding: 1.2rem; background: #fff; border: 1px solid #e4ebef; border-radius: 14px; box-shadow: 0 8px 24px rgba(11, 37, 69, .06); }
+.statusPill { display: inline-block; padding: .28rem .55rem; color: #24796f; background: #e4f2f0; border-radius: 999px; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.profileActions { display: flex; justify-content: flex-end; }
+.detailGrid, .statGrid, .notificationSummary { display: grid; gap: .9rem; }
+.detailGrid { grid-template-columns: repeat(2, 1fr); }
+.detailGrid > div, .notificationSummary > div { display: flex; align-items: center; gap: .7rem; padding: .85rem; background: #f6f9fa; border-radius: 10px; color: var(--teal); }
+.detailGrid span, .notificationSummary span { display: grid; gap: .2rem; color: #4a5a70; font-size: .82rem; }
+.detailGrid b, .notificationSummary b { color: #0f1c33; font-size: .9rem; }
+.statGrid { grid-template-columns: repeat(3, 1fr); }
+.statCard { display: grid; grid-template-columns: auto 1fr; column-gap: .7rem; align-items: center; padding: 1rem; background: #fff; border: 1px solid #e4ebef; border-radius: 12px; }
+.statIcon { width: 36px; height: 36px; grid-row: span 2; }
+.statCard small { color: #728096; font-size: .76rem; }
+.statCard strong { color: #0f1c33; font-size: 1.3rem; }
+.statCard em { color: #728096; font-size: .75rem; font-style: normal; font-weight: 500; }
+.panelHeading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; color: var(--teal); }
+.panelHeading h2 { margin-top: .25rem; color: #0f1c33; font-size: 1.25rem; }
+.notificationSummary { grid-template-columns: repeat(2, 1fr); }
+.notificationSummary > div { background: #fff; border: 1px solid #e4ebef; }
+.notificationSummary > div > svg { color: var(--teal); }
+.summaryIcon { width: 36px; height: 36px; }
 
 /* responsive */
 @media (max-width: 1050px) {
@@ -132,4 +160,8 @@
   .topbar { padding: .8rem 1rem; } .userBox small { display: none; }
   .classRow { flex-direction: column; } .miniTutor { border-right: 0; padding-right: 0; }
   .joinRow { flex-direction: column; }
+  .pageHeading { align-items: flex-start; flex-direction: column; }
+  .statGrid, .notificationSummary, .detailGrid { grid-template-columns: 1fr; }
+  .profileActions { justify-content: stretch; }
+  .profileActions .btnPrimary, .emptyState .btnPrimary { width: 100%; }
 }
