@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowDown, ArrowUp, Bell, Eye, Pencil, Search, Star, Trash2, MoreHorizontal } from "lucide-react";
+import { ArrowDown, ArrowUp, Bell, BookOpen, CalendarDays, CreditCard, Eye, FileBarChart, LayoutDashboard, Pencil, Search, Settings, Star, Trash2, MoreHorizontal, Users, Video } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -65,42 +65,43 @@ export function AdminLayout({ kpis, adminName, children }: { kpis: Kpi[]; adminN
       <div className={styles.adminBody}>
         <aside className={styles.adminSidebar} aria-label="Admin sections">
           <a href="/admin/dashboard" className={`${styles.sidebarItem} ${styles.active}`}>
-            <span className={styles.sidebarIcon} aria-hidden>▦</span>
+            <LayoutDashboard className={styles.sidebarIcon} size={19} aria-hidden />
             <span>Dashboard</span>
           </a>
           <a href="/admin/tutors" className={styles.sidebarItem}>
-            <span className={styles.sidebarIcon} aria-hidden>👥</span>
+            <Users className={styles.sidebarIcon} size={19} aria-hidden />
             <span>Tutors</span>
           </a>
           <a href="/admin/students" className={styles.sidebarItem}>
-            <span className={styles.sidebarIcon} aria-hidden>👥</span>
+            <Users className={styles.sidebarIcon} size={19} aria-hidden />
             <span>Students</span>
           </a>
           <a href="/admin/classes" className={styles.sidebarItem}>
-            <span className={styles.sidebarIcon} aria-hidden>🗓</span>
+            <BookOpen className={styles.sidebarIcon} size={19} aria-hidden />
             <span>Classes</span>
           </a>
           <a href="/admin/meetings" className={styles.sidebarItem}>
-            <span className={styles.sidebarIcon} aria-hidden>🎥</span>
+            <Video className={styles.sidebarIcon} size={19} aria-hidden />
             <span>Meetings</span>
           </a>
           <a href="/admin/subscriptions" className={styles.sidebarItem}>
-            <span className={styles.sidebarIcon} aria-hidden>💳</span>
+            <CreditCard className={styles.sidebarIcon} size={19} aria-hidden />
             <span>Subscriptions</span>
           </a>
           <a href="/admin/reports" className={styles.sidebarItem}>
-            <span className={styles.sidebarIcon} aria-hidden>📄</span>
+            <FileBarChart className={styles.sidebarIcon} size={19} aria-hidden />
             <span>Reports</span>
           </a>
           <a href="/admin/settings" className={`${styles.sidebarItem} ${styles.push}`}>
-            <span className={styles.sidebarIcon} aria-hidden>⚙</span>
+            <Settings className={styles.sidebarIcon} size={19} aria-hidden />
             <span>Settings</span>
           </a>
         </aside>
         <main className={styles.adminMain}>
           <div className={styles.adminHeaderContent}>
             <div>
-              <h1 className={styles.adminTitle}>Admin & Tutor Management Dashboard</h1>
+              <p className={styles.adminEyebrow}>Nile Language administration</p>
+              <h1 className={styles.adminTitle}>Operations overview</h1>
               <p className={styles.adminSubtitle}>Welcome, {adminName}! | {formatToday()}</p>
             </div>
             <dl className={styles.kpiGrid}>

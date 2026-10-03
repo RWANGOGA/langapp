@@ -1,18 +1,29 @@
 import Link from "next/link";
-import { Bell } from "lucide-react";
+import { Bell, BookOpen, CreditCard, FileBarChart, LayoutDashboard, Settings, Users, Video } from "lucide-react";
 import type { Kpi } from "@/lib/admin-data";
 import styles from "./admin.module.css";
 
 const NAV = [
-  { id: "dashboard", label: "Dashboard", icon: "▦" },
-  { id: "tutors", label: "Tutors", icon: "👥" },
-  { id: "students", label: "Students", icon: "👥" },
-  { id: "classes", label: "Classes", icon: "🗓" },
-  { id: "meetings", label: "Meetings", icon: "🎥" },
-  { id: "subscriptions", label: "Subscriptions", icon: "💳" },
-  { id: "reports", label: "Reports", icon: "📄" },
-  { id: "settings", label: "Settings", icon: "⚙", push: true },
+  { id: "dashboard", label: "Dashboard", Icon: LayoutDashboard },
+  { id: "tutors", label: "Tutors", Icon: Users },
+  { id: "students", label: "Students", Icon: Users },
+  { id: "classes", label: "Classes", Icon: BookOpen },
+  { id: "meetings", label: "Meetings", Icon: Video },
+  { id: "subscriptions", label: "Subscriptions", Icon: CreditCard },
+  { id: "reports", label: "Reports", Icon: FileBarChart },
+  { id: "settings", label: "Settings", Icon: Settings, push: true },
 ];
+
+const SECTION_COPY: Record<string, { title: string; subtitle: string }> = {
+  dashboard: { title: "Operations overview", subtitle: "A clear view of learners, tutors, and today’s activity." },
+  tutors: { title: "Tutor roster", subtitle: "Review tutor profiles, evidence, status, and assignments." },
+  students: { title: "Student roster", subtitle: "Keep track of learners and their current support needs." },
+  classes: { title: "Classes", subtitle: "Plan and monitor lessons across the learning program." },
+  meetings: { title: "Meeting integrations", subtitle: "Manage the video platforms used for upcoming sessions." },
+  subscriptions: { title: "Subscriptions", subtitle: "Understand package distribution and account status." },
+  reports: { title: "Reports & activity", subtitle: "Review recent actions and operational signals." },
+  settings: { title: "Settings", subtitle: "Configure your administration workspace." },
+};
 
 export default function AdminShell({
   kpis,
@@ -25,6 +36,7 @@ export default function AdminShell({
   activeSection?: string;
   children: React.ReactNode;
 }) {
+  const copy = SECTION_COPY[activeSection] || SECTION_COPY.dashboard;
   return (
     <div className={styles.adminLayout}>
       <header className={styles.adminHeader}>
@@ -51,7 +63,7 @@ export default function AdminShell({
               className={`${styles.sidebarItem} ${item.id === activeSection ? styles.active : ""} ${item.push ? styles.push : ""}`}
               aria-current={item.id === activeSection ? "page" : undefined}
             >
-              <span className={styles.sidebarIcon} aria-hidden>{item.icon}</span>
+              <item.Icon className={styles.sidebarIcon} size={19} strokeWidth={1.8} aria-hidden />
               <span>{item.label}</span>
             </Link>
           ))}
@@ -60,8 +72,9 @@ export default function AdminShell({
         <main className={styles.adminMain}>
           <div className={styles.adminHeaderContent}>
             <div>
-              <h1 className={styles.adminTitle}>Admin &amp; Tutor Management Dashboard</h1>
-              <p className={styles.adminSubtitle}>Welcome, Eleanor! | Monday, Oct 28, 2024</p>
+              <p className={styles.adminEyebrow}>Nile Language administration</p>
+              <h1 className={styles.adminTitle}>{copy.title}</h1>
+              <p className={styles.adminSubtitle}>{copy.subtitle}</p>
             </div>
 
             <ul className={styles.kpiGrid}>
