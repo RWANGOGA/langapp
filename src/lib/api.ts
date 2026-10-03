@@ -22,14 +22,25 @@ export async function apiGet<T>(path: string, opts: { public?: boolean; revalida
     if (!token) redirect("/auth/login?reason=session");
     headers.Authorization = `Bearer ${token}`;
   }
-  const res = await fetch(`${BASE}${path}`, {
-    headers,
-    ...(opts.revalidate ? { next: { revalidate: opts.revalidate } } : { cache: "no-store" as const }),
-  });
-  if (res.status === 401 && !opts.public) redirect("/auth/login?reason=session");
-  if (!res.ok) {
-    if (opts.public && res.status === 404) return null;
-    throw new Error(`API ${path} failed with ${res.status}`);
+  try {
+    const res = await fetch(`${BASE}${path}`, {
+      headers,
+      ...(opts.revalidate ? { next: { revalidate: opts.revalidate } } : { cache: "no-store" as const }),
+    });
+    if (res.status === 401 && !opts.public) redirect("/auth/login?reason=session");
+    if (!res.ok) {
+      if (opts.public) {
+        console.warn(`[apiGet] public ${path} returned ${res.status} – returning null`);
+        return null;
+      }
+      throw new Error(`API ${path} failed with ${res.status}`);
+    }
+    return (await res.json()) as T;
+  } catch (err) {
+    if (opts.public) {
+      console.warn(`[apiGet] public ${path} failed – returning null:`, err);
+      return null;
+    }
+    throw err;
   }
-  return (await res.json()) as T;
 }
