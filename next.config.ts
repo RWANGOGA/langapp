@@ -22,7 +22,6 @@ function resolveApiOrigin(): string {
 const apiOrigin = resolveApiOrigin();
 
 const nextConfig: NextConfig = {
-  output: "standalone",
   // The browser calls /api/... on the Next origin; this proxies it to FastAPI, so the login cookie stays first-party.
   async rewrites() {
     return [{ source: "/api/:path*", destination: `${apiOrigin}/api/:path*` }];
