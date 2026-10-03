@@ -1,10 +1,10 @@
 services:
   - type: web
     name: langapp-api
-    runtime: python
+    runtime: docker
     rootDir: backend
-    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
-    startCommand: sh start.sh
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
