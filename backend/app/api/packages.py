@@ -1,9 +1,14 @@
-from fastapi import APIRouter, Depends, Header, HTTPException, status
+import hashlib
+import hmac
+import json
+
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import List
 from app.db.session import get_db
 from app.models.package import Package, Order, PlanName, PaymentMethod, OrderStatus
+from app.models.payment_tracking import PaymentEvent
 from app.schemas.package import PackageRead, PackageCreate, OrderCreate, OrderRead, PaymentWebhook
 from app.api.auth import get_current_active_user
 from app.models.user import User
@@ -82,10 +87,13 @@ async def get_order(
 @router.post("/payments/webhook", response_model=OrderRead)
 async def payment_webhook(
     event: PaymentWebhook,
-    webhook_secret: str | None = Header(None, alias="X-Payment-Webhook-Secret"),
+    request: Request,
+    webhook_signature: str | None = Header(None, alias="X-Payment-Signature"),
     db: AsyncSession = Depends(get_db),
 ):
-    if not settings.PAYMENT_WEBHOOK_SECRET or webhook_secret != settings.PAYMENT_WEBHOOK_SECRET:
+    body = await request.body()
+    expected = hmac.new((settings.PAYMENT_WEBHOOK_SECRET or "").encode(), body, hashlib.sha256).hexdigest()
+    if not settings.PAYMENT_WEBHOOK_SECRET or not webhook_signature or not hmac.compare_digest(webhook_signature, expected):
         raise HTTPException(status_code=401, detail="Invalid payment webhook")
 
     order = await db.scalar(select(Order).where(Order.id == event.order_id))
@@ -94,11 +102,28 @@ async def payment_webhook(
     if order.status in {OrderStatus.COMPLETED, OrderStatus.MATCHING_PENDING}:
         return order
 
+    duplicate = await db.scalar(select(PaymentEvent).where(PaymentEvent.provider_event_id == event.provider_event_id))
+    if duplicate:
+        return order
+
     order.external_payment_id = event.external_payment_id
     if event.status != "succeeded":
         order.status = OrderStatus.FAILED
     else:
         await match_paid_student(db, order)
+    db.add(PaymentEvent(
+        event_type=f"payment.{event.status}",
+        actor_type="provider",
+        user_id=order.user_id,
+        order_id=order.id,
+        provider_event_id=event.provider_event_id,
+        previous_state=OrderStatus.PENDING.value,
+        new_state=order.status.value,
+        amount_minor=order.amount_usd,
+        currency="USD",
+        summary=f"Payment provider reported {event.status} for order #{order.id}.",
+        metadata_json={"external_payment_id": event.external_payment_id},
+    ))
     await db.commit()
     await db.refresh(order)
     return order

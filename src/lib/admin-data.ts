@@ -32,6 +32,8 @@ export interface AdminDashboard {
   statuses: StatusCount[]; 
   bars: BarGroup[];
 }
+export interface PaymentActivity { id: number; event_type: string; summary: string; new_state: string | null; amount: number | null; currency: string | null; created_at: string }
+export interface PaymentAnalytics { successful_payments: number; matching_pending: number; gross_revenue_usd: number; active_subscriptions: number; generated_at: string }
 
 /** GET {API_URL}/api/admin/dashboard (needs admin cookie). */
 export async function getAdminDashboard(): Promise<AdminDashboard> {
@@ -40,4 +42,12 @@ export async function getAdminDashboard(): Promise<AdminDashboard> {
     throw new Error("Failed to fetch admin dashboard data");
   }
   return data;
+}
+
+export async function getPaymentActivity(): Promise<PaymentActivity[]> {
+  return (await apiGetClient<PaymentActivity[]>("/admin/payment/activity")) ?? [];
+}
+
+export async function getPaymentAnalytics(): Promise<PaymentAnalytics> {
+  return (await apiGetClient<PaymentAnalytics>("/admin/payment/analytics")) ?? { successful_payments: 0, matching_pending: 0, gross_revenue_usd: 0, active_subscriptions: 0, generated_at: "" };
 }

@@ -7,6 +7,7 @@ from app.models.user import (
 )
 from app.models.tutor_application import TutorApplication, ApplicationStatus, VerificationStatus
 from app.models.notification import Notification
+from app.models.payment_tracking import PaymentEvent, Subscription, SubscriptionStatus
 
 __all__ = [
     "Package",

@@ -1,8 +1,11 @@
+from datetime import datetime, timedelta
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.package import Order, OrderStatus
+from app.models.package import Package, Order, OrderStatus
+from app.models.payment_tracking import Subscription, SubscriptionStatus
 from app.models.user import TutorProfile, User, UserRole
 from app.services.notifications import notify_admins, notify_user
 
@@ -60,6 +63,19 @@ async def match_paid_student(db: AsyncSession, order: Order) -> bool:
 
     student.tutor_id = tutor.id
     order.status = OrderStatus.COMPLETED
+    package = await db.scalar(select(Package).where(Package.id == order.package_id))
+    if package:
+        started_at = datetime.utcnow()
+        end_at = started_at + timedelta(days=max(1, package.months) * 30)
+        db.add(Subscription(
+            user_id=student.id,
+            order_id=order.id,
+            tier="monthly" if package.months == 1 else "annual" if package.months >= 12 else "bundle",
+            status=SubscriptionStatus.ACTIVE,
+            started_at=started_at,
+            current_period_end=end_at,
+            next_renewal_at=end_at if package.months in (1, 12) else None,
+        ))
     await notify_user(db, student.id, "tutor_assigned", "Your tutor has been assigned", f"{tutor.full_name} is now your Nile Language tutor.")
     await notify_user(db, tutor.id, "learner_assigned", "A learner has been assigned to you", f"{student.full_name} is now one of your Nile Language learners.")
     await notify_admins(db, "assignment_created", "Automatic tutor assignment completed", f"{student.full_name} was assigned to {tutor.full_name} after order #{order.id}.")

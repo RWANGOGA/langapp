@@ -21,6 +21,7 @@ export interface TutorDashboard {
   learners: LearnerSummary[];
   today: string;
   sessions: SessionItem[];
+  packageSummary: { student_id: number; student_name: string; subject: string | null; package_name: string; tier: string | null; status: string; started_at: string; expires_at: string | null }[];
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8004/api/v1";
@@ -44,5 +45,9 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
 }
 
 export async function getTutorDashboard(): Promise<TutorDashboard> {
-  return fetchWithAuth(`${PROXY}/tutor/dashboard`);
+  const [dashboard, packageSummary] = await Promise.all([
+    fetchWithAuth(`${PROXY}/tutor/dashboard`),
+    fetchWithAuth(`${PROXY}/tutor/payment-summary`),
+  ]);
+  return { ...dashboard, packageSummary };
 }

@@ -9,6 +9,8 @@ import Countdown from "@/components/dashboard/Countdown";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import styles from "@/components/dashboard/dashboard.module.css";
 import { getLearnerDashboard } from "@/lib/dashboard-data";
+import { getPaymentSummary } from "@/lib/payment-data";
+import PaymentSummary from "@/components/dashboard/PaymentSummary";
 
 export const metadata: Metadata = { title: "Learner Dashboard" };
 
@@ -19,7 +21,7 @@ export default async function DashboardPage() {
   const me = await apiGet<{ role: string }>("/auth/me");
   if (me?.role === "tutor") redirect("/tutor");
   if (me?.role === "admin") redirect("/admin");
-  const { learner, tutor, nextClass, progress, today, classes } = await getLearnerDashboard();
+  const [{ learner, tutor, nextClass, progress, today, classes }, payment] = await Promise.all([getLearnerDashboard(), getPaymentSummary()]);
   const upcoming = classes.filter((c) => c.date > today);
 
   return (
@@ -33,6 +35,7 @@ export default async function DashboardPage() {
         <div><span className={styles.dashboardStatIcon}><BookOpen size={18} /></span><span><small>Current level</small><b>{progress.level}</b></span></div>
         <div><span className={styles.dashboardStatIcon}><CalendarDays size={18} /></span><span><small>Upcoming classes</small><b>{upcoming.length || "None scheduled"}</b></span></div>
       </div>
+      <PaymentSummary payment={payment} />
       <div className={styles.grid}>
         <section className={`${styles.card} ${styles.tutorCard}`} aria-labelledby="tutor-h">
           <h3 id="tutor-h" className={styles.cardTitle}>My Tutor</h3>

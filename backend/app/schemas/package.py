@@ -84,3 +84,30 @@ class PaymentWebhook(BaseModel):
     order_id: int
     external_payment_id: str
     status: str
+    provider_event_id: str
+    signature: str | None = None
+
+
+class PaymentSummary(BaseModel):
+    status: str
+    package_name: str | None = None
+    subject: str | None = None
+    tier: str | None = None
+    started_at: datetime | None = None
+    expires_at: datetime | None = None
+    renews_at: datetime | None = None
+    amount: int | None = None
+    currency: str | None = None
+    fulfillment_status: str | None = None
+
+
+class PaymentHistoryItem(BaseModel):
+    order_id: int
+    package_name: str | None = None
+    status: str
+    amount_jpy: int
+    amount_vnd: int
+    amount_usd: int
+    payment_method: PaymentMethod | None = None
+    created_at: datetime
+    paid_at: datetime | None = None

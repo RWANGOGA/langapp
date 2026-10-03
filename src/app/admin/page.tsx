@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getAdminDashboard, type AdminDashboard } from "@/lib/admin-data";
+import { getAdminDashboard, getPaymentActivity, getPaymentAnalytics, type AdminDashboard, type PaymentActivity, type PaymentAnalytics } from "@/lib/admin-data";
 import AdminShell from "@/components/admin/AdminShell";
 import TutorRoster from "@/components/admin/TutorRoster";
 import StudentRoster from "@/components/admin/StudentRoster";
@@ -18,6 +18,8 @@ export default function AdminPage() {
   const { isAuthenticated, isLoading, isAdmin } = useAuth();
   const [data, setData] = useState<AdminDashboard | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [paymentActivity, setPaymentActivity] = useState<PaymentActivity[]>([]);
+  const [paymentAnalytics, setPaymentAnalytics] = useState<PaymentAnalytics | null>(null);
 
   useEffect(() => {
     if (!isLoading) {
@@ -31,14 +33,24 @@ export default function AdminPage() {
       }
       
       // Fetch data after auth check
-      getAdminDashboard()
-        .then((d) => setData(d))
+      Promise.all([getAdminDashboard(), getPaymentActivity(), getPaymentAnalytics()])
+        .then(([d, activity, analytics]) => { setData(d); setPaymentActivity(activity); setPaymentAnalytics(analytics); })
         .catch((err) => {
           console.error("Admin dashboard fetch error:", err);
           setError(err instanceof Error ? err.message : "Failed to load admin dashboard data. Please try again.");
         });
     }
   }, [isAuthenticated, isAdmin, isLoading, router]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !isAdmin) return;
+    const refresh = () => Promise.all([getPaymentActivity(), getPaymentAnalytics()]).then(([activity, analytics]) => {
+      setPaymentActivity(activity);
+      setPaymentAnalytics(analytics);
+    }).catch(() => undefined);
+    const interval = window.setInterval(refresh, 30000);
+    return () => window.clearInterval(interval);
+  }, [isAuthenticated, isAdmin]);
 
   if (isLoading || !isAuthenticated || !isAdmin) {
     return (
@@ -75,6 +87,10 @@ export default function AdminPage() {
         <SubscriptionManagement plans={data.plans} leaders={data.leaders} statuses={data.statuses} bars={data.bars} />
         <ActivityLog items={data.activity} />
       </div>
+      <section className={styles.paymentOversight} aria-labelledby="payment-oversight-title">
+        <div className={styles.adminCard}><div className={styles.cardHeader}><h3 id="payment-oversight-title">Payment oversight</h3><span className={styles.livePill}>Live data</span></div><div className={styles.adminMetricGrid}><div><small>Gross revenue</small><b>${paymentAnalytics?.gross_revenue_usd ?? 0}</b></div><div><small>Successful payments</small><b>{paymentAnalytics?.successful_payments ?? 0}</b></div><div><small>Active subscriptions</small><b>{paymentAnalytics?.active_subscriptions ?? 0}</b></div><div><small>Matching pending</small><b>{paymentAnalytics?.matching_pending ?? 0}</b></div></div></div>
+        <div className={styles.adminCard}><div className={styles.cardHeader}><h3>Payment activity</h3><span className={styles.activityRefresh}>Refresh on load</span></div><ul className={styles.paymentActivityList}>{paymentActivity.slice(0, 8).map((event) => <li key={event.id}><span><b>{event.event_type}</b><small>{event.summary}</small></span><time>{new Date(event.created_at).toLocaleString()}</time></li>)}{paymentActivity.length === 0 && <li>No payment events recorded yet.</li>}</ul></div>
+      </section>
     </AdminShell>
   );
 }

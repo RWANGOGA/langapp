@@ -188,6 +188,7 @@
   grid-template-columns: 1.1fr 1fr 1fr;
   gap: var(--space-xl);
 }
+.paymentOversight { display: grid; grid-template-columns: 1.1fr 1fr; gap: var(--space-xl); margin-top: var(--space-xl); }.livePill { padding: .3rem .55rem; color: #24796f; background: #e4f2f0; border-radius: 999px; font-size: .72rem; font-weight: 800; text-transform: uppercase; }.adminMetricGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .7rem; }.adminMetricGrid > div { padding: .8rem; background: #f4f8f9; border-radius: 8px; }.adminMetricGrid small, .adminMetricGrid b { display: block; }.adminMetricGrid small { color: var(--text-muted); font-size: .75rem; }.adminMetricGrid b { margin-top: .3rem; color: var(--navy); font-size: 1.2rem; }.activityRefresh { color: var(--text-muted); font-size: .75rem; }.paymentActivityList { display: grid; gap: .55rem; list-style: none; }.paymentActivityList li { display: flex; justify-content: space-between; gap: .8rem; padding: .6rem 0; border-top: 1px solid var(--border); }.paymentActivityList li:first-child { border-top: 0; }.paymentActivityList span { display: grid; gap: .2rem; }.paymentActivityList b { color: var(--navy); font-size: .82rem; }.paymentActivityList small, .paymentActivityList time { color: var(--text-muted); font-size: .75rem; }.paymentActivityList time { white-space: nowrap; }
 
 .adminLeft,
 .adminRight,
@@ -626,6 +627,7 @@
   .kpiGrid {
     flex-wrap: wrap;
   }
+  .paymentOversight { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 1024px) {
@@ -663,6 +665,7 @@
   .searchWrap {
     flex-wrap: wrap;
   }
+  .adminMetricGrid { grid-template-columns: repeat(2, 1fr); }
 }
 
 .loading,

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Clock } from "lucide-react";
+import { Clock, PackageCheck } from "lucide-react";
 import Calendar from "@/components/tutor/Calendar";
 import Countdown from "@/components/tutor/Countdown";
 import DashboardLayout from "@/components/tutor/DashboardLayout";
@@ -60,7 +60,7 @@ export default function TutorPage() {
     );
   }
 
-  const { tutor, next, learners, today, sessions } = dashboard;
+  const { tutor, next, learners, today, sessions, packageSummary } = dashboard;
   const todays = sessions.filter((s) => s.date === today);
 
   const initials = (n: string) => n.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
@@ -152,6 +152,11 @@ export default function TutorPage() {
               </label>
               <button type="submit" className={styles.submit}>Send feedback</button>
             </form>
+          </section>
+          <section className={`${styles.card} ${styles.notes}`} aria-labelledby="packages-h">
+            <h3 id="packages-h" className={styles.cardTitle}><PackageCheck size={20} className={styles.tealIcon} /> Learner Packages</h3>
+            <p className={styles.packagePrivacy}>Only packages belonging to your assigned learners are shown.</p>
+            <ul className={styles.packageList}>{packageSummary.map((item) => <li key={`${item.student_id}-${item.started_at}`}><span><strong>{item.student_name}</strong><small>{item.package_name} · {item.tier || "one-time"} · {item.subject || "Learning plan"}</small><small>Started {new Date(item.started_at).toLocaleDateString()} · Expires {item.expires_at ? new Date(item.expires_at).toLocaleDateString() : "Not set"}</small></span><b>{item.status}</b></li>)}{packageSummary.length === 0 && <li>No assigned learner packages yet.</li>}</ul>
           </section>
         </div>
       </DashboardShell>

@@ -45,6 +45,14 @@
 .dashboardStats small { color: #728096; font-size: .76rem; }
 .dashboardStats b { color: #0f1c33; font-size: .92rem; }
 .dashboardStatIcon { display: grid; place-items: center; width: 36px; height: 36px; color: var(--teal); background: #e4f2f0; border-radius: 10px; }
+.paymentSummary { padding: 1.2rem; margin-bottom: 1.4rem; background: #fff; border: 1px solid #e4ebef; border-radius: 14px; box-shadow: 0 8px 24px rgba(11, 37, 69, .06); }
+.paymentSummary :global(.subscription-action) { margin-top: .9rem; padding: .55rem .75rem; color: #56677d; background: #fff; border: 1px solid #d5dde3; border-radius: 7px; font: inherit; font-size: .8rem; cursor: pointer; }
+.paymentSummary :global(.subscription-action + small) { display: block; margin-top: .45rem; color: #24796f; }
+.paymentSummaryHead { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.paymentSummaryHead h2 { margin-top: .2rem; color: #0f1c33; font-size: 1.25rem; }
+.paymentStatus { padding: .35rem .65rem; border-radius: 999px; font-size: .75rem; font-weight: 800; text-transform: uppercase; }
+.paymentPaid { color: #24796f; background: #e4f2f0; }.paymentUnpaid { color: #9a4a20; background: #fff0e8; }
+.paymentDetails { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; }.paymentDetails > div { display: flex; align-items: center; gap: .6rem; padding: .75rem; background: #f6f9fa; border-radius: 9px; color: var(--teal); }.paymentDetails span { display: grid; gap: .15rem; }.paymentDetails small { color: #728096; }.paymentDetails b { color: #0f1c33; font-size: .88rem; }.paymentNotice { margin-top: .9rem; color: #38536f; font-size: .88rem; }.paymentAction { display: inline-block; margin-top: .9rem; padding: .65rem .9rem; color: #fff; background: #132b50; border-radius: 8px; font-weight: 700; text-decoration: none; }
 
 /* ---- grid ---- */
 .grid { display: grid; gap: 1.4rem; grid-template-columns: 1fr 1.65fr 1.2fr; grid-template-areas: "tutor upcoming calendar" "progress progress calendar"; }
@@ -177,6 +185,7 @@
   .joinRow { flex-direction: column; }
   .dashboardWelcome { align-items: flex-start; flex-direction: column; }
   .dashboardStats { grid-template-columns: 1fr; }
+  .paymentDetails { grid-template-columns: 1fr; }
   .pageHeading { align-items: flex-start; flex-direction: column; }
   .statGrid, .notificationSummary, .detailGrid { grid-template-columns: 1fr; }
   .profileActions { justify-content: stretch; }
