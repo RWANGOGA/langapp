@@ -33,6 +33,8 @@ class PaymentMethod(str, enum.Enum):
     LINE_PAY = "line"
     PAYPAY = "paypay"
     ZALOPAY = "zalopay"
+    MOMO = "momo"
+    MOBILE_MONEY = "mobile_money"
     PAYPAL = "paypal"
 
 
@@ -40,6 +42,7 @@ class OrderStatus(str, enum.Enum):
     PENDING = "pending"
     PROCESSING = "processing"
     COMPLETED = "completed"
+    MATCHING_PENDING = "matching_pending"
     FAILED = "failed"
     REFUNDED = "refunded"
 
@@ -50,6 +53,9 @@ class Order(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     package_id: Mapped[str] = mapped_column(String(20), ForeignKey("packages.id"), nullable=False)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=True)
+    subject: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    session_type: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    duration_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)
     status: Mapped[OrderStatus] = mapped_column(SQLEnum(OrderStatus), default=OrderStatus.PENDING)
     payment_method: Mapped[PaymentMethod] = mapped_column(SQLEnum(PaymentMethod), nullable=True)
     amount_jpy: Mapped[int] = mapped_column(Integer, nullable=False)

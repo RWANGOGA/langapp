@@ -44,12 +44,18 @@ class PackageRead(PackageBase):
 class OrderCreate(BaseModel):
     package_id: PlanName
     payment_method: PaymentMethod
+    subject: str
+    session_type: str
+    duration_minutes: int = 60
 
 
 class OrderRead(BaseModel):
     id: int
     package_id: PlanName
     user_id: Optional[int] = None
+    subject: Optional[str] = None
+    session_type: Optional[str] = None
+    duration_minutes: Optional[int] = None
     status: OrderStatus
     payment_method: Optional[PaymentMethod] = None
     amount_jpy: int
@@ -72,3 +78,9 @@ class CheckoutResponse(BaseModel):
     order_id: int
     status: OrderStatus
     payment_url: Optional[str] = None
+
+
+class PaymentWebhook(BaseModel):
+    order_id: int
+    external_payment_id: str
+    status: str

@@ -9,14 +9,14 @@ import styles from "./checkout.module.css";
 const ICONS: Record<FeatureIcon, typeof Clock> = { clock: Clock, list: ListChecks, content: LayoutList, video: Video, cert: Award, mentor: Users };
 const n = (v: number) => v.toLocaleString("en-US");
 const yen = (v: number) => `¥${n(v)}`, dong = (v: number) => `₫${n(v)}`, usd = (v: number) => `$${n(v)}`;
-type Method = "card" | "line" | "paypay" | "zalopay" | "paypal";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8004/api/v1";
+type Method = "card" | "line" | "paypay" | "zalopay" | "momo" | "mobile_money" | "paypal";
 
 export default function CheckoutClient({ plans }: { plans: Plan[] }) {
   const router = useRouter();
   const [planId, setPlanId] = useState<Plan["id"]>(plans.find((p) => p.popular)?.id ?? plans[0].id);
   const [method, setMethod] = useState<Method>("card");
+  const [subject, setSubject] = useState("General English");
+  const [sessionType, setSessionType] = useState("conversation");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const plan = plans.find((p) => p.id === planId)!;
@@ -24,10 +24,14 @@ export default function CheckoutClient({ plans }: { plans: Plan[] }) {
   async function pay() {
     setBusy(true); setError(null);
     try {
-      const res = await fetch(`${API_URL}/checkout`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ packageId: plan.id, method }) });
+      const res = await fetch("/api/v1/checkout", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ package_id: plan.id, payment_method: method, subject, session_type: sessionType, duration_minutes: 60 }) });
+      if (res.status === 401) {
+        router.push(`/auth/login?callbackUrl=${encodeURIComponent(`/checkout?package=${plan.id}`)}`);
+        return;
+      }
       if (!res.ok) throw new Error();
       const order = await res.json();
-      router.push(`/matching?order=${order.id}`);
+      router.push(`/checkout/success?order=${order.id}`);
     } catch {
       setError("We couldn't start your payment. Please try again.");
       setBusy(false);
@@ -44,7 +48,12 @@ export default function CheckoutClient({ plans }: { plans: Plan[] }) {
   return (
     <main className={styles.main}>
       <section aria-labelledby="pk-h">
-        <h2 id="pk-h">1. Select Your Learning Package</h2>
+        <h2 id="session-h">1. Choose your study session</h2>
+        <div className={styles.sessionChoices}>
+          <label>Subject<select value={subject} onChange={(event) => setSubject(event.target.value)}><option>General English</option><option>Business English</option><option>IELTS Preparation</option><option>TOEFL Preparation</option><option>Academic Writing</option></select></label>
+          <label>Session type<select value={sessionType} onChange={(event) => setSessionType(event.target.value)}><option value="conversation">Conversation practice</option><option value="grammar">Grammar and writing</option><option value="exam_prep">Exam preparation</option><option value="business">Business English</option></select></label>
+        </div>
+        <h2 id="pk-h">2. Select Your Learning Package</h2>
         <div className={styles.plans} role="radiogroup" aria-labelledby="pk-h">
           {plans.map((p) => (
             <article key={p.id} className={`${styles.plan} ${p.popular ? styles.popular : ""} ${p.id === planId ? styles.selected : ""}`}>
@@ -67,7 +76,7 @@ export default function CheckoutClient({ plans }: { plans: Plan[] }) {
       </section>
 
       <aside aria-labelledby="co-h">
-        <h2 id="co-h">2. Secure Payment Checkout</h2>
+          <h2 id="co-h">3. Secure Payment Checkout</h2>
         <div className={styles.summary}>
           <h3>Order Summary</h3>
           <div className={styles.row}><span>Package: {plan.name}</span><span>{yen(plan.price.JPY)}</span></div>
@@ -84,6 +93,8 @@ export default function CheckoutClient({ plans }: { plans: Plan[] }) {
             {radio("line", <span className={styles.line}>LINE Pay</span>)}
             {radio("paypay", <span className={styles.paypay}>PayPay</span>)}
             {radio("zalopay", <><span className={styles.momo}>mo<br />mo</span><span className={styles.zalo}>ZaloPay</span></>)}
+            {radio("momo", <span className={styles.momo}>MoMo</span>)}
+            {radio("mobile_money", <span>Mobile Money</span>)}
             {radio("paypal", <span className={styles.paypal}>PayPal</span>)}
           </div>
           <hr />
