@@ -17,10 +17,12 @@ const NAV = [
 export default function AdminShell({
   kpis,
   unread,
+  activeSection = "dashboard",
   children,
 }: {
   kpis: Kpi[];
   unread: number;
+  activeSection?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -46,8 +48,8 @@ export default function AdminShell({
             <Link
               key={item.id}
               href={`/admin/${item.id}`}
-              className={`${styles.sidebarItem} ${item.id === "dashboard" ? styles.active : ""} ${item.push ? styles.push : ""}`}
-              aria-current={item.id === "dashboard" ? "page" : undefined}
+              className={`${styles.sidebarItem} ${item.id === activeSection ? styles.active : ""} ${item.push ? styles.push : ""}`}
+              aria-current={item.id === activeSection ? "page" : undefined}
             >
               <span className={styles.sidebarIcon} aria-hidden>{item.icon}</span>
               <span>{item.label}</span>

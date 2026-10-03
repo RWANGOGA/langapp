@@ -26,7 +26,7 @@ function LoginForm() {
       } else if (isTutor) {
         router.push("/tutor");
       } else {
-        router.push(callbackUrl.startsWith("/tutor") || callbackUrl.startsWith("/admin") ? "/dashboard" : callbackUrl);
+        router.push(callbackUrl.startsWith("/admin") ? "/dashboard" : callbackUrl);
       }
     }
   }, [isAuthenticated, isLoading, isAdmin, isTutor, router, callbackUrl, sessionExpired]);

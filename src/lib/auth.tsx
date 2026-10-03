@@ -98,6 +98,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (data: RegisterData) => {
+    // Registration must not inherit an existing session, especially an admin session.
+    await logout();
+
     const response = await fetch(`${PROXY}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -109,8 +112,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const error = await response.json();
       throw new Error(error.detail || "Registration failed");
     }
-
-    await fetchUser();
   };
 
   const logout = async () => {
