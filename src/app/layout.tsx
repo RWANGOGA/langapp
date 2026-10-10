@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
+import SiteHeader from "@/components/layout/SiteHeader";
+import SiteFooter from "@/components/layout/SiteFooter";
 
 export const metadata: Metadata = {
   title: "Nile Language — Learn English with Dedicated 1-on-1 Tutors",
@@ -19,7 +21,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
+          <SiteHeader />
           {children}
+          <SiteFooter />
         </AuthProvider>
       </body>
     </html>

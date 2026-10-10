@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getTutorDirectory } from "@/lib/tutors-data";
 import TutorDirectory from "./TutorDirectory";
 import styles from "./page.module.css";
@@ -14,10 +13,6 @@ export default async function TutorsPage() {
   const tutors = await getTutorDirectory();
   return (
     <main className={styles.page}>
-      <header className={styles.header}>
-        <Link href="/" className={styles.brand}>Nile Language</Link>
-        <Link href="/tutor/requirements" className={styles.headerLink}>Become a Tutor</Link>
-      </header>
       <section className={styles.intro}>
         <h1>Meet Our Certified Tutors</h1>
         <p>Every tutor is TEFL/TESOL certified and vetted. Filter by your goal and find the right match.</p>
