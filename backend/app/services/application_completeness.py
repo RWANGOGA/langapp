@@ -56,7 +56,7 @@ REQUIRED_BY_STEP: Dict[int, StepRequirement] = {
     6: StepRequirement(
         step=6,
         title="Availability",
-        required_fields=("availability_json",),
+        required_fields=("availability",),
     ),
     7: StepRequirement(
         step=7,
@@ -80,6 +80,11 @@ CONSENT_FIELDS = REQUIRED_BY_STEP[7].required_fields
 # Comma-joined text columns need an explicit split before they count as filled.
 _LIST_FIELDS = {"specialties", "languages"}
 
+# Model attribute names that differ from schema field names.
+_MODEL_FIELD_ALIASES = {
+    "availability": "availability_json",
+}
+
 _BOOLEAN_TRUE = True
 
 
@@ -100,6 +105,12 @@ def _is_present(field_name: str, value: Any) -> bool:
     return True
 
 
+def _get_model_attr(application: Any, field_name: str) -> Any:
+    """Get attribute from application model, handling field name aliases."""
+    attr_name = _MODEL_FIELD_ALIASES.get(field_name, field_name)
+    return getattr(application, attr_name, None)
+
+
 def evaluate(application: Any) -> Dict[str, Any]:
     """Assess a TutorApplication (or any object with the same attributes).
 
@@ -113,7 +124,7 @@ def evaluate(application: Any) -> Dict[str, Any]:
         missing = [
             name
             for name in requirement.required_fields
-            if not _is_present(name, getattr(application, name, None))
+            if not _is_present(name, _get_model_attr(application, name))
         ]
         if missing:
             incomplete_steps.append(number)
