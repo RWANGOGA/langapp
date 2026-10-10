@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, or_
@@ -544,3 +544,92 @@ async def get_admin_dashboard(
         "statuses": statuses,
         "bars": bars,
     }
+
+
+@router.get("/admin/payment/analytics")
+async def get_payment_analytics(
+    current_user: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get payment analytics for the admin dashboard."""
+    # Use string values for enum columns (stored as lowercase in DB)
+    completed_status = "completed"
+    matching_pending_status = "matching_pending"
+
+    # Successful payments (completed orders)
+    completed_result = await db.execute(
+        select(func.count(Order.id)).where(Order.status == completed_status)
+    )
+    successful_payments = completed_result.scalar() or 0
+
+    # Matching pending orders
+    matching_pending_result = await db.execute(
+        select(func.count(Order.id)).where(Order.status == matching_pending_status)
+    )
+    matching_pending = matching_pending_result.scalar() or 0
+
+    # Gross revenue in USD
+    revenue_result = await db.execute(
+        select(func.sum(Order.amount_usd)).where(Order.status == completed_status)
+    )
+    gross_revenue_usd = float(revenue_result.scalar() or 0)
+
+    # Active subscriptions (completed orders with recurring packages)
+    active_subs_result = await db.execute(
+        select(func.count(Order.id))
+        .join(Package, Order.package_id == Package.id)
+        .where(Order.status == completed_status)
+        .where(Package.months > 1)
+    )
+    active_subscriptions = active_subs_result.scalar() or 0
+
+    return {
+        "successful_payments": successful_payments,
+        "matching_pending": matching_pending,
+        "gross_revenue_usd": gross_revenue_usd,
+        "active_subscriptions": active_subscriptions,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+@router.get("/admin/payment/activity")
+async def get_payment_activity(
+    current_user: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+    limit: int = 50,
+):
+    """Get recent payment activity for the admin dashboard."""
+    result = await db.execute(
+        select(Order, User, Package)
+        .join(User, Order.user_id == User.id)
+        .join(Package, Order.package_id == Package.id)
+        .order_by(Order.created_at.desc())
+        .limit(limit)
+    )
+    rows = result.all()
+
+    activity = []
+    for order, user, package in rows:
+        # Use string values for status (stored as lowercase in DB)
+        status_value = order.status
+        event_map = {
+            "completed": "payment_completed",
+            "pending": "payment_pending",
+            "processing": "payment_processing",
+            "matching_pending": "matching_pending",
+            "failed": "payment_failed",
+            "refunded": "payment_refunded",
+        }
+        event_type = event_map.get(status_value, "status_changed")
+
+        activity.append({
+            "id": order.id,
+            "event_type": event_type,
+            "summary": f"Order {order.id} - {package.name} for {user.full_name or user.email}",
+            "new_state": status_value,
+            "amount": order.amount_usd,
+            "currency": "USD",
+            "created_at": order.created_at.isoformat() if order.created_at else None,
+        })
+
+    return activity

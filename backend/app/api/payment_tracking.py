@@ -147,8 +147,26 @@ async def get_payment_analytics(
     current_user: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    successful = await db.scalar(select(func.count(Order.id)).where(Order.status.in_([OrderStatus.COMPLETED, OrderStatus.MATCHING_PENDING]))) or 0
-    matching_pending = await db.scalar(select(func.count(Order.id)).where(Order.status == OrderStatus.MATCHING_PENDING)) or 0
-    revenue = await db.scalar(select(func.coalesce(func.sum(Order.amount_usd), 0)).where(Order.status.in_([OrderStatus.COMPLETED, OrderStatus.MATCHING_PENDING]))) or 0
-    active_subscriptions = await db.scalar(select(func.count(Subscription.id)).where(Subscription.status == "active")) or 0
-    return {"successful_payments": successful, "matching_pending": matching_pending, "gross_revenue_usd": revenue, "active_subscriptions": active_subscriptions, "generated_at": datetime.utcnow()}
+    # Use string values for enum columns (stored as lowercase in DB)
+    completed_status = "completed"
+    matching_pending_status = "matching_pending"
+
+    successful = await db.scalar(
+        select(func.count(Order.id)).where(Order.status.in_([completed_status, matching_pending_status]))
+    ) or 0
+    matching_pending = await db.scalar(
+        select(func.count(Order.id)).where(Order.status == matching_pending_status)
+    ) or 0
+    revenue = await db.scalar(
+        select(func.coalesce(func.sum(Order.amount_usd), 0)).where(Order.status.in_([completed_status, matching_pending_status]))
+    ) or 0
+    active_subscriptions = await db.scalar(
+        select(func.count(Subscription.id)).where(Subscription.status == "active")
+    ) or 0
+    return {
+        "successful_payments": successful,
+        "matching_pending": matching_pending,
+        "gross_revenue_usd": float(revenue),
+        "active_subscriptions": active_subscriptions,
+        "generated_at": datetime.utcnow(),
+    }
