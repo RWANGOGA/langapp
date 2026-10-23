@@ -235,11 +235,12 @@ async def submit_application(
     step7 = application_in.step7
     step8 = application_in.step8
 
-    if prior and prior.status == ApplicationStatus.REJECTED:
-        # Resubmission keeps the same record so the audit trail is preserved.
+    if prior:
+        # Resubmission - and a full re-POST over an editable draft - updates
+        # the same record: user_id is unique, so creating a second row would
+        # breach the constraint, and the audit trail must survive anyway.
         application = prior
         application.status = ApplicationStatus.SUBMITTED
-        application.is_approved = False
         application.reviewed_at = None
         application.reviewed_by = None
     else:

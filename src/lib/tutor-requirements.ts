@@ -79,18 +79,3 @@ export const DEFAULT_TUTOR_REQUIREMENTS: TutorRequirements = {
   disclaimer: "Submitting an application does not guarantee approval or grant tutor access. Your account becomes a tutor account only after every document has been reviewed and the demo lesson has been passed.",
   total_steps: 8,
 };
-
-const PROXY = "/api/v1";
-
-/** What the applicant still owes. Same rules the submit gate enforces. */
-export async function getApplicationCompleteness(): Promise<ApplicationCompleteness | null> {
-  try {
-    const res = await fetch(`${PROXY}/tutor/applications/me/completeness`, {
-      credentials: "include",
-    });
-    if (res.status === 401 || !res.ok) return null;
-    return (await res.json()) as ApplicationCompleteness;
-  } catch {
-    return null;
-  }
-}

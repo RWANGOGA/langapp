@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
-import { getApplicationCompleteness, type ApplicationCompleteness } from "@/lib/tutor-requirements";
+import { type ApplicationCompleteness } from "@/lib/tutor-requirements";
 import styles from "./page.module.css";
 
 // Relative so requests go through the Next rewrite and stay first-party.
@@ -76,6 +76,70 @@ const languagesOptions = [
   "Turkish",
 ];
 
+type RequiredField = keyof TutorApplicationData;
+
+// Mirrors app/services/application_completeness.py on the backend: same
+// steps, same titles, same presence rules (consents affirmatively true,
+// lists non-empty, emails parseable). Keeping the two in sync means the
+// form can gate submit on what the applicant has actually typed - the
+// server-side completeness endpoint only ever sees a saved draft, and
+// nothing is saved until submit.
+const requiredByStep: { step: number; title: string; fields: RequiredField[] }[] = [
+  { step: 1, title: "Personal details", fields: ["full_name", "country"] },
+  {
+    step: 2,
+    title: "Identity and qualification documents",
+    fields: [
+      "id_verification_provider",
+      "id_verification_id",
+      "id_document_url",
+      "qualification_type",
+      "qualification_file_url",
+    ],
+  },
+  {
+    step: 3,
+    title: "English proficiency evidence",
+    fields: ["english_proof_type", "english_score", "english_proof_url"],
+  },
+  { step: 4, title: "Introduction video", fields: ["intro_video_url"] },
+  { step: 5, title: "Specialties and languages", fields: ["specialties", "languages"] },
+  { step: 6, title: "Availability", fields: ["availability"] },
+  {
+    step: 7,
+    title: "Agreements and consent",
+    fields: [
+      "tech_confirmed",
+      "code_of_conduct_accepted",
+      "privacy_agreement_accepted",
+      "recording_consent",
+    ],
+  },
+  { step: 8, title: "References", fields: ["reference_1_name", "reference_1_email"] },
+];
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function isFieldMissing(name: RequiredField, value: TutorApplicationData[RequiredField]): boolean {
+  if (typeof value === "boolean") return !value;
+  if (Array.isArray(value)) return value.length === 0;
+  const text = String(value ?? "").trim();
+  if (!text) return true;
+  if (name === "reference_1_email" || name === "reference_2_email") {
+    return !emailPattern.test(text);
+  }
+  return false;
+}
+
+function evaluateLocalCompleteness(data: TutorApplicationData): ApplicationCompleteness {
+  const steps = requiredByStep.map(({ step, title, fields }) => {
+    const missing = fields.filter((name) => isFieldMissing(name, data[name]));
+    return { step, title, complete: missing.length === 0, missing };
+  });
+  const incomplete_steps = steps.filter((s) => !s.complete).map((s) => s.step);
+  return { steps, incomplete_steps, can_submit: incomplete_steps.length === 0 };
+}
+
 export default function TutorApplicationPage() {
   const router = useRouter();
   const { isAuthenticated, isTutor, isLoading: authLoading } = useAuth();
@@ -84,7 +148,7 @@ export default function TutorApplicationPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [applicationExists, setApplicationExists] = useState(false);
-  const [completeness, setCompleteness] = useState<ApplicationCompleteness | null>(null);
+  const [applicationStatus, setApplicationStatus] = useState<string | null>(null);
 
   const [data, setData] = useState<TutorApplicationData>({
     full_name: "",
@@ -116,6 +180,10 @@ export default function TutorApplicationPage() {
     background_check_provider: "",
   });
 
+  // Recomputed on every keystroke so step 8 unlocks the moment the form
+  // itself is complete - a server round-trip can never see unsaved input.
+  const completeness = useMemo(() => evaluateLocalCompleteness(data), [data]);
+
   const checkExistingApplication = useCallback(async () => {
     try {
       const response = await fetch(`${PROXY}/tutor/applications/me`, {
@@ -126,6 +194,7 @@ export default function TutorApplicationPage() {
         const editable = ["submitted", "documents_review", "rejected"].includes(app.status);
         if (editable) {
           setApplicationExists(true);
+          setApplicationStatus(app.status);
           // Resume where the applicant left off rather than restarting at step 1.
           setCurrentStep(app.current_step || 1);
           setData((prev) => ({
@@ -165,11 +234,6 @@ export default function TutorApplicationPage() {
     }
   }, []);
 
-  const refreshCompleteness = useCallback(async () => {
-    const report = await getApplicationCompleteness();
-    setCompleteness(report);
-  }, []);
-
   useEffect(() => {
     if (!authLoading) {
       if (!isAuthenticated) {
@@ -180,9 +244,8 @@ export default function TutorApplicationPage() {
       // gated on `isTutor`, which is inverted: only students can apply, so a
       // student's saved application was never loaded back.
       void checkExistingApplication();
-      void refreshCompleteness();
     }
-  }, [isAuthenticated, isTutor, authLoading, router, checkExistingApplication, refreshCompleteness]);
+  }, [isAuthenticated, isTutor, authLoading, router, checkExistingApplication]);
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -264,8 +327,15 @@ export default function TutorApplicationPage() {
         },
       };
 
-      const method = applicationExists ? "PATCH" : "POST";
-      const url = applicationExists
+      // PATCH takes a flat payload (TutorApplicationUpdate) and only accepts
+      // applications in submitted/documents_review. POST takes the nested
+      // step1..step8 shape and is the resubmission path for rejected ones,
+      // so the right verb depends on the stored application's status.
+      const editInPlace =
+        applicationExists &&
+        (applicationStatus === "submitted" || applicationStatus === "documents_review");
+      const method = editInPlace ? "PATCH" : "POST";
+      const url = editInPlace
         ? `${PROXY}/tutor/applications/me`
         : `${PROXY}/tutor/applications`;
 
@@ -273,7 +343,7 @@ export default function TutorApplicationPage() {
         method,
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(applicationExists ? flat : nested),
+        body: JSON.stringify(editInPlace ? flat : nested),
       });
 
       if (!response.ok) {
@@ -282,7 +352,6 @@ export default function TutorApplicationPage() {
       }
 
       setSuccess(true);
-      await refreshCompleteness();
       setTimeout(() => {
         // Applicants are students until approved, so /tutor (the tutor
         // dashboard) would bounce them. Return to the start of the journey.
@@ -715,12 +784,10 @@ export default function TutorApplicationPage() {
                   className={styles.submitBtn}
                   onClick={handleSubmit}
                   disabled={
-                    isSubmitting ||
-                    !data.code_of_conduct_accepted ||
-                    !data.privacy_agreement_accepted ||
-                    !data.recording_consent ||
-                    // Never offer a submit the completeness gate would reject.
-                    (completeness !== null && !completeness.can_submit)
+                    // The local rules mirror the API's submit gate, including
+                    // the four step-7 consents, so the button never offers a
+                    // submission the server would reject with 422.
+                    isSubmitting || !completeness.can_submit
                   }
                 >
                   {isSubmitting ? "Submitting..." : "Submit Application"}
