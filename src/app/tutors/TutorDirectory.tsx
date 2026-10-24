@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Search, Star } from "lucide-react";
+import { Search } from "lucide-react";
 import { SPECIALTIES, type DirectoryTutor, type Specialty } from "@/lib/tutors-data";
 import styles from "./page.module.css";
 
 type Sort = "rating" | "reviews" | "experience";
-const initials = (n: string) => n.split(" ").map((w) => w[0]).join("").slice(0, 2);
 
 export default function TutorDirectory({ tutors }: { tutors: DirectoryTutor[] }) {
   const [query, setQuery] = useState("");
@@ -26,49 +25,83 @@ export default function TutorDirectory({ tutors }: { tutors: DirectoryTutor[] })
       .sort((a, b) => (sort === "rating" ? b.rating - a.rating : sort === "reviews" ? b.reviews - a.reviews : b.years - a.years));
   }, [tutors, query, specialty, language, sort]);
 
+  if (tutors.length === 0) {
+    return (
+      <div className={styles.wrap}>
+        <p className={styles.empty}>
+          <strong>The faculty list is empty right now.</strong>
+          Tutors appear here the moment staff approve their application — identity,
+          credentials, tested English and an observed demo lesson. We would rather
+          show you an honest list than a decorated one.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <section className={styles.wrap}>
+    <div className={styles.wrap}>
       <div className={styles.filters} role="search">
         <label className={styles.search}>
           <Search size={18} aria-hidden />
-          <input type="search" placeholder="Search tutors" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search tutors" />
+          <input type="search" placeholder="Search by name or focus" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search tutors" />
         </label>
-        <select value={specialty} onChange={(e) => setSpecialty(e.target.value as Specialty | "All")} aria-label="Specialty">
-          <option value="All">All goals</option>
-          {SPECIALTIES.map((s) => <option key={s}>{s}</option>)}
-        </select>
-        <select value={language} onChange={(e) => setLanguage(e.target.value)} aria-label="Also speaks">
-          <option value="Any">Any language</option>
-          {languages.map((l) => <option key={l}>{l}</option>)}
-        </select>
-        <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label="Sort by">
-          <option value="rating">Top rated</option>
-          <option value="reviews">Most reviews</option>
-          <option value="experience">Most experienced</option>
-        </select>
+        <label className={styles.field}>
+          <span>Goal</span>
+          <select value={specialty} onChange={(e) => setSpecialty(e.target.value as Specialty | "All")} aria-label="Specialty">
+            <option value="All">All</option>
+            {SPECIALTIES.map((s) => <option key={s}>{s}</option>)}
+          </select>
+        </label>
+        <label className={styles.field}>
+          <span>Language support</span>
+          <select value={language} onChange={(e) => setLanguage(e.target.value)} aria-label="Also speaks">
+            <option value="Any">Any</option>
+            {languages.map((l) => <option key={l}>{l}</option>)}
+          </select>
+        </label>
+        <label className={styles.field}>
+          <span>Order by</span>
+          <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label="Sort by">
+            <option value="rating">Highest rated</option>
+            <option value="reviews">Most reviewed</option>
+            <option value="experience">Most experienced</option>
+          </select>
+        </label>
       </div>
 
-      <p className={styles.count} aria-live="polite">Showing {list.length} of {tutors.length} tutors</p>
+      <p className={styles.count} aria-live="polite">{list.length} of {tutors.length} tutors</p>
 
-      <ul className={styles.grid}>
-        {list.map((t, i) => (
-          <li key={t.id} className={styles.card}>
-            <span className={styles.avatar} data-tone={i % 4} aria-hidden>{initials(t.name)}</span>
-            <h2>{t.name}</h2>
-            <p className={styles.headline}>{t.headline}</p>
-            <p className={styles.meta}>
-              <Star size={15} fill="#f5b301" stroke="#f5b301" aria-hidden /> <strong>{t.rating.toFixed(1)}</strong> · {t.reviews} reviews · {t.years} yrs · {t.country}
-            </p>
-            <p className={styles.speaks}>Speaks: {t.speaks.join(", ")}</p>
-            <ul className={styles.tags}>{t.specialties.map((s) => <li key={s}>{s}</li>)}</ul>
-            <div className={styles.actions}>
-              <Link href={`/auth/register?role=learner&tutor=${t.id}`} className={styles.primary}>Book trial</Link>
-              <Link href={`/tutors/${t.id}`} className={styles.ghost}>View profile</Link>
+      <ul className={styles.roster}>
+        {list.map((t) => (
+          <li key={t.id} className={styles.tutor}>
+            <div>
+              <h2>{t.name}</h2>
+              {t.specialties.length > 0 && <span className={styles.goals}>{t.specialties.join(" · ")}</span>}
+              <p className={styles.headline}>{t.headline}</p>
+              <p className={styles.meta}>
+                {t.reviews > 0 ? (
+                  <><strong>{t.rating.toFixed(1)}</strong> from {t.reviews} review{t.reviews === 1 ? "" : "s"}</>
+                ) : (
+                  <>Newly approved faculty</>
+                )}
+                <span>{t.years} yrs teaching</span>
+                {t.country && <span>{t.country}</span>}
+                <span>Speaks {t.speaks.join(", ") || "English"}</span>
+              </p>
+            </div>
+            <div className={styles.side}>
+              <Link href={`/tutors/${t.id}`} className={styles.actionGhost}>View profile</Link>
+              <Link href={`/auth/register?role=learner&tutor=${t.id}`} className={styles.actionPrimary}>Start with a trial</Link>
             </div>
           </li>
         ))}
       </ul>
-      {list.length === 0 && <p className={styles.empty}>No tutors match those filters. Try clearing one.</p>}
-    </section>
+      {list.length === 0 && (
+        <p className={styles.notice}>
+          <strong>No tutor matches those filters.</strong>
+          Widen the goal or language — or clear the search.
+        </p>
+      )}
+    </div>
   );
 }

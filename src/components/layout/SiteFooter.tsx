@@ -25,7 +25,8 @@ export default function SiteFooter() {
   const pathname = usePathname();
 
   // Don't render on portal pages
-  if (PORTAL_PREFIXES.some((p) => pathname.startsWith(p))) return null;
+  // Segment match so the public /tutors pages keep the footer.
+  if (PORTAL_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"))) return null;
 
   return (
     <footer className={styles.footer} role="contentinfo">

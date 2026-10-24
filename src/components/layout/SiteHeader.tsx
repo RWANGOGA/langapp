@@ -61,8 +61,8 @@ export default function SiteHeader() {
     setMobileOpen(false);
   }, [pathname]);
 
-  // Don't render on portal pages
-  if (PORTAL_PREFIXES.some((p) => pathname.startsWith(p))) return null;
+  // Don't render on portal pages (segment match: /tutors is public marketing).
+  if (PORTAL_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"))) return null;
 
   const handleLogout = async () => {
     await logout();

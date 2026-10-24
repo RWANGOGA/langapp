@@ -1,62 +1,56 @@
-"use client";
+import type { Metadata } from "next";
+import { CtaBand, FeatureRows, Hero, PageShell, Section } from "@/components/marketing/Sections";
 
-import Image from "next/image";
-import Link from "next/link";
-import { BadgeCheck, CalendarDays, PlayCircle, Star, Users } from "lucide-react";
-import styles from "./page.module.css";
-
-function Logo() {
-  return (
-    <svg width="46" height="40" viewBox="0 0 46 40" fill="none" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M4 6a4 4 0 0 1 4-4h16a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4h-8l-6 5v-5H8a4 4 0 0 1-4-4z" stroke="#f2541b" />
-      <path d="M20 17a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4v9a4 4 0 0 1-4 4h-2v5l-6-5h-6a4 4 0 0 1-4-4z" stroke="#3fb8ad" />
-    </svg>
-  );
-}
+export const metadata: Metadata = {
+  title: "Nile Language — Learn English with Dedicated 1-on-1 Tutors",
+  description:
+    "Personalized online English lessons with verified tutors: one teacher, one measured goal, and a weekly cycle of live lessons and recorded progress.",
+  alternates: { canonical: "/" },
+};
 
 export default function HomePage() {
   return (
-    <main className={styles.page}>
-      <section className={styles.hero}>
-        <div className={styles.art}>
-          <Image src="/images/image.png" alt="Tutor Sarah on a video lesson with learners Aiko and Bao" width={1055} height={945} priority />
-        </div>
+    <PageShell>
+      <Hero
+        kicker="One-to-one English"
+        title="Speak with precision."
+        lede="Nile Language pairs you with a single verified tutor and builds the plan around your level, your goal and your timezone. No groups, no apps that guess — just lessons, feedback and a record of where the hours went."
+        ctas={[
+          { href: "/pricing", label: "See programs and prices", primary: true },
+          { href: "/tutors", label: "Meet the tutors" },
+        ]}
+      />
 
-        <div className={styles.copy}>
-          <h1>Master Fluent English with Dedicated 1-on-1 Tutors</h1>
-          <p>
-            Personalised online lessons for learners anywhere in the world. Reach your
-            fluency goal faster with a verified expert tutor and a plan built around you.
-          </p>
-          <div className={styles.cta}>
-            <Link href="/pricing" className={`${styles.btn} ${styles.solid}`}>Start Learning Today</Link>
-            <Link href="/tutor/requirements" className={`${styles.btn} ${styles.outline}`}>Become a Tutor</Link>
-          </div>
-          <ul className={styles.trust}>
-            <li>
-              <BadgeCheck size={44} strokeWidth={1.6} className={styles.tealIcon} />
-              <div><small>Accredited by</small><strong className={styles.efec}>EFEC</strong></div>
-            </li>
-            <li>
-              <Star size={40} strokeWidth={1.5} className={styles.tealIcon} />
-              <div>
-                <strong className={styles.rate}>4.9 <Star size={20} fill="#f5b301" stroke="#f5b301" /> Rating</strong>
-                <small>from 2000+ Reviews</small>
-              </div>
-            </li>
-            <li>
-              <BadgeCheck size={40} strokeWidth={1.5} className={styles.tealIcon} />
-              <div><strong className={styles.rate}>100%</strong><small>Certified Tutors</small></div>
-            </li>
-          </ul>
-        </div>
-      </section>
+      <Section kicker="The standard" title="What makes a lesson here different.">
+        <FeatureRows
+          items={[
+            {
+              label: "01",
+              title: "Tutors clear eight checks before anyone studies with them.",
+              body: "Identity, teaching credentials, tested English proficiency, references and an observed demo lesson — reviewed by staff. Approval is the only path to teaching here; nobody self-declares.",
+            },
+            {
+              label: "02",
+              title: "Every hour is one-to-one.",
+              body: "Your tutor prepares for your goal, not a room of mixed levels. Sessions land on a fixed weekly schedule in your own timezone.",
+            },
+            {
+              label: "03",
+              title: "Progress is written down, not remembered.",
+              body: "Your tutor records notes after each completed lesson. Learners see exactly how many of their planned sessions are done — a number calculated from real class history.",
+            },
+          ]}
+        />
+      </Section>
 
-      <section className={styles.features} aria-label="Highlights">
-        <div><Users size={30} strokeWidth={1.6} /><span>Personalized Lessons</span></div>
-        <div><CalendarDays size={30} strokeWidth={1.6} /><span>Flexible Scheduling</span></div>
-        <div><PlayCircle size={30} strokeWidth={1.6} /><span>Trial Session Available</span></div>
-      </section>
-    </main>
+      <CtaBand
+        title="Ready when you are."
+        body="Create a free account, pick a program, and an approved tutor will be matched to you. Or bring your own classroom experience to a global roster of learners."
+        ctas={[
+          { href: "/auth/register", label: "Start learning", primary: true },
+          { href: "/tutor/requirements", label: "Become a tutor" },
+        ]}
+      />
+    </PageShell>
   );
 }
