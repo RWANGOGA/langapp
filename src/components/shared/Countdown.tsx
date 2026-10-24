@@ -17,9 +17,12 @@ export default function Countdown({ initialSeconds }: { initialSeconds: number }
   const h = Math.floor(left / 3600), m = Math.floor((left % 3600) / 60), s = left % 60;
   return (
     <div className={styles.countdown} role="timer" aria-label="Time until class starts">
-      <span className={styles.countLabel}>CLASS STARTS IN:</span>
-      <span className={styles.countTime}>{pad(h)}:{pad(m)}:{pad(s)}</span>
-      <span className={styles.countUnits}><i>hr</i><i>min</i><i>sec</i></span>
+      <span className={styles.countLabel}>Class starts in</span>
+      <span className={styles.countTime}>
+        <b>{pad(h)}<i>hr</i></b>
+        <b>{pad(m)}<i>min</i></b>
+        <b>{pad(s)}<i>sec</i></b>
+      </span>
     </div>
   );
 }

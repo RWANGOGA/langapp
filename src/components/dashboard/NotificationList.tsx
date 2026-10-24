@@ -19,7 +19,7 @@ export default function NotificationList({ initialNotifications }: { initialNoti
   };
 
   if (notifications.length === 0) {
-    return <div className={styles.emptyState}><span className={styles.emptyIcon}><CheckCircle2 size={28} /></span><h2>Nothing new here</h2><p>Updates about your tutor, lessons, and account will appear in this inbox.</p><Link className={styles.btnPrimary} href="/dashboard"><span>Back to dashboard</span><ArrowRight size={16} /></Link></div>;
+    return <div className={`${styles.emptyState} ${styles.emptyStateQuiet}`}><span className={styles.emptyIcon}><CheckCircle2 size={26} /></span><h2>Nothing new here</h2><p>Updates about your tutor, lessons, and account will appear in this inbox.</p><Link className={styles.btnPrimary} href="/dashboard"><span>Back to dashboard</span><ArrowRight size={16} /></Link></div>;
   }
 
   return (

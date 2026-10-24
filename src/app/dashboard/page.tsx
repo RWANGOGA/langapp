@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { apiGet } from "@/lib/api";
 import Link from "next/link";
-import { BookOpen, CalendarDays, Package, Search, TrendingUp, Users } from "lucide-react";
+import { ArrowRight, CalendarDays, GraduationCap, Package, Search, TrendingUp } from "lucide-react";
 import Calendar from "@/components/shared/Calendar";
 import ClassList from "@/components/dashboard/ClassList";
 import Countdown from "@/components/shared/Countdown";
@@ -19,91 +19,106 @@ export default async function DashboardPage() {
   if (me?.role === "tutor") redirect("/tutor");
   if (me?.role === "admin") redirect("/admin");
   const [{ learner, tutor, nextClass, progress, classes }, payment] = await Promise.all([getLearnerDashboard(), getPaymentSummary()]);
-  // The API only returns future scheduled classes; local-day filtering
-  // happens client-side (ClassList/Calendar) in the viewer's timezone.
-  const upcomingCount = classes.length;
 
   return (
     <DashboardShell learner={learner}>
       <section className={styles.dashboardWelcome} aria-labelledby="dashboard-title">
-        <div><p className={styles.kicker}>Learner dashboard</p><h1 id="dashboard-title">Welcome back, {learner.name.split(" ")[0]}</h1><p>Here is your learning plan at a glance.</p></div>
-        <Link className={styles.headerAction} href="/tutors"><Search size={16} /> Browse tutors</Link>
+        <div>
+          <p className={styles.kicker}>Learner dashboard</p>
+          <h1 id="dashboard-title">Welcome back, {learner.name.split(" ")[0]}</h1>
+          <p>Here is your learning plan at a glance.</p>
+        </div>
+        <Link className={styles.headerAction} href="/tutors"><Search size={15} /> Browse tutors</Link>
       </section>
+
       <div className={styles.dashboardStats}>
-        <div><span className={styles.dashboardStatIcon}><TrendingUp size={18} /></span><span><small>Progress</small><b>{progress.percent}% complete</b></span></div>
-        <div><span className={styles.dashboardStatIcon}><BookOpen size={18} /></span><span><small>Current level</small><b>{progress.level}</b></span></div>
-        <div><span className={styles.dashboardStatIcon}><CalendarDays size={18} /></span><span><small>Upcoming classes</small><b>{upcomingCount || "None scheduled"}</b></span></div>
+        <div><span className={styles.dashboardStatIcon}><TrendingUp size={16} /></span><span><small>Progress</small><b>{progress.percent}%</b></span></div>
+        <div><span className={styles.dashboardStatIcon}><GraduationCap size={16} /></span><span><small>Current level</small><b>{progress.level}</b></span></div>
+        <div><span className={styles.dashboardStatIcon}><CalendarDays size={16} /></span><span><small>Upcoming classes</small><b>{classes.length || "None"}</b></span></div>
       </div>
+
       <PaymentSummary payment={payment} />
-      <div className={styles.grid}>
-        <section className={`${styles.card} ${styles.tutorCard}`} aria-labelledby="tutor-h">
-          <h3 id="tutor-h" className={styles.cardTitle}>My Tutor</h3>
-          {tutor ? (
-            <>
-              <img src={tutor.avatar} alt={tutor.name} width={88} height={88} className={styles.portrait} />
-              <strong className={styles.tutorName}>{tutor.name}</strong>
-              <small>{tutor.country}</small>
-              <Link className={styles.btnOutline} href="/dashboard/tutors">View tutor profile</Link>
-              <Link className={styles.btnOutline} href="/dashboard/notifications">View updates</Link>
-            </>
-          ) : (
-            <div className={styles.cardEmptyState}>
-              <strong className={styles.tutorName}>No tutor assigned yet</strong>
-              <small>An administrator will notify you when your tutor is matched.</small>
-              <a className={styles.btnOutline} href="/tutors">Browse tutors</a>
-            </div>
-          )}
-        </section>
 
-        <section className={`${styles.card} ${styles.upcoming}`} aria-labelledby="up-h">
-          <div className={styles.cardTop}>
-            <h3 id="up-h" className={styles.cardTitle}>Next Class</h3>
-          </div>
-          {nextClass ? (
-            <>
-              <small>Title:</small>
-              <h4 className={styles.classTitle}>{nextClass.title}</h4>
-              <div className={styles.classRow}>
-                {tutor && (
-                  <div className={styles.miniTutor}>
-                    <img src={tutor.avatar} alt="" width={56} height={56} />
-                    <strong>{tutor.name}</strong><small>{tutor.country}</small>
-                  </div>
-                )}
-                <Countdown initialSeconds={nextClass.secondsLeft} />
-              </div>
-              <div className={styles.joinRow}>
-                {nextClass.zoomUrl && <a className={styles.btnCoral} href={nextClass.zoomUrl} target="_blank" rel="noopener noreferrer">Join Zoom Class</a>}
-                {nextClass.meetUrl && <a className={styles.btnCoral} href={nextClass.meetUrl} target="_blank" rel="noopener noreferrer">Join Google Meet</a>}
-              </div>
-              {nextClass.packageName && (
-                <div className={styles.pkgRow}>
-                  <span className={styles.pkg}><Package size={18} aria-hidden /> {nextClass.packageName}</span>
+      <div className={styles.split}>
+        <div className={styles.mainPane}>
+          <section className={styles.band} aria-labelledby="next-h">
+            <h2 id="next-h" className={styles.bandLabel}>Next class</h2>
+            {nextClass ? (
+              <>
+                <h3 className={styles.bandTitle}>{nextClass.title}</h3>
+                <div className={styles.nextRow}>
+                  {tutor && (
+                    <div className={styles.miniTutor}>
+                      <img src={tutor.avatar} alt="" width={40} height={40} />
+                      <span><strong>{tutor.name}</strong><small>{tutor.country}</small></span>
+                    </div>
+                  )}
+                  <Countdown initialSeconds={nextClass.secondsLeft} />
                 </div>
-              )}
-            </>
-          ) : (
-            <div className={styles.cardEmptyState}><span className={styles.cardEmptyIcon}><CalendarDays size={24} /></span><strong>No class scheduled yet</strong><small>Your next lesson will appear here once your tutor schedules it.</small><Link className={styles.btnCoral} href="/dashboard/tutors">See your tutor</Link></div>
-          )}
-        </section>
+                <div className={styles.joinRow}>
+                  {nextClass.zoomUrl && <a className={styles.btnCoral} href={nextClass.zoomUrl} target="_blank" rel="noopener noreferrer">Join Zoom Class</a>}
+                  {nextClass.meetUrl && <a className={styles.btnCoral} href={nextClass.meetUrl} target="_blank" rel="noopener noreferrer">Join Google Meet</a>}
+                </div>
+                {nextClass.packageName && (
+                  <p className={styles.packageNote}><Package size={14} aria-hidden /> {nextClass.packageName}</p>
+                )}
+              </>
+            ) : (
+              <div className={styles.bandEmpty}>
+                <p>No class scheduled yet. Your next lesson appears here once your tutor schedules it.</p>
+                <Link className={styles.textLink} href="/dashboard/tutors">{tutor ? "See your tutor" : "Browse tutors"} <ArrowRight size={13} /></Link>
+              </div>
+            )}
+          </section>
 
-        <section className={`${styles.card} ${styles.calendar}`}>
-          <Calendar title="Scheduled Classes" events={classes} />
-          <hr className={styles.rule} />
-          <h3 className={styles.subTitle}>Upcoming Classes</h3>
-          <ClassList classes={classes} />
-        </section>
+          <section className={styles.band} aria-labelledby="pg-h">
+            <div className={styles.bandHead}>
+              <h2 id="pg-h" className={styles.bandLabel}>Progress</h2>
+              <Link className={styles.textLink} href="/dashboard/progress">Details <ArrowRight size={13} /></Link>
+            </div>
+            <div className={styles.figureRow}>
+              <strong className={styles.figure}>{progress.percent}<span>%</span></strong>
+              <div className={styles.figureBody}>
+                <div className={styles.bar} role="progressbar" aria-valuenow={progress.percent} aria-valuemin={0} aria-valuemax={100}>
+                  <i style={{ width: `${progress.percent}%` }}>{progress.percent}%</i>
+                </div>
+                <p className={styles.figureMeta}>
+                  <span>{progress.total ? `${progress.completed} of ${progress.total} lessons completed` : "Progress starts after your first lesson."}</span>
+                  <span>Level {progress.level === "Not set" ? "not set" : progress.level}</span>
+                </p>
+              </div>
+            </div>
+          </section>
 
-        <section className={`${styles.card} ${styles.progress}`} aria-labelledby="pg-h">
-          <div className={styles.progressHeader}><h3 id="pg-h" className={styles.cardTitle}><TrendingUp size={22} className={styles.tealIcon} aria-hidden /> Learning Progress</h3><Link href="/dashboard/progress">View details <TrendingUp size={14} /></Link></div>
-          <div className={styles.bar} role="progressbar" aria-valuenow={progress.percent} aria-valuemin={0} aria-valuemax={100}>
-            <i style={{ width: `${progress.percent}%` }}>{progress.percent}%</i>
-          </div>
-          <div className={styles.progMeta}>
-            <span>Level {progress.level}</span>
-            <span>{progress.total ? `Lessons completed: ${progress.completed} of ${progress.total}` : "Progress starts after your first lesson."}</span>
-          </div>
-        </section>
+          <section className={styles.band} aria-labelledby="up-h">
+            <h2 id="up-h" className={styles.bandLabel}>Upcoming lessons</h2>
+            <ClassList classes={classes} />
+          </section>
+        </div>
+
+        <aside className={styles.sidePane}>
+          <section className={styles.band} aria-labelledby="tutor-h">
+            <h2 id="tutor-h" className={styles.bandLabel}>My tutor</h2>
+            {tutor ? (
+              <>
+                <div className={styles.tutorWho}>
+                  <img src={tutor.avatar} alt="" width={56} height={56} />
+                  <span><strong>{tutor.name}</strong><small>{tutor.country}</small></span>
+                </div>
+                <Link className={styles.textLink} href="/dashboard/tutors">View tutor <ArrowRight size={13} /></Link>
+              </>
+            ) : (
+              <div className={styles.bandEmpty}>
+                <p>No tutor assigned yet. An administrator will match you after your payment is confirmed.</p>
+                <Link className={styles.textLink} href="/tutors">Browse tutors <ArrowRight size={13} /></Link>
+              </div>
+            )}
+          </section>
+
+          <section className={styles.band} aria-label="Scheduled classes">
+            <Calendar title="Scheduled classes" events={classes} />
+          </section>
+        </aside>
       </div>
     </DashboardShell>
   );

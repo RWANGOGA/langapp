@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import styles from "./shared.module.css";
 
 const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -40,7 +40,6 @@ export default function Calendar({ title, events }: { title: string; events: Cal
     <>
       <div className={styles.calHead}>
         <h3 className={styles.calTitle}>{title}</h3>
-        <CalendarDays size={22} className={styles.tealIcon} aria-hidden />
       </div>
       <div className={styles.calNav}>
         <button type="button" onClick={() => shift(-1)} aria-label="Previous month"><ChevronLeft size={18} /></button>

@@ -7,8 +7,9 @@ import { cancelLearnerClass } from "@/lib/tutor-data";
 import styles from "./dashboard.module.css";
 
 // The API sends explicit UTC instants; the browser renders the learner's local time.
-const fmtDay = (iso: string) =>
-  new Intl.DateTimeFormat("en-US", { weekday: "short", day: "numeric" }).format(new Date(iso));
+const fmtWeekday = (iso: string) =>
+  new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(new Date(iso));
+const fmtDayNum = (iso: string) => new Date(iso).getDate();
 const fmtTime = (iso: string) =>
   new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 const localDay = (iso: string) => new Date(iso).toLocaleDateString("en-CA");
@@ -48,7 +49,11 @@ export default function ClassList({ classes }: { classes: ClassItem[] }) {
           const started = new Date(c.startsAt) <= new Date();
           return (
             <li key={c.id}>
-              {fmtDay(c.startsAt)} | {fmtTime(c.startsAt)} - {c.title}
+              <span className={styles.classWhen}>
+                <b>{fmtDayNum(c.startsAt)}</b>
+                <em>{fmtWeekday(c.startsAt)} · {fmtTime(c.startsAt)}</em>
+              </span>
+              <span className={styles.classWhat}>{c.title}</span>
               {!started && (
                 <button
                   type="button"

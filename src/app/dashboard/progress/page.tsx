@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Activity, BookOpen, CheckCircle2, Target } from "lucide-react";
 import { getLearnerDashboard } from "@/lib/dashboard-data";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import styles from "@/components/dashboard/dashboard.module.css";
@@ -8,21 +7,40 @@ export const metadata: Metadata = { title: "Progress | Learner Dashboard" };
 
 export default async function LearnerProgressPage() {
   const { learner, progress } = await getLearnerDashboard();
+  const scheduled = Math.max(0, progress.total - progress.completed);
   return (
     <DashboardShell learner={learner}>
-    <section className={styles.dashboardPage} aria-labelledby="progress-title">
-      <div className={styles.pageHeading}><div><p className={styles.kicker}>Your learning journey</p><h1 id="progress-title">Learning Progress</h1><p>See how your lessons are building confidence over time.</p></div></div>
-      <div className={styles.statGrid}>
-        <div className={styles.statCard}><span className={styles.statIcon}><Target size={18} /></span><small>Current level</small><strong>{progress.level}</strong></div>
-        <div className={styles.statCard}><span className={styles.statIcon}><CheckCircle2 size={18} /></span><small>Lessons completed</small><strong>{progress.completed} <em>of {progress.total || 0}</em></strong></div>
-        <div className={styles.statCard}><span className={styles.statIcon}><Activity size={18} /></span><small>Overall progress</small><strong>{progress.percent}%</strong></div>
-      </div>
-      <article className={styles.progressPanel}>
-        <div className={styles.panelHeading}><div><span className={styles.kicker}>Curriculum overview</span><h2>Keep your momentum</h2></div><BookOpen size={22} /></div>
-        <div className={styles.bar} role="progressbar" aria-valuenow={progress.percent} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${progress.percent}%` }}>{progress.percent}%</i></div>
-        <div className={styles.progMeta}><span>{progress.total ? `${progress.completed} of ${progress.total} lessons completed` : "No lessons recorded yet"}</span><span>Cancelled or missed lessons are not counted.</span></div>
-      </article>
-    </section>
+      <section className={styles.dashboardPage} aria-labelledby="progress-title">
+        <header className={styles.pageHeading}>
+          <div>
+            <p className={styles.kicker}>Your learning journey</p>
+            <h1 id="progress-title">Learning progress</h1>
+            <p>How far through your plan you are, and what the number counts.</p>
+          </div>
+        </header>
+
+        <section className={styles.panel} aria-label="Progress breakdown">
+          <div className={`${styles.figureRow} ${styles.figureRowAligned}`}>
+            <strong className={styles.figure}>{progress.percent}<span>%</span></strong>
+            <div className={styles.figureBody}>
+              <div className={styles.bar} role="progressbar" aria-valuenow={progress.percent} aria-valuemin={0} aria-valuemax={100}>
+                <i style={{ width: `${progress.percent}%` }}>{progress.percent}%</i>
+              </div>
+              <p className={styles.figureMeta}>
+                <span>{progress.completed} of {progress.total} lessons completed</span>
+                <span>{scheduled} still scheduled</span>
+              </p>
+            </div>
+          </div>
+
+          <dl className={styles.rows}>
+            <div><dt>Current level</dt><dd>{progress.level === "Not set" ? "Not set — placement pending" : progress.level}</dd></div>
+            <div><dt>Lessons completed</dt><dd>{progress.completed}</dd></div>
+            <div><dt>Lessons still scheduled</dt><dd>{scheduled}</dd></div>
+            <div><dt>How this is measured</dt><dd className={styles.rowNote}>Completed lessons over completed plus scheduled. Cancelled and missed lessons are excluded from both sides of the ratio.</dd></div>
+          </dl>
+        </section>
+      </section>
     </DashboardShell>
   );
 }
