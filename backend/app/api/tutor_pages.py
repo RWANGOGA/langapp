@@ -1,4 +1,5 @@
 """Tutor portal pages: Learners roster, Schedule, Lesson Notes, Settings."""
+import json
 from datetime import timedelta
 from typing import List, Optional
 
@@ -12,6 +13,7 @@ from app.core.time import utc_now, to_utc_iso
 from app.db.session import get_db
 from app.models.user import User, UserRole, TutorProfile, TutorAvailability, Class, ClassStatus
 from app.api.auth import get_current_user
+from app.api.notes_format import unwrap_notes
 
 router = APIRouter()
 
@@ -140,7 +142,7 @@ async def tutor_notes(
                 "title": c.title,
                 "learner": c.learner.full_name if c.learner else "Unknown",
                 "startsAt": to_utc_iso(c.scheduled_at),
-                "notes": c.notes,
+                **unwrap_notes(c.notes),
             }
             for c in result.scalars().all()
         ]
