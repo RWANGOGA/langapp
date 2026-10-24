@@ -24,6 +24,7 @@ class LearnerBasic(BaseModel):
 class NextClassResponse(BaseModel):
     title: str
     secondsLeft: int
+    startsAt: Optional[str] = None  # explicit UTC ISO instant (+00:00)
     zoomUrl: Optional[str] = None
     meetUrl: Optional[str] = None
     packageName: Optional[str] = None
@@ -41,8 +42,10 @@ class ProgressResponse(BaseModel):
 
 
 class ClassItemResponse(BaseModel):
+    id: int
     date: str
     time: str
+    startsAt: str  # explicit UTC ISO instant (+00:00) for local rendering
     title: str
 
     model_config = ConfigDict(from_attributes=True)

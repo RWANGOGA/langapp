@@ -1,16 +1,24 @@
-from datetime import datetime
+from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_
 from sqlalchemy.orm import selectinload
 
+from app.core.time import utc_now, to_utc_iso
 from app.db.session import get_db
 from app.models.user import User, Class, ClassStatus
 from app.api.auth import get_current_active_user
 from app.schemas.learner import LearnerDashboardResponse
+from app.schemas.tutor_sessions import SessionActionResponse
 from app.models.notification import Notification
+from app.services.notifications import notify_user
 
 router = APIRouter()
+
+
+class LearnerCancelRequest(BaseModel):
+    reason: str | None = Field(None, max_length=500)
 
 
 @router.get("/learner/dashboard", response_model=LearnerDashboardResponse)
@@ -46,7 +54,7 @@ async def get_learner_dashboard(
             tutor_profile = tutor.tutor_profile
 
     # Get next upcoming class
-    now = datetime.utcnow()
+    now = utc_now()
     next_class_result = await db.execute(
         select(Class)
         .where(
@@ -90,6 +98,7 @@ async def get_learner_dashboard(
         next_class_data = {
             "title": next_class.title,
             "secondsLeft": max(0, seconds_left),
+            "startsAt": to_utc_iso(next_class.scheduled_at),
             "zoomUrl": next_class.zoom_url,
             "meetUrl": next_class.meet_url,
             "packageName": next_class.package_name,
@@ -110,9 +119,84 @@ async def get_learner_dashboard(
             "completed": 0,
             "total": 0,
         },
-        "today": datetime.utcnow().date().isoformat(),
+        "today": utc_now().date().isoformat(),
         "classes": [
-            {"date": c.scheduled_at.date().isoformat(), "time": c.scheduled_at.strftime("%H:%M"), "title": c.title}
+            {
+                "id": c.id,
+                "date": c.scheduled_at.date().isoformat(),
+                "time": c.scheduled_at.strftime("%H:%M"),
+                "startsAt": to_utc_iso(c.scheduled_at),
+                "title": c.title,
+            }
             for c in classes
         ],
     }
+
+
+@router.post("/learner/sessions/{class_id}/cancel", response_model=SessionActionResponse)
+async def cancel_class(
+    class_id: int,
+    payload: LearnerCancelRequest,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Learner cancels their own upcoming class.
+
+    Global-marketplace policy: never after the class started, and inside
+    the 24h window a reason is required so the tutor can judge it.
+    """
+    if current_user.role != "student":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only learners can cancel their classes",
+        )
+
+    result = await db.execute(
+        select(Class).where(Class.id == class_id, Class.learner_id == current_user.id)
+    )
+    cls = result.scalar_one_or_none()
+    if not cls:
+        # 404, not 403: don't confirm class existence to non-owners.
+        raise HTTPException(status_code=404, detail="Class not found")
+
+    if cls.status != ClassStatus.SCHEDULED:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Class is '{cls.status.value}', only 'scheduled' classes can be cancelled",
+        )
+
+    now = utc_now()
+    if cls.scheduled_at <= now:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This class has already started",
+        )
+    reason = payload.reason.strip() if payload.reason else None
+    if cls.scheduled_at - now < timedelta(hours=24) and not reason:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Cancellations within 24 hours require a reason",
+        )
+
+    cls.status = ClassStatus.CANCELLED
+    reason_line = f" Reason: {reason}" if reason else ""
+    await notify_user(
+        db,
+        cls.tutor_id,
+        "class_cancelled",
+        f"Class cancelled by {current_user.full_name}",
+        f"{current_user.full_name} cancelled '{cls.title}' (scheduled at "
+        f"{to_utc_iso(cls.scheduled_at)} UTC).{reason_line}",
+    )
+
+    await db.commit()
+    await db.refresh(cls)
+    return SessionActionResponse(
+        class_id=cls.id,
+        status=cls.status,
+        starts_at=to_utc_iso(cls.scheduled_at),
+        zoom_url=cls.zoom_url,
+        meet_url=cls.meet_url,
+        notes=cls.notes,
+        updated_at=to_utc_iso(cls.updated_at or now),
+    )

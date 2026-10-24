@@ -7,10 +7,16 @@ import styles from "./dashboard.module.css";
 
 const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
-export default function Calendar({ today, classes }: { today: string; classes: ClassItem[] }) {
+// Bucket each class into the viewer's local calendar day, not the UTC one.
+const localDay = (iso: string) => new Date(iso).toLocaleDateString("en-CA");
+
+export default function Calendar({ classes }: { classes: ClassItem[] }) {
+  // Client component: anchor and highlight the viewer's local day, not a
+  // server-rendered UTC date (matters for learners in far-off timezones).
+  const today = new Date().toLocaleDateString("en-CA");
   const [ty, tm] = [Number(today.slice(0, 4)), Number(today.slice(5, 7)) - 1];
   const [view, setView] = useState({ y: ty, m: tm });
-  const classDays = useMemo(() => new Set(classes.map((c) => c.date)), [classes]);
+  const classDays = useMemo(() => new Set(classes.map((c) => localDay(c.startsAt))), [classes]);
 
   const cells = useMemo(() => {
     const start = new Date(Date.UTC(view.y, view.m, 1)).getUTCDay();

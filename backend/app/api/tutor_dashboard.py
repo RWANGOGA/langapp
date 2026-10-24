@@ -3,8 +3,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_
 from sqlalchemy.orm import selectinload
 from typing import List
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 
+from app.core.time import utc_now, to_utc_iso
 from app.db.session import get_db
 from app.models.user import User, UserRole, TutorProfile, Class, ClassStatus
 from app.models.notification import Notification
@@ -35,8 +36,9 @@ async def get_tutor_dashboard(
     )
     unread = unread_result.scalar() or 0
 
-    today = date.today()
-    now = datetime.now()
+    # UTC day/now - never the server's local clock (global deployment).
+    now = utc_now()
+    today = now.date()
 
     # Get today's classes for this tutor
     classes_result = await db.execute(
@@ -68,6 +70,8 @@ async def get_tutor_dashboard(
                 "id": f"s{cls.id}",
                 "date": cls.scheduled_at.date().isoformat(),
                 "time": cls.scheduled_at.strftime("%H:%M"),
+                "startsAt": to_utc_iso(cls.scheduled_at),
+                "status": cls.status.value,
                 "learner": cls.learner.full_name if cls.learner else "Unknown",
                 "topic": cls.title,
                 "provider": "Zoom" if cls.zoom_url else ("Google Meet" if cls.meet_url else None),
@@ -98,6 +102,7 @@ async def get_tutor_dashboard(
             "learner": next_class.learner.full_name if next_class.learner else "Unknown",
             "topic": next_class.title,
             "secondsLeft": max(0, seconds_left),
+            "startsAt": to_utc_iso(next_class.scheduled_at),
             "meetingUrl": next_class.zoom_url or next_class.meet_url,
         }
     else:
@@ -106,6 +111,7 @@ async def get_tutor_dashboard(
             "learner": "No upcoming sessions",
             "topic": "—",
             "secondsLeft": 0,
+            "startsAt": None,
             "meetingUrl": None,
         }
 

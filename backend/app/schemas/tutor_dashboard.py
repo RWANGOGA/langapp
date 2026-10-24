@@ -14,6 +14,7 @@ class TutorDashboardNextSession(BaseModel):
     learner: str
     topic: str
     secondsLeft: int
+    startsAt: Optional[str] = None  # explicit UTC ISO instant (+00:00)
     meetingUrl: Optional[str] = None
 
 
@@ -29,6 +30,8 @@ class SessionItem(BaseModel):
     id: str
     date: str
     time: str
+    startsAt: str  # explicit UTC ISO instant (+00:00) for local rendering
+    status: str
     learner: str
     topic: str
     provider: Optional[str] = None

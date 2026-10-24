@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Award, BookOpen, CalendarDays, Package, Search, TrendingUp, Clock, Users } from "lucide-react";
 import Calendar from "@/components/dashboard/Calendar";
+import ClassList from "@/components/dashboard/ClassList";
 import Countdown from "@/components/dashboard/Countdown";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import styles from "@/components/dashboard/dashboard.module.css";
@@ -14,15 +15,14 @@ import PaymentSummary from "@/components/dashboard/PaymentSummary";
 
 export const metadata: Metadata = { title: "Learner Dashboard" };
 
-const fmt = (iso: string) =>
-  new Intl.DateTimeFormat("en-US", { weekday: "short", day: "numeric", timeZone: "UTC" }).format(new Date(iso + "T00:00:00Z"));
-
 export default async function DashboardPage() {
   const me = await apiGet<{ role: string }>("/auth/me");
   if (me?.role === "tutor") redirect("/tutor");
   if (me?.role === "admin") redirect("/admin");
-  const [{ learner, tutor, nextClass, progress, today, classes }, payment] = await Promise.all([getLearnerDashboard(), getPaymentSummary()]);
-  const upcoming = classes.filter((c) => c.date > today);
+  const [{ learner, tutor, nextClass, progress, classes }, payment] = await Promise.all([getLearnerDashboard(), getPaymentSummary()]);
+  // The API only returns future scheduled classes; local-day filtering
+  // happens client-side (ClassList/Calendar) in the viewer's timezone.
+  const upcomingCount = classes.length;
 
   return (
     <DashboardShell learner={learner}>
@@ -33,7 +33,7 @@ export default async function DashboardPage() {
       <div className={styles.dashboardStats}>
         <div><span className={styles.dashboardStatIcon}><TrendingUp size={18} /></span><span><small>Progress</small><b>{progress.percent}% complete</b></span></div>
         <div><span className={styles.dashboardStatIcon}><BookOpen size={18} /></span><span><small>Current level</small><b>{progress.level}</b></span></div>
-        <div><span className={styles.dashboardStatIcon}><CalendarDays size={18} /></span><span><small>Upcoming classes</small><b>{upcoming.length || "None scheduled"}</b></span></div>
+        <div><span className={styles.dashboardStatIcon}><CalendarDays size={18} /></span><span><small>Upcoming classes</small><b>{upcomingCount || "None scheduled"}</b></span></div>
       </div>
       <PaymentSummary payment={payment} />
       <div className={styles.grid}>
@@ -87,15 +87,10 @@ export default async function DashboardPage() {
         </section>
 
         <section className={`${styles.card} ${styles.calendar}`}>
-          <Calendar today={today} classes={classes} />
+          <Calendar classes={classes} />
           <hr className={styles.rule} />
           <h3 className={styles.subTitle}>Upcoming Classes</h3>
-          <ul className={styles.upList}>
-            {upcoming.map((c) => (
-              <li key={c.date + c.time}>{fmt(c.date)} | {c.time} - {c.title}</li>
-            ))}
-            {upcoming.length === 0 && <li className={styles.listEmpty}>No classes scheduled yet. Your calendar will fill up as lessons are booked.</li>}
-          </ul>
+          <ClassList classes={classes} />
         </section>
 
         <section className={`${styles.card} ${styles.progress}`} aria-labelledby="pg-h">

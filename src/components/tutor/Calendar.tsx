@@ -7,10 +7,13 @@ import styles from "./tutor.module.css";
 
 const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
+// Bucket each session into the viewer's local calendar day, not the UTC one.
+const localDay = (iso: string) => new Date(iso).toLocaleDateString("en-CA");
+
 export default function Calendar({ today, events }: { today: string; events: SessionItem[] }) {
   const [ty, tm] = [Number(today.slice(0, 4)), Number(today.slice(5, 7)) - 1];
   const [view, setView] = useState({ y: ty, m: tm });
-  const eventDays = useMemo(() => new Set(events.map((c) => c.date)), [events]);
+  const eventDays = useMemo(() => new Set(events.map((c) => localDay(c.startsAt))), [events]);
 
   const cells = useMemo(() => {
     const start = new Date(Date.UTC(view.y, view.m, 1)).getUTCDay();
