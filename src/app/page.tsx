@@ -5,8 +5,6 @@ import Link from "next/link";
 import { BadgeCheck, CalendarDays, PlayCircle, Star, Users } from "lucide-react";
 import styles from "./page.module.css";
 
-const NAV = ["Home", "Features", "Pricing", "Resources", "Blog"];
-
 function Logo() {
   return (
     <svg width="46" height="40" viewBox="0 0 46 40" fill="none" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -27,11 +25,11 @@ export default function HomePage() {
         <div className={styles.copy}>
           <h1>Master Fluent English with Dedicated 1-on-1 Tutors</h1>
           <p>
-            Personalized online lessons tailored for learners in Japan and Vietnam. Reach your
-            fluency goals faster with native experts.
+            Personalised online lessons for learners anywhere in the world. Reach your
+            fluency goal faster with a verified expert tutor and a plan built around you.
           </p>
           <div className={styles.cta}>
-            <Link href="/tutor" className={`${styles.btn} ${styles.solid}`}>Start Learning Today</Link>
+            <Link href="/pricing" className={`${styles.btn} ${styles.solid}`}>Start Learning Today</Link>
             <Link href="/tutor/requirements" className={`${styles.btn} ${styles.outline}`}>Become a Tutor</Link>
           </div>
           <ul className={styles.trust}>

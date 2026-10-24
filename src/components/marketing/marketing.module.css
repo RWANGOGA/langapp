@@ -1,0 +1,452 @@
+/* Nile Language — editorial marketing system.
+   Type-driven layout shared by Features, Pricing, Resources and Blog:
+   hairline rules, uppercase micro-labels, declarative headlines,
+   numbered steps and one navy proof band. No gradients, no card soup. */
+
+.page {
+  background: #fff;
+  color: #0f1c33;
+}
+
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* — Hero — */
+.hero {
+  padding: clamp(72px, 12vw, 140px) 0 clamp(56px, 8vw, 96px);
+  border-bottom: 1px solid #dfe6ec;
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--coral);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.kicker::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #dfe6ec;
+}
+
+.display {
+  max-width: 22ch;
+  margin-top: 22px;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+}
+
+.lede {
+  max-width: 62ch;
+  margin-top: 22px;
+  color: #52607a;
+  font-size: 1.15rem;
+  line-height: 1.65;
+}
+
+.heroCtas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 34px;
+}
+
+/* — Buttons — */
+.btnPrimary,
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  transition: filter 0.15s ease;
+}
+
+.btnPrimary {
+  background: var(--coral);
+  color: #fff;
+}
+
+.btnPrimary:hover { filter: brightness(1.08); }
+
+.btnGhost {
+  border: 1px solid #0f1c33;
+  color: #0f1c33;
+}
+
+.btnGhost:hover { background: #f2f5f8; }
+
+/* — Sections — */
+.section {
+  padding: clamp(56px, 8vw, 96px) 0;
+  border-bottom: 1px solid #dfe6ec;
+}
+
+.sectionHead {
+  margin-bottom: 44px;
+}
+
+.sectionTitle {
+  margin-top: 18px;
+  font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+
+.sectionLede {
+  max-width: 60ch;
+  margin-top: 14px;
+  color: #52607a;
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+/* — Numbered steps — */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 2px solid #0f1c33;
+}
+
+.step {
+  padding: 30px 30px 34px 0;
+}
+
+.step + .step {
+  border-left: 1px solid #dfe6ec;
+  padding-left: 30px;
+}
+
+.stepNum {
+  color: var(--teal);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+}
+
+.stepTitle {
+  margin-top: 12px;
+  font-size: 1.18rem;
+  font-weight: 700;
+}
+
+.stepBody {
+  margin-top: 10px;
+  color: #52607a;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* — Feature rows: label column + statement column — */
+.rows {
+  border-top: 1px solid #dfe6ec;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 40px;
+  padding: 40px 0;
+  border-bottom: 1px solid #dfe6ec;
+}
+
+.rowLabel {
+  color: var(--coral);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding-top: 6px;
+}
+
+.rowTitle {
+  font-size: clamp(1.3rem, 2.4vw, 1.7rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.rowBody {
+  max-width: 65ch;
+  margin-top: 12px;
+  color: #52607a;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* — Proof band — */
+.proof {
+  background: #0f1c33;
+  color: #fff;
+  padding: clamp(48px, 7vw, 72px) 0;
+}
+
+.proofGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.proofValue {
+  font-size: clamp(1.9rem, 4vw, 2.7rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.proofLabel {
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* — FAQ (native details, zero JS) — */
+.faq {
+  max-width: 780px;
+  border-top: 1px solid #dfe6ec;
+}
+
+.faqItem {
+  border-bottom: 1px solid #dfe6ec;
+}
+
+.faqItem summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 22px 0;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.faqItem summary::-webkit-details-marker { display: none; }
+
+.faqItem summary::after {
+  content: "+";
+  color: var(--teal);
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.faqItem[open] summary::after { content: "\2013"; }
+
+.faqBody {
+  max-width: 65ch;
+  padding: 0 0 24px;
+  color: #52607a;
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+/* — Closing CTA band — */
+.cta {
+  padding: clamp(64px, 9vw, 110px) 0;
+  background: #f6f8fa;
+  border-top: 1px solid #dfe6ec;
+}
+
+.ctaTitle {
+  max-width: 20ch;
+  font-size: clamp(1.9rem, 4.4vw, 3.1rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.ctaBody {
+  max-width: 58ch;
+  margin-top: 16px;
+  color: #52607a;
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.ctaCtas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+/* — Pricing cards — */
+.plans {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  align-items: stretch;
+}
+
+.plan {
+  display: flex;
+  flex-direction: column;
+  padding: 32px 28px;
+  border: 1px solid #dfe6ec;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.planFeatured {
+  border: 2px solid var(--coral);
+}
+
+.planBadge {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--coral);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  align-self: flex-start;
+}
+
+.planBadgeSpacer {
+  height: 28px;
+}
+
+.planName {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.planPrice {
+  margin-top: 14px;
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.planTerm {
+  margin-top: 6px;
+  color: #52607a;
+  font-size: 0.88rem;
+}
+
+.planAlt {
+  margin-top: 4px;
+  color: #8a96a8;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.planFeatures {
+  display: grid;
+  gap: 10px;
+  margin: 22px 0 26px;
+  padding: 22px 0 0;
+  border-top: 1px solid #dfe6ec;
+  list-style: none;
+}
+
+.planFeature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #33415c;
+  font-size: 0.92rem;
+}
+
+.planFeature svg {
+  color: var(--teal);
+  flex-shrink: 0;
+}
+
+.planCta {
+  margin-top: auto;
+  justify-content: center;
+}
+
+.pricingNote {
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid #dfe6ec;
+  color: #8a96a8;
+  font-size: 0.86rem;
+  line-height: 1.7;
+  max-width: 80ch;
+}
+
+/* — Editorial list (blog/resources) — */
+.notes {
+  border-top: 1px solid #dfe6ec;
+}
+
+.note {
+  display: block;
+  padding: 30px 0;
+  border-bottom: 1px solid #dfe6ec;
+}
+
+.noteTitle {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.noteBody {
+  max-width: 68ch;
+  margin-top: 10px;
+  color: #52607a;
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+.noteMeta {
+  margin-top: 12px;
+  color: var(--teal);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* — Responsive — */
+@media (max-width: 860px) {
+  .steps,
+  .plans {
+    grid-template-columns: 1fr;
+  }
+
+  .step + .step {
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid #dfe6ec;
+  }
+
+  .step { padding: 24px 0; }
+
+  .row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 32px 0;
+  }
+
+  .proofGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
