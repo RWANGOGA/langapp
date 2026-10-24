@@ -1,0 +1,180 @@
+/* Shared portal chrome: the editorial frame every signed-in portal uses.
+   Identity lives in the top bar, navigation lives in the ruled sidebar, and
+   the content area owns its own band composition. No gradients, no shadows. */
+
+.page {
+  min-height: 100vh;
+  background: #fff;
+  color: #0f1c33;
+  font-size: 0.95rem;
+}
+
+.window {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  background: #fff;
+}
+
+/* — Top bar: identity only; navigation lives in the sidebar — */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  padding: 0.85rem 24px;
+  background: #fff;
+  border-bottom: 1px solid #dfe6ec;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #0f1c33;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  text-decoration: none;
+}
+
+.portalLabel {
+  margin-left: auto;
+  padding-right: 1.2rem;
+  border-right: 1px solid #dfe6ec;
+  color: #8a96a8;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.userBox { display: flex; align-items: center; gap: 0.7rem; }
+.userBox strong { display: block; font-size: 0.88rem; letter-spacing: -0.01em; }
+.userBox small { color: #52607a; font-size: 0.72rem; font-variant-numeric: tabular-nums; }
+.userBox small b { color: #0f1c33; }
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 3px;
+  object-fit: cover;
+  border: 1px solid #dfe6ec;
+}
+
+/* Tutors and admins have no profile photo: initials in a ruled square. */
+.initials {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #0f1c33;
+  border-radius: 3px;
+  color: #0f1c33;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.bell {
+  position: relative;
+  margin-left: 0.3rem;
+  padding: 0.2rem;
+  background: none;
+  border: 0;
+  color: #52607a;
+  cursor: pointer;
+}
+
+.bell:hover { color: #0f1c33; }
+
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -6px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--coral);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+
+.sideLink:focus-visible, .bell:focus-visible, .brand:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+/* — Body: ruled sidebar + content — */
+.body { display: grid; grid-template-columns: 218px minmax(0, 1fr); min-height: calc(100vh - 61px); }
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 1.6rem 0 1.2rem;
+  border-right: 1px solid #dfe6ec;
+}
+
+.sideNav { display: flex; flex-direction: column; }
+
+.sideLink {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.62rem 24px 0.62rem 23px;
+  color: #52607a;
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-left: 2px solid transparent;
+}
+
+.sideLink svg { color: #8b98ab; }
+.sideLink.active { color: #0f1c33; background: #f6f8fa; border-left-color: var(--coral); }
+.sideLink.active svg, .sideLink:hover svg { color: var(--coral); }
+.sideLink:hover { color: #0f1c33; }
+
+.sideFoot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: auto 24px 0;
+  padding-top: 1.1rem;
+  border-top: 1px solid #dfe6ec;
+  color: #8a96a8;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.sideFoot:hover { color: #0f1c33; }
+
+.content { padding: clamp(1.6rem, 3vw, 2.6rem) clamp(1.4rem, 3vw, 2.2rem) 3rem; min-width: 0; }
+
+@media (max-width: 1050px) {
+  .portalLabel { display: none; }
+}
+
+@media (max-width: 720px) {
+  .body { grid-template-columns: 1fr; }
+  .sidebar { flex-direction: row; align-items: center; gap: 0; overflow-x: auto; padding: 0; border-right: 0; border-bottom: 1px solid #dfe6ec; }
+  .sideNav { flex-direction: row; }
+  .sideLink { white-space: nowrap; border-left: 0; border-bottom: 2px solid transparent; gap: 0.45rem; padding: 0.72rem 0.55rem; font-size: 0.64rem; letter-spacing: 0.08em; }
+  .sideLink.active { border-bottom-color: var(--coral); background: #fff; }
+  .sideFoot { display: none; }
+  .topbar { padding: 0.75rem 16px; }
+  .userBox small { display: none; }
+}
+
+/* Four tabs must fit a phone without side-scrolling, so drop the icons. */
+@media (max-width: 520px) {
+  .sideLink svg { display: none; }
+  .sideLink { padding: 0.72rem 0.4rem; letter-spacing: 0.04em; }
+}

@@ -1,40 +1,32 @@
-import Link from "next/link";
-import type { ReactNode } from "react";
-import { ArrowUpRight, Bell } from "lucide-react";
+import PortalShell, { type PortalNavItem } from "@/components/portal/PortalShell";
 import type { LearnerDashboard } from "@/lib/dashboard-data";
-import { SideNav } from "./Nav";
-import styles from "./dashboard.module.css";
 
-export default function DashboardShell({ learner, children }: { learner: LearnerDashboard["learner"]; children: ReactNode }) {
+// One navigation surface only: the sidebar. The header stays for identity,
+// not for a second copy of the same links.
+const NAV: PortalNavItem[] = [
+  { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
+  { href: "/dashboard/tutors", label: "My Tutor", icon: "tutors" },
+  { href: "/dashboard/progress", label: "Progress", icon: "progress" },
+  { href: "/dashboard/notifications", label: "Notifications", icon: "notifications" },
+];
+
+export default function DashboardShell({ learner, children }: { learner: LearnerDashboard["learner"]; children: React.ReactNode }) {
   return (
-    <div className={styles.page}>
-      <div className={styles.window}>
-        <header className={styles.topbar}>
-          <Link href="/dashboard" className={styles.brand}>
-            <svg width="34" height="34" viewBox="0 0 38 38" fill="none" strokeWidth="2.4" aria-hidden>
-              <circle cx="17" cy="19" r="13" stroke="#3fb8ad" /><path d="M4 19h26M17 6c-6 6-6 20 0 26M17 6c6 6 6 20 0 26" stroke="#3fb8ad" />
-              <circle cx="31" cy="11" r="4" fill="#f2541b" stroke="none" />
-            </svg>
-            <span>Nile<br />Language</span>
-          </Link>
-          <p className={styles.portalLabel}>Learner portal</p>
-          <div className={styles.userBox}>
-            <img src={learner.avatar} alt="" width={36} height={36} className={styles.avatar} />
-            <div><strong>{learner.name}</strong><small>Level <b>{learner.level === "Not set" ? "not set" : learner.level}</b></small></div>
-            <Link href="/dashboard/notifications" className={styles.bell} aria-label={`Notifications, ${learner.unread} unread`}>
-              <Bell size={19} />
-              {learner.unread > 0 && <span className={styles.badge}>{learner.unread}</span>}
-            </Link>
-          </div>
-        </header>
-        <div className={styles.body}>
-          <div className={styles.sidebar}>
-            <SideNav />
-            <Link className={styles.sideFoot} href="/">Back to site <ArrowUpRight size={13} aria-hidden /></Link>
-          </div>
-          <main className={styles.content}>{children}</main>
-        </div>
-      </div>
-    </div>
+    <PortalShell
+      portalLabel="Learner portal"
+      homeHref="/dashboard"
+      navAriaLabel="Learner"
+      nav={NAV}
+      identity={{
+        name: learner.name,
+        meta: <>Level <b>{learner.level === "Not set" ? "not set" : learner.level}</b></>,
+        avatar: learner.avatar,
+      }}
+      unread={learner.unread}
+      notificationsHref="/dashboard/notifications"
+      footer={{ href: "/", label: "Back to site" }}
+    >
+      {children}
+    </PortalShell>
   );
 }

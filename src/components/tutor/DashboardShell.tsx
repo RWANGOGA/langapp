@@ -1,39 +1,27 @@
-import Link from "next/link";
-import type { ReactNode } from "react";
-import { Bell } from "lucide-react";
+import PortalShell, { type PortalNavItem } from "@/components/portal/PortalShell";
 import type { TutorDashboard } from "@/lib/tutor-data";
-import { SideNav, TopNav } from "./Nav";
-import styles from "./tutor.module.css";
 
-const initials = (n: string) => n.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+// One navigation surface only: the sidebar.
+const NAV: PortalNavItem[] = [
+  { href: "/tutor", label: "Dashboard", icon: "dashboard" },
+  { href: "/tutor/learners", label: "My learners", icon: "learners" },
+  { href: "/tutor/schedule", label: "Schedule", icon: "schedule" },
+  { href: "/tutor/notes", label: "Lesson notes", icon: "notes" },
+  { href: "/tutor/settings", label: "Settings", icon: "settings" },
+];
 
-export default function DashboardShell({ tutor, children }: { tutor: TutorDashboard["tutor"]; children: ReactNode }) {
+export default function DashboardShell({ tutor, children }: { tutor: TutorDashboard["tutor"]; children: React.ReactNode }) {
   return (
-    <div className={styles.page}>
-      <div className={styles.window}>
-        <header className={styles.topbar}>
-          <Link href="/tutor" className={styles.brand}>
-            <svg width="38" height="38" viewBox="0 0 38 38" fill="none" strokeWidth="2.4" aria-hidden>
-              <circle cx="17" cy="19" r="13" stroke="#3fb8ad" /><path d="M4 19h26M17 6c-6 6-6 20 0 26M17 6c6 6 6 20 0 26" stroke="#3fb8ad" />
-              <circle cx="31" cy="11" r="4" fill="#f2541b" stroke="none" />
-            </svg>
-            <span>Nile<br />Language</span>
-          </Link>
-          <TopNav />
-          <div className={styles.userBox}>
-            <span className={styles.initials} aria-hidden>{initials(tutor.name)}</span>
-            <div><strong>{tutor.name}</strong><small><b>{tutor.role}</b></small></div>
-            <button type="button" className={styles.bell} aria-label={`Notifications, ${tutor.unread} unread`}>
-              <Bell size={22} />
-              {tutor.unread > 0 && <span className={styles.badge}>{tutor.unread}</span>}
-            </button>
-          </div>
-        </header>
-        <div className={styles.body}>
-          <SideNav />
-          <main className={styles.content}>{children}</main>
-        </div>
-      </div>
-    </div>
+    <PortalShell
+      portalLabel="Tutor portal"
+      homeHref="/tutor"
+      navAriaLabel="Tutor"
+      nav={NAV}
+      identity={{ name: tutor.name, meta: tutor.role }}
+      unread={tutor.unread}
+      footer={{ href: "/", label: "Back to site" }}
+    >
+      {children}
+    </PortalShell>
   );
 }

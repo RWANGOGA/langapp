@@ -2,11 +2,10 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import DashboardLayout from "@/components/tutor/DashboardLayout";
 import DashboardShell from "@/components/tutor/DashboardShell";
 import { useAuth } from "@/lib/auth";
 import { getTutorDashboard, TutorDashboard } from "@/lib/tutor-data";
-import styles from "@/components/tutor/tutor.module.css";
+import ui from "@/components/portal/bands.module.css";
 
 /**
  * Guard + frame shared by the tutor sub-pages (Learners, Schedule, Notes,
@@ -40,15 +39,11 @@ export default function TutorPageShell({ children }: { children: ReactNode }) {
 
   if (isLoading || !isAuthenticated || !isTutor || !header) {
     return (
-      <div className={styles.loading}>
-        <div className={styles.loadingSpinner}>Loading...</div>
+      <div className={ui.pageStack}>
+        <p className={ui.lede}>Loading…</p>
       </div>
     );
   }
 
-  return (
-    <DashboardLayout>
-      <DashboardShell tutor={header}>{children}</DashboardShell>
-    </DashboardLayout>
-  );
+  return <DashboardShell tutor={header}>{children}</DashboardShell>;
 }

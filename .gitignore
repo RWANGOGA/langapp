@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# local QA scratch: screenshots, CDP scripts, throwaway browser profile
+/.dist/
+
 # debug
 npm-debug.log*
 yarn-debug.log*

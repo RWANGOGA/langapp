@@ -1,0 +1,241 @@
+/* Portal content primitives: the editorial vocabulary every signed-in
+   surface composes from. Statement moments (page heads, empty states) and
+   detail blocks (bands, rows, figures) share one set of rules, so the
+   learner, tutor and admin portals read as one publication.
+   Shell chrome lives next door in portal.module.css. */
+
+/* — Layout helpers — */
+.pageStack { display: grid; gap: 2rem; max-width: 1080px; }
+
+/* — Page head — */
+.pageHeading { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; }
+.pageHeading h1 {
+  margin-top: 0.35rem;
+  color: #0f1c33;
+  font-size: clamp(1.7rem, 3.2vw, 2.3rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.pageHeading p { margin-top: 0.4rem; color: #52607a; line-height: 1.6; max-width: 62ch; }
+
+.kicker {
+  color: var(--coral);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.lede { color: #52607a; line-height: 1.6; }
+
+.headerAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex: none;
+  padding: 0.62rem 1.1rem;
+  border: 1px solid #0f1c33;
+  border-radius: 8px;
+  color: #0f1c33;
+  background: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+.headerAction:hover { background: #f2f5f8; }
+
+/* — Stat strip: hairline-ruled cells — */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  list-style: none;
+  border-top: 1px solid #dfe6ec;
+  border-bottom: 1px solid #dfe6ec;
+}
+.stats > li { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0.95rem 0 1.05rem; }
+.stats > li + li { padding-left: 1.4rem; border-left: 1px solid #dfe6ec; }
+.stats span { display: grid; gap: 0.15rem; }
+.stats small { color: #8a96a8; font-size: 0.64rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+.stats b { color: #0f1c33; font-size: 1.3rem; font-weight: 800; letter-spacing: -0.015em; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.stats svg { color: var(--coral); flex: none; margin-top: 0.35rem; }
+
+/* — Two-pane composition — */
+.split { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 0 2.6rem; }
+.mainPane { min-width: 0; }
+.sidePane { min-width: 0; padding-left: 2.2rem; border-left: 1px solid #dfe6ec; }
+
+/* — Person rows — */
+.nextRow { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; margin-top: 1.2rem; }
+.miniTutor { display: flex; align-items: center; gap: 0.75rem; padding-right: 1.5rem; border-right: 1px solid #dfe6ec; }
+.avatarSquare {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #dfe6ec;
+  border-radius: 3px;
+  color: #0f1c33;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.who { display: grid; gap: 0.1rem; }
+.who strong { color: #0f1c33; font-size: 0.92rem; font-weight: 700; }
+.who small { color: #8a96a8; font-size: 0.74rem; }
+.joinRow { display: flex; flex-wrap: wrap; align-items: center; gap: 0.9rem; margin-top: 1.3rem; }
+.packageNote { display: flex; align-items: center; gap: 0.4rem; margin-top: 1.3rem; padding-top: 0.9rem; border-top: 1px solid #dfe6ec; color: #8a96a8; font-size: 0.78rem; }
+
+/* — Bands: ink rule, micro-label, content — */
+.band { padding: 1.15rem 0 1.7rem; border-top: 2px solid #0f1c33; }
+.band + .band { margin-top: 2rem; }
+.bandLabel { color: #8a96a8; font-size: 0.66rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; }
+.bandHead { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.bandTitle {
+  margin-top: 0.3rem;
+  color: #0f1c33;
+  font-size: clamp(1.45rem, 2.5vw, 1.95rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.bandEmpty { margin-top: 0.7rem; color: #52607a; line-height: 1.6; max-width: 52ch; }
+.bandEmpty p + a { margin-top: 0.8rem; }
+
+/* A statement: centred, framed by hairlines - used when a portal has
+   nothing to show and the honest answer is a sentence, not an empty widget. */
+.bandStatement {
+  max-width: 54ch;
+  margin: 0 auto;
+  padding: 2.2rem 0 0.4rem;
+  text-align: center;
+}
+.bandStatement .bandLabel::before,
+.bandStatement .bandLabel::after {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  width: 42px;
+  height: 1px;
+  background: #dfe6ec;
+  margin: 0 0.7rem;
+}
+.bandStatement p { margin-top: 0.7rem; color: #52607a; line-height: 1.65; }
+
+/* — Rows: hairline-separated label/value pairs — */
+.rows { border-top: 1px solid #dfe6ec; }
+.rows > div { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 1.5rem; padding: 0.9rem 0; border-bottom: 1px solid #dfe6ec; }
+.rows dt { color: #8a96a8; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+.rows dd { color: #0f1c33; font-weight: 600; font-variant-numeric: tabular-nums; }
+.rowNote { color: #52607a; font-weight: 400; line-height: 1.6; }
+
+/* — Figures — */
+.figureRow { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.8rem; align-items: center; margin-top: 1.1rem; }
+.figureRowAligned { grid-template-columns: 200px minmax(0, 1fr); }
+.figure { color: #0f1c33; font-size: clamp(2.1rem, 4vw, 2.7rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.figure span { color: #8a96a8; font-size: 0.9rem; font-weight: 700; margin-left: 0.15rem; }
+.figureBody { min-width: 0; }
+.bar { height: 6px; background: #eef2f6; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--teal); }
+.bar i::after { content: ""; display: block; height: 100%; width: 0; }
+.figureMeta { display: flex; justify-content: space-between; gap: 1rem; margin-top: 0.55rem; color: #52607a; font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+
+/* — Session rows: date stub, subject, actions — */
+.sessions { list-style: none; margin-top: 0.9rem; }
+.sessions li { display: grid; grid-template-columns: 84px minmax(0, 1fr) auto; gap: 1.2rem; align-items: start; padding: 0.85rem 0; border-top: 1px solid #dfe6ec; }
+.sessions li:last-child { border-bottom: 1px solid #dfe6ec; }
+.when { display: grid; gap: 0.1rem; font-variant-numeric: tabular-nums; }
+.when b { color: #0f1c33; font-size: 1.02rem; font-weight: 800; line-height: 1.2; }
+.when em { color: #8a96a8; font-size: 0.6rem; font-weight: 800; font-style: normal; letter-spacing: 0.1em; text-transform: uppercase; }
+.what { color: #0f1c33; font-weight: 600; }
+.what small { display: block; margin-top: 0.2rem; color: #52607a; font-weight: 400; font-size: 0.8rem; }
+.actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.35rem 0.9rem; }
+
+/* — Text links and status — */
+.textLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--coral);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.textLink:hover { text-decoration: underline; text-underline-offset: 3px; }
+.textLink:disabled { color: #b3bdc9; cursor: default; text-decoration: none; }
+
+.statusPill { display: inline-block; padding: 0.2rem 0.45rem; border: 1px solid currentColor; color: #52607a; font-size: 0.58rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.statusOk { color: var(--teal-dark); }
+.statusBad { color: #a8501f; }
+
+/* — Forms — */
+.form { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.4rem; margin-top: 1.1rem; }
+.form label { display: grid; gap: 0.4rem; color: #8a96a8; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+.form .wide { grid-column: 1 / -1; }
+.input, .select, .textarea {
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid #dfe6ec;
+  border-radius: 6px;
+  background: #fff;
+  color: #0f1c33;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+}
+.textarea { min-height: 96px; resize: vertical; line-height: 1.55; }
+.input:focus-visible, .select:focus-visible, .textarea:focus-visible { outline: 2px solid var(--coral); outline-offset: -1px; border-color: var(--coral); }
+.formActions { display: flex; align-items: center; gap: 1rem; }
+
+/* — Buttons — */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.72rem 1.35rem;
+  border: 1px solid #0f1c33;
+  border-radius: 8px;
+  background: #fff;
+  color: #0f1c33;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn:hover { background: #f2f5f8; }
+.btnCoral { composes: btn; border-color: var(--coral); background: var(--coral); color: #fff; }
+.btnCoral:hover { background: #d94a17; }
+.btn:disabled, .btnCoral:disabled { opacity: 0.5; cursor: default; }
+
+/* — Focus — */
+.headerAction:focus-visible, .btn:focus-visible, .textLink:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+
+@media (max-width: 1050px) {
+  .split { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .sidePane { padding-left: 0; border-left: 0; }
+  .sidePane .band:first-child { margin-top: 2rem; }
+}
+
+@media (max-width: 720px) {
+  .pageHeading { align-items: flex-start; flex-direction: column; }
+  .stats { grid-template-columns: 1fr; }
+  .stats > li + li { padding-left: 0; border-left: 0; border-top: 1px solid #dfe6ec; }
+  .figureRow, .figureRowAligned { display: flex; flex-direction: column; align-items: flex-start; gap: 0.9rem; }
+  .figureBody { width: 100%; }
+  .rows > div { grid-template-columns: 1fr; gap: 0.3rem; padding: 0.8rem 0; }
+  .sessions li { grid-template-columns: 68px minmax(0, 1fr); }
+  .actions { grid-column: 1 / -1; justify-content: flex-start; }
+  .form { grid-template-columns: 1fr; }
+}
