@@ -1,140 +1,124 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+"""
+Public tutor directory.
+
+The faculty list is derived from the real onboarding pipeline: a tutor appears
+here if and only if their User account is an active tutor AND staff set
+TutorProfile.is_approved. The legacy `tutors` table (a seed migration plus
+rows old tests wrote into production) is no longer read or written — there
+are intentionally no create/update/delete endpoints on this surface. Faculty
+changes happen through the application-review workflow, never raw API writes.
+"""
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, or_
 from sqlalchemy.orm import selectinload
-from typing import List, Optional
-from math import ceil
 
 from app.db.session import get_db
-from app.models.tutor import Tutor, TutorSpecialty, TutorLanguage
-from app.schemas.tutor import TutorRead, TutorListResponse, TutorCreate, TutorUpdate
+from app.models.user import TutorProfile, User, UserRole
+from app.schemas.tutor import TutorListResponse, TutorRead
 
 router = APIRouter()
 
+_DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+
+
+def availability_summary(profile: TutorProfile) -> Optional[str]:
+    """Human-readable weekly windows from the tutor's real availability rows."""
+    slots = sorted(profile.availability, key=lambda a: (a.day_of_week, a.start_time))
+    if not slots:
+        return None
+    return "; ".join(
+        f"{_DAY_NAMES[s.day_of_week]} {s.start_time}-{s.end_time}" for s in slots
+    )
+
+
+def _to_public(user: User, application_verified) -> TutorRead:
+    """Project a User + TutorProfile onto the directory's wire format.
+
+    `application_verified` is a (qualification, english_proof, english_score)
+    tuple with each member set to None unless staff verified it — an
+    applicant's own claim is not evidence for the public page.
+    """
+    profile = user.tutor_profile
+    qualification_type, english_proof_type, english_score = application_verified
+    return TutorRead(
+        id=str(user.id),
+        name=user.full_name,
+        headline=profile.headline or "Certified English tutor",
+        country=profile.country or "",
+        rating=profile.rating,
+        reviews=profile.reviews_count,
+        years_experience=profile.years_experience,
+        bio=profile.bio or "",
+        avatar_url=user.avatar_url,
+        qualification_type=qualification_type,
+        english_proof_type=english_proof_type,
+        english_score=english_score,
+        intro_video_url=profile.intro_video_url,
+        availability=availability_summary(profile),
+        onboarding_fee_usd=0,
+        languages=[l.language for l in profile.languages],
+        specialties=[s.specialty for s in profile.specialties],
+        created_at=profile.created_at,
+        updated_at=profile.updated_at,
+    )
+
+
+def _verified_evidence(user: User):
+    application = user.tutor_application
+    if not application:
+        return (None, None, None)
+    return (
+        application.qualification_type if application.qualification_verified else None,
+        application.english_proof_type if application.english_verified else None,
+        application.english_score if application.english_verified else None,
+    )
+
+
+_TUTOR_LOAD = (
+    select(User)
+    .join(TutorProfile, TutorProfile.user_id == User.id)
+    .where(
+        User.role == UserRole.TUTOR,
+        User.is_active.is_(True),
+        TutorProfile.is_approved.is_(True),
+    )
+    .options(
+        selectinload(User.tutor_profile).selectinload(TutorProfile.specialties),
+        selectinload(User.tutor_profile).selectinload(TutorProfile.languages),
+        selectinload(User.tutor_profile).selectinload(TutorProfile.availability),
+        selectinload(User.tutor_application),
+    )
+)
+
 
 @router.get("/tutors", response_model=TutorListResponse)
-async def get_tutors(
-    specialty: Optional[str] = Query(None),
-    language: Optional[str] = Query(None),
-    search: Optional[str] = Query(None),
-    sort: str = Query("rating", pattern="^(rating|reviews|experience|name)$"),
-    page: int = Query(1, ge=1),
-    page_size: int = Query(10, ge=1, le=50),
-    db: AsyncSession = Depends(get_db),
-):
-    query = select(Tutor).options(selectinload(Tutor._specialties), selectinload(Tutor._languages))
-    count_query = select(func.count(Tutor.id))
-
-    if specialty:
-        query = query.where(Tutor._specialties.any(TutorSpecialty.specialty == specialty))
-        count_query = count_query.where(Tutor._specialties.any(TutorSpecialty.specialty == specialty))
-
-    if language:
-        query = query.where(Tutor._languages.any(TutorLanguage.language == language))
-        count_query = count_query.where(Tutor._languages.any(TutorLanguage.language == language))
-
-    if search:
-        search_term = f"%{search.lower()}%"
-        query = query.where(
-            or_(
-                Tutor.name.ilike(search_term),
-                Tutor.headline.ilike(search_term),
-                Tutor.bio.ilike(search_term),
-            )
-        )
-        count_query = count_query.where(
-            or_(
-                Tutor.name.ilike(search_term),
-                Tutor.headline.ilike(search_term),
-                Tutor.bio.ilike(search_term),
-            )
-        )
-
-    if sort == "rating":
-        query = query.order_by(Tutor.rating.desc())
-    elif sort == "reviews":
-        query = query.order_by(Tutor.reviews.desc())
-    elif sort == "experience":
-        query = query.order_by(Tutor.years_experience.desc())
-    elif sort == "name":
-        query = query.order_by(Tutor.name.asc())
-
-    total_result = await db.execute(count_query)
-    total = total_result.scalar()
-
-    query = query.offset((page - 1) * page_size).limit(page_size)
-    result = await db.execute(query)
+async def get_tutors(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(_TUTOR_LOAD)
     tutors = result.scalars().all()
 
+    items = [_to_public(t, _verified_evidence(t)) for t in tutors]
+    # Top of the list = proven classroom record; brand-new tutors sit below
+    # with an honest 0.0 rating rather than a seeded 4.9.
+    items.sort(key=lambda t: (-t.rating, -t.reviews, t.name))
+
     return TutorListResponse(
-        tutors=[TutorRead.model_validate(t) for t in tutors],
-        total=total,
-        page=page,
-        page_size=page_size,
-        total_pages=ceil(total / page_size) if total > 0 else 1,
+        tutors=items,
+        total=len(items),
+        page=1,
+        page_size=len(items) or 1,
+        total_pages=1,
     )
 
 
 @router.get("/tutors/{tutor_id}", response_model=TutorRead)
 async def get_tutor(tutor_id: str, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(
-        select(Tutor)
-        .options(selectinload(Tutor._specialties), selectinload(Tutor._languages))
-        .where(Tutor.id == tutor_id)
-    )
+    if not tutor_id.isdigit():
+        raise HTTPException(status_code=404, detail="Tutor not found")
+    result = await db.execute(_TUTOR_LOAD.where(User.id == int(tutor_id)))
     tutor = result.scalar_one_or_none()
     if not tutor:
         raise HTTPException(status_code=404, detail="Tutor not found")
-    return TutorRead.model_validate(tutor)
-
-
-@router.post("/tutors", response_model=TutorRead, status_code=201)
-async def create_tutor(tutor_in: TutorCreate, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Tutor).where(Tutor.id == tutor_in.id))
-    if result.scalar_one_or_none():
-        raise HTTPException(status_code=400, detail="Tutor with this ID already exists")
-
-    tutor = Tutor(**tutor_in.model_dump(exclude={"specialties", "languages"}))
-    tutor.specialties = tutor_in.specialties
-    tutor.languages = tutor_in.languages
-
-    db.add(tutor)
-    await db.commit()
-    await db.refresh(tutor)
-    return TutorRead.model_validate(tutor)
-
-
-@router.patch("/tutors/{tutor_id}", response_model=TutorRead)
-async def update_tutor(tutor_id: str, tutor_in: TutorUpdate, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(
-        select(Tutor)
-        .options(selectinload(Tutor._specialties), selectinload(Tutor._languages))
-        .where(Tutor.id == tutor_id)
-    )
-    tutor = result.scalar_one_or_none()
-    if not tutor:
-        raise HTTPException(status_code=404, detail="Tutor not found")
-
-    update_data = tutor_in.model_dump(exclude_unset=True, exclude={"specialties", "languages"})
-    for field, value in update_data.items():
-        setattr(tutor, field, value)
-
-    if tutor_in.specialties is not None:
-        tutor.specialties = tutor_in.specialties
-    if tutor_in.languages is not None:
-        tutor.languages = tutor_in.languages
-
-    await db.commit()
-    await db.refresh(tutor)
-    return TutorRead.model_validate(tutor)
-
-
-@router.delete("/tutors/{tutor_id}", status_code=204)
-async def delete_tutor(tutor_id: str, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Tutor).where(Tutor.id == tutor_id))
-    tutor = result.scalar_one_or_none()
-    if not tutor:
-        raise HTTPException(status_code=404, detail="Tutor not found")
-
-    await db.delete(tutor)
-    await db.commit()
+    return _to_public(tutor, _verified_evidence(tutor))

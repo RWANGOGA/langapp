@@ -8,8 +8,6 @@ from math import ceil
 
 from app.db.session import get_db
 from app.models.user import User, UserRole, TutorProfile
-from app.models.tutor import Tutor
-from app.models.tutor import Tutor
 from app.models.tutor_application import (
     TutorApplication,
     ApplicationStatus,
@@ -524,7 +522,8 @@ async def review_application(
         if user:
             user.role = UserRole.TUTOR
             existing_profile = await db.execute(select(TutorProfile).where(TutorProfile.user_id == user.id))
-            if not existing_profile.scalar_one_or_none():
+            profile = existing_profile.scalar_one_or_none()
+            if not profile:
                 db.add(TutorProfile(
                     user_id=user.id,
                     headline=None,
@@ -538,32 +537,14 @@ async def review_application(
                     approved_by=current_user.id,
                     intro_video_url=application.intro_video_url,
                 ))
-            public_tutor_result = await db.execute(select(Tutor).where(Tutor.id == f"user-{user.id}"))
-            public_tutor = public_tutor_result.scalar_one_or_none()
-            public_data = {
-                "name": user.full_name,
-                "headline": application.qualification_type or "Certified English tutor",
-                "country": application.country,
-                "years_experience": application.years_experience or 0,
-                "bio": f"Nile Language tutor specialising in {application.specialties or 'English conversation'}.",
-                "avatar_url": user.avatar_url,
-                "qualification_type": application.qualification_type,
-                "english_proof_type": application.english_proof_type,
-                "english_score": application.english_score,
-                "intro_video_url": application.intro_video_url,
-                "availability": application.availability_json,
-                "onboarding_fee_usd": 0,
-            }
-            if public_tutor:
-                for field, value in public_data.items():
-                    setattr(public_tutor, field, value)
-                public_tutor.specialties = [s.strip() for s in application.specialties.split(",") if s.strip()]
-                public_tutor.languages = [l.strip() for l in application.languages.split(",") if l.strip()]
             else:
-                public_tutor = Tutor(id=f"user-{user.id}", **public_data)
-                public_tutor.specialties = [s.strip() for s in application.specialties.split(",") if s.strip()]
-                public_tutor.languages = [l.strip() for l in application.languages.split(",") if l.strip()]
-                db.add(public_tutor)
+                # Re-approval of a previously onboarded tutor: the profile is
+                # the single source of directory truth (see app/api/tutors.py),
+                # so flip it back to approved - no legacy-table copy needed.
+                profile.is_approved = True
+                if profile.approved_at is None:
+                    profile.approved_at = datetime.utcnow()
+                    profile.approved_by = current_user.id
         await notify_user(
             db, application.user_id, "tutor_application_approved",
             "Your tutor application was approved",

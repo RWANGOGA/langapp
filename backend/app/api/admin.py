@@ -6,10 +6,10 @@ from sqlalchemy.orm import selectinload
 from typing import List
 
 from app.db.session import get_db
-from app.models.user import User, UserRole, Class, ClassStatus, ProficiencyLevel
-from app.models.tutor import Tutor
+from app.models.user import User, UserRole, Class, ClassStatus, ProficiencyLevel, TutorProfile
 from app.models.package import Package, Order, OrderStatus, PaymentMethod, PlanName
 from app.api.auth import require_admin
+from app.api.tutors import availability_summary
 from app.schemas.admin import (
     StudentAssignmentRequest, 
     StudentAssignmentResponse,
@@ -239,6 +239,7 @@ async def get_admin_dashboard(
         select(User)
         .where(User.role == UserRole.TUTOR)
         .options(
+            selectinload(User.tutor_profile).selectinload(TutorProfile.availability),
             selectinload(User.tutor_profile),
             selectinload(User.tutor_application),
         )
@@ -246,13 +247,9 @@ async def get_admin_dashboard(
     )
     tutors = tutors_result.scalars().all()
 
-    public_tutors_result = await db.execute(select(Tutor))
-    public_tutors = {tutor.id: tutor for tutor in public_tutors_result.scalars().all()}
-
     # Get tutor statuses based on their profile approval and assignments
     tutors_data = []
     for t in tutors:
-        public_tutor = public_tutors.get(f"user-{t.id}")
         # Get assignment count (active scheduled classes)
         assignment_result = await db.execute(
             select(func.count(Class.id)).where(
@@ -285,9 +282,9 @@ async def get_admin_dashboard(
             "qualification_type": t.tutor_application.qualification_type if t.tutor_application else None,
             "english_proof_type": t.tutor_application.english_proof_type if t.tutor_application else None,
             "english_score": t.tutor_application.english_score if t.tutor_application else None,
-            "intro_video_url": public_tutor.intro_video_url if public_tutor else (t.tutor_profile.intro_video_url if t.tutor_profile else None),
-            "availability": public_tutor.availability if public_tutor else None,
-            "onboarding_fee_usd": public_tutor.onboarding_fee_usd if public_tutor else 0,
+            "intro_video_url": t.tutor_profile.intro_video_url if t.tutor_profile else None,
+            "availability": availability_summary(t.tutor_profile) if t.tutor_profile else None,
+            "onboarding_fee_usd": 0,
         })
 
     students_result = await db.execute(
