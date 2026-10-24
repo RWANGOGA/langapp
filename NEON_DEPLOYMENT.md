@@ -59,16 +59,21 @@ alembic upgrade head
 ```
 
 ### 3. Create Admin User
+Credentials come from the environment - the script refuses hard-coded or
+weak passwords and never prints them:
 ```bash
+ADMIN_EMAIL="you@yourdomain.com" \
+ADMIN_PASSWORD="$(python -c 'import secrets; print(secrets.token_urlsafe(24))')" \
 python create_admin.py
 ```
+Store the generated password in your password manager as you create the account.
 
 ### 4. Verify Connection
 ```bash
 curl http://127.0.0.1:8004/health
 curl -X POST http://127.0.0.1:8004/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@langapp.com","password":"admin123456"}'
+  -d '{"email":"<ADMIN_EMAIL above>","password":"<ADMIN_PASSWORD above>"}'
 ```
 
 ---

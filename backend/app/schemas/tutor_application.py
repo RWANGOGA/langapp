@@ -69,20 +69,24 @@ class TutorApplicationCreate(BaseModel):
 
 
 class TutorApplicationUpdate(BaseModel):
+    """Applicant-editable draft fields for PATCH /tutor/applications/me.
+
+    Reviewer-owned fields (verification statuses/flags, admin_notes,
+    demo_lesson_score) are deliberately absent: they are attestations made
+    by staff, never data the applicant supplies. The endpoint additionally
+    filters writes through APPLICANT_WRITABLE_FIELDS as defence in depth.
+    """
     full_name: Optional[str] = Field(None, min_length=1, max_length=100)
     country: Optional[str] = Field(None, min_length=1, max_length=50)
     date_of_birth: Optional[date] = None
     id_verification_provider: Optional[str] = None
     id_verification_id: Optional[str] = None
     id_document_url: Optional[str] = None
-    id_verification_status: Optional[VerificationStatus] = None
     qualification_type: Optional[str] = Field(None, max_length=50)
     qualification_file_url: Optional[str] = None
-    qualification_verified: Optional[bool] = None
     english_proof_type: Optional[str] = Field(None, max_length=50)
     english_score: Optional[str] = Field(None, max_length=50)
     english_proof_url: Optional[str] = None
-    english_verified: Optional[bool] = None
     intro_video_url: Optional[str] = None
     years_experience: Optional[int] = Field(None, ge=0, le=50)
     specialties: Optional[List[str]] = None
@@ -97,9 +101,6 @@ class TutorApplicationUpdate(BaseModel):
     reference_2_name: Optional[str] = Field(None, max_length=100)
     reference_2_email: Optional[str] = None
     background_check_provider: Optional[str] = Field(None, max_length=50)
-    background_check_status: Optional[VerificationStatus] = None
-    admin_notes: Optional[str] = None
-    demo_lesson_score: Optional[int] = Field(None, ge=0, le=100)
 
 
 class TutorApplicationStatusUpdate(BaseModel):

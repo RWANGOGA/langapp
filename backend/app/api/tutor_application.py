@@ -29,6 +29,25 @@ router = APIRouter()
 # Statuses in which the applicant may still change their submission.
 EDITABLE_STATUSES = {ApplicationStatus.SUBMITTED, ApplicationStatus.DOCUMENTS_REVIEW}
 
+# Fields an applicant may write on their own application. This mirrors the
+# onboarding form's input surface exactly. Verification outcomes, reviewer
+# notes and demo scores are attestations owned by staff - accepting them
+# from the applicant endpoint was a privilege-escalation path, so they are
+# excluded here even if a schema (or a future schema edit) ever allows them.
+APPLICANT_WRITABLE_FIELDS = {
+    "full_name", "country", "date_of_birth",
+    "id_verification_provider", "id_verification_id", "id_document_url",
+    "qualification_type", "qualification_file_url",
+    "english_proof_type", "english_score", "english_proof_url",
+    "intro_video_url", "years_experience", "specialties", "languages",
+    "availability_json",
+    "tech_confirmed", "code_of_conduct_accepted",
+    "privacy_agreement_accepted", "recording_consent",
+    "reference_1_name", "reference_1_email",
+    "reference_2_name", "reference_2_email",
+    "background_check_provider",
+}
+
 # Legal forward transitions. Backward moves and skips are rejected so an
 # application cannot jump straight to APPROVED without passing review.
 ALLOWED_TRANSITIONS: dict[ApplicationStatus, set[ApplicationStatus]] = {
@@ -354,6 +373,10 @@ async def update_my_application(
         )
 
     update_data = application_in.model_dump(exclude_unset=True)
+    # Defence in depth behind the restricted schema: drop anything a
+    # reviewer owns. Extra/unknown keys are ignored silently so older
+    # clients sending a full draft payload keep working.
+    update_data = {k: v for k, v in update_data.items() if k in APPLICANT_WRITABLE_FIELDS}
     # Consents must never be silently flipped on by a partial save.
     for consent in completeness.CONSENT_FIELDS:
         if consent not in update_data:
