@@ -106,7 +106,11 @@ export interface TutorNoteRow {
   title: string;
   learner: string;
   startsAt: string;
+  /** The note itself. The API unwraps the stored entry, so this is prose. */
   notes: string | null;
+  /** Lesson topic recorded with the feedback, when one was saved. */
+  topic: string | null;
+  writtenAt: string | null;
 }
 
 export const getTutorNotes = (limit = 100): Promise<{ notes: TutorNoteRow[] }> =>
