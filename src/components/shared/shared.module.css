@@ -1,0 +1,23 @@
+/* Shared session-portal UI (Calendar + Countdown), used by both the
+ * learner dashboard and the tutor portal. Merged from byte-identical
+ * duplicates in dashboard.module.css / tutor.module.css (Step 4). */
+
+/* — Countdown — */
+.countdown { flex: 1; display: flex; flex-direction: column; align-items: center; }
+.countLabel { font-size: .85rem; font-weight: 500; color: #16233a; }
+.countTime { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 700; letter-spacing: .02em; color: #0f1c33; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.countUnits { display: flex; gap: 1.6rem; font-size: .75rem; color: #4a5a70; }
+.countUnits i { font-style: normal; }
+
+/* — Calendar — */
+.calHead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.calTitle { font-size: 1.3rem; font-weight: 600; color: #0f1c33; display: flex; align-items: center; gap: .6rem; }
+.tealIcon { color: var(--teal); }
+.calNav { display: flex; justify-content: space-between; align-items: center; margin-bottom: .6rem; font-size: .92rem; }
+.calNav button { background: none; border: 0; cursor: pointer; color: #16233a; }
+.calGrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: .35rem 0; text-align: center; }
+.calDow { font-weight: 600; font-size: .85rem; padding: .3rem 0; }
+.calDay { font-size: .88rem; font-weight: 500; padding: .5rem 0; border-radius: 8px; }
+.calOut { color: #b6c0c8; }
+.calClass { background: #d3e9e6; }
+.calToday { background: var(--teal); color: #fff; font-weight: 700; }

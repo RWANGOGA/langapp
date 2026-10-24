@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import styles from "./tutor.module.css";
+import styles from "./shared.module.css";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 

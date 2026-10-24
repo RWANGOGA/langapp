@@ -4,9 +4,9 @@ import { apiGet } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 import { Award, BookOpen, CalendarDays, Package, Search, TrendingUp, Clock, Users } from "lucide-react";
-import Calendar from "@/components/dashboard/Calendar";
+import Calendar from "@/components/shared/Calendar";
 import ClassList from "@/components/dashboard/ClassList";
-import Countdown from "@/components/dashboard/Countdown";
+import Countdown from "@/components/shared/Countdown";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import styles from "@/components/dashboard/dashboard.module.css";
 import { getLearnerDashboard } from "@/lib/dashboard-data";
@@ -87,7 +87,7 @@ export default async function DashboardPage() {
         </section>
 
         <section className={`${styles.card} ${styles.calendar}`}>
-          <Calendar classes={classes} />
+          <Calendar title="Scheduled Classes" events={classes} />
           <hr className={styles.rule} />
           <h3 className={styles.subTitle}>Upcoming Classes</h3>
           <ClassList classes={classes} />

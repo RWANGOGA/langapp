@@ -273,11 +273,25 @@
   .actions {
     gap: 8px;
   }
-  /* hide desktop auth buttons on mobile, rely on drawer */
+  /* Auth CTAs stay visible on mobile - compacted, not hidden. They are the
+     primary action of the site; burying them in the drawer lost sign-ins. */
   .actions .btn {
-    display: none;
+    font-size: 13px;
+    padding: 8px 12px;
+    white-space: nowrap;
   }
   .drawer {
     padding-inline: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Below the buttons' comfortable width, trim the wordmark instead of
+     the auth CTAs. */
+  .brand span {
+    display: none;
+  }
+  .actions {
+    gap: 6px;
   }
 }

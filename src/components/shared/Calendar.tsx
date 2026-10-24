@@ -2,15 +2,25 @@
 
 import { useMemo, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
-import type { SessionItem } from "@/lib/tutor-data";
-import styles from "./tutor.module.css";
+import styles from "./shared.module.css";
 
 const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
-// Bucket each session into the viewer's local calendar day, not the UTC one.
+// Bucket each event into the viewer's local calendar day, not the UTC one.
 const localDay = (iso: string) => new Date(iso).toLocaleDateString("en-CA");
 
-export default function Calendar({ today, events }: { today: string; events: SessionItem[] }) {
+export interface CalendarEvent {
+  startsAt: string;
+}
+
+/**
+ * Month grid marking days that hold a session. Anchored to the viewer's
+ * local today (client-rendered on purpose: a server-rendered UTC date
+ * would highlight the wrong day for far-off timezones).
+ * Shared by the learner dashboard and the tutor portal.
+ */
+export default function Calendar({ title, events }: { title: string; events: CalendarEvent[] }) {
+  const today = new Date().toLocaleDateString("en-CA");
   const [ty, tm] = [Number(today.slice(0, 4)), Number(today.slice(5, 7)) - 1];
   const [view, setView] = useState({ y: ty, m: tm });
   const eventDays = useMemo(() => new Set(events.map((c) => localDay(c.startsAt))), [events]);
@@ -24,20 +34,20 @@ export default function Calendar({ today, events }: { today: string; events: Ses
   }, [view]);
 
   const shift = (n: number) => setView(({ y, m }) => { const d = new Date(Date.UTC(y, m + n, 1)); return { y: d.getUTCFullYear(), m: d.getUTCMonth() }; });
-  const title = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(Date.UTC(view.y, view.m, 1)));
+  const monthTitle = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(Date.UTC(view.y, view.m, 1)));
 
   return (
     <>
       <div className={styles.calHead}>
-        <h3 className={styles.cardTitle}>My Schedule</h3>
+        <h3 className={styles.calTitle}>{title}</h3>
         <CalendarDays size={22} className={styles.tealIcon} aria-hidden />
       </div>
       <div className={styles.calNav}>
         <button type="button" onClick={() => shift(-1)} aria-label="Previous month"><ChevronLeft size={18} /></button>
-        <strong>{title}</strong>
+        <strong>{monthTitle}</strong>
         <button type="button" onClick={() => shift(1)} aria-label="Next month"><ChevronRight size={18} /></button>
       </div>
-      <div className={styles.calGrid} role="grid" aria-label={title}>
+      <div className={styles.calGrid} role="grid" aria-label={monthTitle}>
         {DAYS.map((d) => <span key={d} className={styles.calDow} role="columnheader">{d}</span>)}
         {cells.map((c) => (
           <span key={c.iso} role="gridcell" aria-current={c.iso === today ? "date" : undefined}

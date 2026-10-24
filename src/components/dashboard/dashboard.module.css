@@ -83,11 +83,7 @@
 .classRow { display: flex; align-items: center; gap: 1.2rem; }
 .miniTutor { display: flex; flex-direction: column; align-items: center; padding-right: 1.2rem; border-right: 1px solid #dfe6ea; font-size: .85rem; }
 .miniTutor img { border-radius: 50%; object-fit: cover; }
-.countdown { flex: 1; display: flex; flex-direction: column; align-items: center; }
-.countLabel { font-size: .85rem; font-weight: 500; color: #16233a; }
-.countTime { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 700; letter-spacing: .02em; color: #0f1c33; font-variant-numeric: tabular-nums; line-height: 1.15; }
-.countUnits { display: flex; gap: 1.6rem; font-size: .75rem; color: #4a5a70; }
-.countUnits i { font-style: normal; }
+/* countdown + calendar styles live in components/shared/shared.module.css */
 .joinRow { display: flex; gap: .9rem; margin: 1.1rem 0 .9rem; }
 .btnCoral { flex: 1; text-align: center; padding: .85rem .4rem; border-radius: 8px; background: #f26a3d; color: #fff; text-decoration: none; font-weight: 600; font-size: .85rem; text-transform: uppercase; }
 .btnCoral:hover { background: var(--coral); }
@@ -96,15 +92,6 @@
 .award { color: var(--coral); }
 
 /* calendar */
-.calHead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-.calNav { display: flex; justify-content: space-between; align-items: center; margin-bottom: .6rem; font-size: .92rem; }
-.calNav button { background: none; border: 0; cursor: pointer; color: #16233a; }
-.calGrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: .35rem 0; text-align: center; }
-.calDow { font-weight: 600; font-size: .85rem; padding: .3rem 0; }
-.calDay { font-size: .88rem; font-weight: 500; padding: .5rem 0; border-radius: 8px; }
-.calOut { color: #b6c0c8; }
-.calClass { background: #d3e9e6; }
-.calToday { background: var(--teal); color: #fff; font-weight: 700; }
 .rule { border: 0; border-top: 1px solid #e3e9ee; margin: 1.1rem 0; }
 .subTitle { font-size: 1.1rem; font-weight: 600; margin-bottom: .7rem; }
 .upList { list-style: none; display: grid; gap: .6rem; }

@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Clock, PackageCheck } from "lucide-react";
-import Calendar from "@/components/tutor/Calendar";
-import Countdown from "@/components/tutor/Countdown";
+import Calendar from "@/components/shared/Calendar";
+import Countdown from "@/components/shared/Countdown";
 import DashboardLayout from "@/components/tutor/DashboardLayout";
 import DashboardShell from "@/components/tutor/DashboardShell";
 import { useAuth } from "@/lib/auth";
@@ -234,7 +234,7 @@ export default function TutorPage() {
           </section>
 
           <section className={`${styles.card} ${styles.calendar}`}>
-            <Calendar today={localToday} events={sessions} />
+            <Calendar title="My Schedule" events={sessions} />
             <hr className={styles.rule} />
             <h3 className={styles.subTitle}>Upcoming</h3>
             <ul className={styles.upList}>
