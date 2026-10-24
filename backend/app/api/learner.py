@@ -83,6 +83,20 @@ async def get_learner_dashboard(
     )
     classes = classes_result.scalars().all()
 
+    # Real progress: lessons delivered vs the learner's live plan.
+    # Cancelled and no-show classes are excluded from both sides of the
+    # ratio - a cancelled class is no longer part of anyone's plan, and a
+    # no-show is neither completed nor still to come.
+    status_counts = await db.execute(
+        select(Class.status, func.count(Class.id))
+        .where(Class.learner_id == current_user.id)
+        .group_by(Class.status)
+    )
+    counts = dict(status_counts.all())
+    completed = counts.get(ClassStatus.COMPLETED, 0)
+    total = completed + counts.get(ClassStatus.SCHEDULED, 0)
+    percent = round(completed * 100 / total) if total else 0
+
     # Build response
     tutor_data = None
     if tutor:
@@ -114,10 +128,10 @@ async def get_learner_dashboard(
         "tutor": tutor_data,
         "nextClass": next_class_data,
         "progress": {
-            "percent": 0,
+            "percent": percent,
             "level": current_user.proficiency_level.value if current_user.proficiency_level else "Not set",
-            "completed": 0,
-            "total": 0,
+            "completed": completed,
+            "total": total,
         },
         "today": utc_now().date().isoformat(),
         "classes": [
