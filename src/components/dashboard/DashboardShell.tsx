@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Bell } from "lucide-react";
@@ -20,7 +19,7 @@ export default function DashboardShell({ learner, children }: { learner: Learner
           </Link>
           <TopNav />
           <div className={styles.userBox}>
-            <Image src={learner.avatar} alt="" width={48} height={48} className={styles.avatar} />
+            <img src={learner.avatar} alt="" width={40} height={40} className={styles.avatar} />
             <div><strong>{learner.name}</strong><small>Level <b>{learner.level}</b></small></div>
             <Link href="/dashboard/notifications" className={styles.bell} aria-label={`Notifications, ${learner.unread} unread`}>
               <Bell size={22} />

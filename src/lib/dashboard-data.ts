@@ -1,12 +1,11 @@
 import { apiGet } from "@/lib/api";
 
-export interface ClassItem { id: number; date: string; time: string; startsAt: string; title: string }
+export interface ClassItem { id: number; startsAt: string; title: string }
 export interface LearnerDashboard {
   learner: { name: string; level: string; avatar: string; unread: number };
   tutor: { name: string; country: string; avatar: string } | null;
   nextClass: { title: string; secondsLeft: number; startsAt?: string; zoomUrl?: string; meetUrl?: string; packageName?: string } | null;
   progress: { percent: number; level: string; completed: number; total: number };
-  today: string;
   classes: ClassItem[];
 }
 

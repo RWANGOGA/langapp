@@ -43,8 +43,6 @@ class ProgressResponse(BaseModel):
 
 class ClassItemResponse(BaseModel):
     id: int
-    date: str
-    time: str
     startsAt: str  # explicit UTC ISO instant (+00:00) for local rendering
     title: str
 
@@ -56,7 +54,6 @@ class LearnerDashboardResponse(BaseModel):
     tutor: Optional[TutorBasic] = None
     nextClass: Optional[NextClassResponse] = None
     progress: ProgressResponse
-    today: str
     classes: list[ClassItemResponse]
 
     model_config = ConfigDict(from_attributes=True)

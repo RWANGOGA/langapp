@@ -1,7 +1,5 @@
-import { Poppins } from "next/font/google";
-
-const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"] });
-
+// No font wrapper: the dashboard inherits the site-wide Inter typography
+// from the root layout, keeping portal and marketing pages in one voice.
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return <div className={poppins.className}>{children}</div>;
+  return children;
 }

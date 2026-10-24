@@ -121,7 +121,9 @@ async def get_learner_dashboard(
     return {
         "learner": {
             "name": current_user.full_name,
-            "level": current_user.proficiency_level.value if current_user.proficiency_level else "B1",
+            # Never invent a level: an unchosen placement reads "Not set" here
+            # and in progress, so the UI can be honest about both.
+            "level": current_user.proficiency_level.value if current_user.proficiency_level else "Not set",
             "avatar": current_user.avatar_url,
             "unread": unread,
         },
@@ -133,12 +135,9 @@ async def get_learner_dashboard(
             "completed": completed,
             "total": total,
         },
-        "today": utc_now().date().isoformat(),
         "classes": [
             {
                 "id": c.id,
-                "date": c.scheduled_at.date().isoformat(),
-                "time": c.scheduled_at.strftime("%H:%M"),
                 "startsAt": to_utc_iso(c.scheduled_at),
                 "title": c.title,
             }

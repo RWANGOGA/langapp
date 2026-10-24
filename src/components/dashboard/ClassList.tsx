@@ -52,26 +52,26 @@ export default function ClassList({ classes }: { classes: ClassItem[] }) {
               {!started && (
                 <button
                   type="button"
+                  className={styles.cancelBtn}
                   onClick={() => { setCancelId(cancelId === c.id ? null : c.id); setReason(""); setMsg(null); }}
-                  style={{ float: "right", background: "none", border: "none", color: "#728096", fontSize: ".78rem", fontWeight: 600, cursor: "pointer", textTransform: "uppercase" }}
                 >
                   {cancelId === c.id ? "Close" : "Cancel"}
                 </button>
               )}
               {cancelId === c.id && (
-                <span style={{ display: "block", marginTop: ".5rem" }}>
+                <span className={styles.cancelForm}>
                   <input
+                    className={styles.cancelInput}
                     aria-label="Cancellation reason"
                     placeholder="Reason (required within 24h of class)"
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
-                    style={{ width: "60%", padding: ".4rem .6rem", border: "1px solid #d5dde3", borderRadius: 6, fontSize: ".8rem" }}
                   />
                   <button
                     type="button"
+                    className={styles.confirmBtn}
                     disabled={busy}
                     onClick={() => confirmCancel(c)}
-                    style={{ marginLeft: ".5rem", padding: ".4rem .8rem", border: "1px solid var(--teal)", borderRadius: 6, background: "#fff", color: "var(--teal)", fontWeight: 600, fontSize: ".78rem", cursor: "pointer" }}
                   >
                     {busy ? "Cancelling..." : "Confirm"}
                   </button>
@@ -83,7 +83,7 @@ export default function ClassList({ classes }: { classes: ClassItem[] }) {
         {upcoming.length === 0 && <li className={styles.listEmpty}>No classes scheduled yet. Your calendar will fill up as lessons are booked.</li>}
       </ul>
       {msg && (
-        <p role="status" style={{ fontSize: ".8rem", marginTop: ".5rem", color: msg.ok ? "var(--teal)" : "#d64545" }}>
+        <p role="status" className={msg.ok ? styles.statusOk : styles.statusBad}>
           {msg.text}
         </p>
       )}

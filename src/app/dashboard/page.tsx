@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { apiGet } from "@/lib/api";
-import Image from "next/image";
 import Link from "next/link";
-import { Award, BookOpen, CalendarDays, Package, Search, TrendingUp, Clock, Users } from "lucide-react";
+import { BookOpen, CalendarDays, Package, Search, TrendingUp, Users } from "lucide-react";
 import Calendar from "@/components/shared/Calendar";
 import ClassList from "@/components/dashboard/ClassList";
 import Countdown from "@/components/shared/Countdown";
@@ -28,7 +27,7 @@ export default async function DashboardPage() {
     <DashboardShell learner={learner}>
       <section className={styles.dashboardWelcome} aria-labelledby="dashboard-title">
         <div><p className={styles.kicker}>Learner dashboard</p><h1 id="dashboard-title">Welcome back, {learner.name.split(" ")[0]}</h1><p>Here is your learning plan at a glance.</p></div>
-        <Link className={styles.headerAction} href="/tutors"><Search size={16} /> Find a tutor</Link>
+        <Link className={styles.headerAction} href="/tutors"><Search size={16} /> Browse tutors</Link>
       </section>
       <div className={styles.dashboardStats}>
         <div><span className={styles.dashboardStatIcon}><TrendingUp size={18} /></span><span><small>Progress</small><b>{progress.percent}% complete</b></span></div>
@@ -41,7 +40,7 @@ export default async function DashboardPage() {
           <h3 id="tutor-h" className={styles.cardTitle}>My Tutor</h3>
           {tutor ? (
             <>
-              <Image src={tutor.avatar} alt={tutor.name} width={100} height={100} className={styles.portrait} />
+              <img src={tutor.avatar} alt={tutor.name} width={88} height={88} className={styles.portrait} />
               <strong className={styles.tutorName}>{tutor.name}</strong>
               <small>{tutor.country}</small>
               <Link className={styles.btnOutline} href="/dashboard/tutors">View tutor profile</Link>
@@ -58,31 +57,33 @@ export default async function DashboardPage() {
 
         <section className={`${styles.card} ${styles.upcoming}`} aria-labelledby="up-h">
           <div className={styles.cardTop}>
-            <h3 id="up-h" className={styles.cardTitle}>My Upcoming Class</h3>
-            <Clock size={26} className={styles.clockRing} aria-hidden />
+            <h3 id="up-h" className={styles.cardTitle}>Next Class</h3>
           </div>
-          {nextClass && tutor ? (
+          {nextClass ? (
             <>
               <small>Title:</small>
               <h4 className={styles.classTitle}>{nextClass.title}</h4>
               <div className={styles.classRow}>
-                <div className={styles.miniTutor}>
-                  <Image src={tutor.avatar} alt="" width={56} height={56} />
-                  <strong>{tutor.name}</strong><small>{tutor.country}</small>
-                </div>
+                {tutor && (
+                  <div className={styles.miniTutor}>
+                    <img src={tutor.avatar} alt="" width={56} height={56} />
+                    <strong>{tutor.name}</strong><small>{tutor.country}</small>
+                  </div>
+                )}
                 <Countdown initialSeconds={nextClass.secondsLeft} />
               </div>
               <div className={styles.joinRow}>
                 {nextClass.zoomUrl && <a className={styles.btnCoral} href={nextClass.zoomUrl} target="_blank" rel="noopener noreferrer">Join Zoom Class</a>}
                 {nextClass.meetUrl && <a className={styles.btnCoral} href={nextClass.meetUrl} target="_blank" rel="noopener noreferrer">Join Google Meet</a>}
               </div>
-              <div className={styles.pkgRow}>
-                <span className={styles.pkg}><Package size={18} aria-hidden /> {nextClass.packageName || "Class package"}</span>
-                <Award size={26} className={styles.award} aria-hidden />
-              </div>
+              {nextClass.packageName && (
+                <div className={styles.pkgRow}>
+                  <span className={styles.pkg}><Package size={18} aria-hidden /> {nextClass.packageName}</span>
+                </div>
+              )}
             </>
           ) : (
-            <div className={styles.cardEmptyState}><span className={styles.cardEmptyIcon}><CalendarDays size={24} /></span><strong>No class scheduled yet</strong><small>Your next lesson will appear here once it is booked.</small><Link className={styles.btnCoral} href="/tutors">Explore tutors</Link></div>
+            <div className={styles.cardEmptyState}><span className={styles.cardEmptyIcon}><CalendarDays size={24} /></span><strong>No class scheduled yet</strong><small>Your next lesson will appear here once your tutor schedules it.</small><Link className={styles.btnCoral} href="/dashboard/tutors">See your tutor</Link></div>
           )}
         </section>
 
@@ -99,8 +100,8 @@ export default async function DashboardPage() {
             <i style={{ width: `${progress.percent}%` }}>{progress.percent}%</i>
           </div>
           <div className={styles.progMeta}>
-            <span>LEARNING PROGRESS (Level {progress.level})</span>
-            <span>{progress.total ? `Completed Units: ${progress.completed}/${progress.total}` : "Progress starts after your first lesson."}</span>
+            <span>Level {progress.level}</span>
+            <span>{progress.total ? `Lessons completed: ${progress.completed} of ${progress.total}` : "Progress starts after your first lesson."}</span>
           </div>
         </section>
       </div>

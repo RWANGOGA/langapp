@@ -78,6 +78,38 @@ async def test_progress_is_zero_without_any_classes(db_session, learner_user):  
 
 
 @pytest.mark.asyncio
+async def test_unselected_level_is_honest_not_a_letter(db_session):  # noqa: F811
+    """A learner who never picked a level must not be shown a fabricated B1."""
+    from app.models.user import User, UserRole
+
+    fresh = User(
+        email="nofresh-level@example.com", hashed_password="x",
+        full_name="Fresh Face", role=UserRole.STUDENT, is_active=True,
+        proficiency_level=None,
+    )
+    db_session.add(fresh)
+    await db_session.commit()
+
+    async with make_client(db_session, fresh) as learner:
+        r = await learner.get(BASE)
+        assert r.status_code == 200, r.text
+        body = r.json()
+    assert body["learner"]["level"] == "Not set"
+    assert body["progress"]["level"] == "Not set"
+
+
+@pytest.mark.asyncio
+async def test_payload_carries_only_fields_the_ui_uses(db_session, learner_user):  # noqa: F811
+    """Dead payload fields invite drift; the dashboard renders from startsAt."""
+    async with make_client(db_session, learner_user) as learner:
+        r = await learner.get(BASE)
+        body = r.json()
+    assert "today" not in body
+    for item in body["classes"]:
+        assert "date" not in item and "time" not in item
+
+
+@pytest.mark.asyncio
 async def test_cancelled_only_plan_does_not_divide_by_zero(db_session, learner_user):  # noqa: F811
     from app.models.user import User
     t = User(
