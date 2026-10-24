@@ -18,11 +18,13 @@
 .hero {
   padding: clamp(72px, 12vw, 140px) 0 clamp(56px, 8vw, 96px);
   border-bottom: 1px solid #dfe6ec;
+  text-align: center;
 }
 
 .kicker {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 14px;
   color: var(--coral);
   font-size: 0.72rem;
@@ -31,16 +33,19 @@
   text-transform: uppercase;
 }
 
+/* Hairlines frame the label on both sides (centered statement style). */
+.kicker::before,
 .kicker::after {
   content: "";
   flex: 1;
+  max-width: 180px;
   height: 1px;
   background: #dfe6ec;
 }
 
 .display {
   max-width: 22ch;
-  margin-top: 22px;
+  margin: 22px auto 0;
   font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: 800;
   line-height: 1.04;
@@ -49,7 +54,7 @@
 
 .lede {
   max-width: 62ch;
-  margin-top: 22px;
+  margin: 22px auto 0;
   color: #52607a;
   font-size: 1.15rem;
   line-height: 1.65;
@@ -58,6 +63,7 @@
 .heroCtas {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 14px;
   margin-top: 34px;
 }
@@ -97,10 +103,12 @@
 
 .sectionHead {
   margin-bottom: 44px;
+  text-align: center;
 }
 
 .sectionTitle {
-  margin-top: 18px;
+  margin: 18px auto 0;
+  max-width: 30ch;
   font-size: clamp(1.7rem, 3.4vw, 2.5rem);
   font-weight: 800;
   letter-spacing: -0.015em;
@@ -109,7 +117,7 @@
 
 .sectionLede {
   max-width: 60ch;
-  margin-top: 14px;
+  margin: 14px auto 0;
   color: #52607a;
   font-size: 1.05rem;
   line-height: 1.65;
@@ -200,6 +208,7 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 24px;
+  text-align: center;
 }
 
 .proofValue {
@@ -265,10 +274,12 @@
   padding: clamp(64px, 9vw, 110px) 0;
   background: #f6f8fa;
   border-top: 1px solid #dfe6ec;
+  text-align: center;
 }
 
 .ctaTitle {
   max-width: 20ch;
+  margin: 0 auto;
   font-size: clamp(1.9rem, 4.4vw, 3.1rem);
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -277,7 +288,7 @@
 
 .ctaBody {
   max-width: 58ch;
-  margin-top: 16px;
+  margin: 16px auto 0;
   color: #52607a;
   font-size: 1.05rem;
   line-height: 1.65;
@@ -286,6 +297,7 @@
 .ctaCtas {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 14px;
   margin-top: 30px;
 }
