@@ -73,6 +73,74 @@ export const completeTutorSession = (classId: number) =>
 export const cancelTutorSession = (classId: number, reason?: string) =>
   postSessionAction(classId, "cancel", { reason: reason || undefined });
 
+/* — Tutor portal pages (Learners / Schedule / Notes / Settings) — */
+
+export interface TutorLearnerRow {
+  id: number;
+  name: string;
+  level: string;
+  nativeLanguage: string | null;
+  avatarUrl: string | null;
+  completed: number;
+  upcoming: number;
+  lastCompletedAt: string | null;
+  nextSessionAt: string | null;
+}
+
+export const getTutorLearners = (): Promise<{ learners: TutorLearnerRow[] }> =>
+  fetchWithAuth(`${PROXY}/tutor/learners`);
+
+export interface TutorScheduleSession {
+  id: number;
+  title: string;
+  learner: string;
+  startsAt: string;
+  durationMinutes: number;
+}
+
+export const getTutorSchedule = (days = 60): Promise<{ sessions: TutorScheduleSession[]; days: number }> =>
+  fetchWithAuth(`${PROXY}/tutor/schedule?days=${days}`);
+
+export interface TutorNoteRow {
+  id: number;
+  title: string;
+  learner: string;
+  startsAt: string;
+  notes: string | null;
+}
+
+export const getTutorNotes = (limit = 100): Promise<{ notes: TutorNoteRow[] }> =>
+  fetchWithAuth(`${PROXY}/tutor/notes?limit=${limit}`);
+
+export interface AvailabilitySlot {
+  dayOfWeek: number; // 0 = Sunday
+  startTime: string; // HH:mm
+  endTime: string;
+  timezone: string;
+}
+
+export interface TutorProfileSettings {
+  id: number;
+  email: string;
+  fullName: string;
+  headline: string | null;
+  bio: string | null;
+  country: string | null;
+  timezone: string | null;
+  nativeLanguage: string | null;
+  yearsExperience: number;
+  rating: number;
+  reviewsCount: number;
+  isApproved: boolean;
+  availability: AvailabilitySlot[];
+}
+
+export const getTutorProfile = (): Promise<TutorProfileSettings> =>
+  fetchWithAuth(`${PROXY}/tutor/profile`);
+
+export const updateTutorProfile = (patch: Partial<Pick<TutorProfileSettings, "headline" | "bio" | "country" | "timezone" | "nativeLanguage">> & { availability?: AvailabilitySlot[] }): Promise<TutorProfileSettings> =>
+  fetchWithAuth(`${PROXY}/tutor/profile`, { method: "PATCH", body: JSON.stringify(patch) });
+
 export const markSessionNoShow = (classId: number) =>
   postSessionAction(classId, "no-show");
 

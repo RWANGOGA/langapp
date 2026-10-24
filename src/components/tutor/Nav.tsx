@@ -9,7 +9,7 @@ const TOP = [
   { href: "/tutor", label: "Dashboard" },
   { href: "/tutor/learners", label: "Learners" },
   { href: "/tutor/schedule", label: "Schedule" },
-  { href: "/tutor/resources", label: "Resources" },
+  { href: "/resources", label: "Resources" },
 ];
 const SIDE = [
   { href: "/tutor", label: "Dashboard", Icon: LayoutDashboard },
