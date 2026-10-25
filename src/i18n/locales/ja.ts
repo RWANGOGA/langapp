@@ -99,6 +99,43 @@ const ja: Record<string, string> = {
   "features.cta.body": "プログラムを選び、認定チューターとマッチングし、今週中に初回のレッスンをカレンダーに載せましょう。",
   "features.cta.choose": "プログラムを選ぶ",
   "features.cta.account": "アカウントを作る",
+
+  "resources.hero.kicker": "練習",
+  "resources.hero.title": "レッスンが作り、練習が保つ。",
+  "resources.hero.lede":
+    "チューターとの一時間が方向を決めます。その後の五十分にすることが、身につくかどうかを分けます。四つの習慣、アプリは不要——チューターが、あなたのレベルに合わせた毎週の計画に変えてくれます。",
+  "resources.hero.ctaTutor": "チューターを見つける",
+  "resources.hero.ctaBrowse": "チューターを探す",
+  "resources.step.1.title": "発話の記録をつける",
+  "resources.step.1.body": "実際の会話で必要だった表現をひとつ書き留め、翌日あえて使ってみましょう。手を伸ばして得た言葉は、覚える価値のある言葉です。",
+  "resources.step.2.title": "十分で見直す",
+  "resources.step.2.body": "毎日集中した十分は、月一回の三時間の猛勉強に勝ります。短い周期が、新しい単語が自動になるのに必要な反復を与えます。",
+  "resources.step.3.title": "本物の質問を持参する",
+  "resources.step.3.body": "仕事で、ネットで、移動中に戸惑った文を保存しておきましょう。答えられていない質問こそ、二人とも事前に書けなかった最良のレッスン計画です。",
+  "resources.habit4.kicker": "四つ目の習慣",
+  "resources.habit4.title": "学ぶ前に、使う。",
+  "resources.habit4.lede":
+    "すでにしていることをひとつ英語に切り替えましょう——スマホ、ゲーム、毎朝読むニュースアプリ。言語が教科ではなく、つい手に取る道具になるときに、流暢さは最も速く伸びます。選んだ道具をチューターに伝えれば、三回目のレッスンはもっと良くなります。",
+  "resources.cta.title": "フィードバック付きの練習は速い。",
+  "resources.cta.body": "認定チューターがこれらの習慣を計画に変え、毎週仕上がりを確認します——まずは一レッスンから。",
+  "resources.cta.how": "仕組みを見る",
+
+  "blog.hero.kicker": "ジャーナル",
+  "blog.hero.title": "正しく学ぶためのノート。",
+  "blog.hero.lede":
+    "Nile Language で教え、学ぶ人々による、短く実用的な記事。まとめ記事も、十のヒントもありません——結果を本当に変える、いくつかのことだけです。",
+  "blog.note.1.title": "思い描ける目標を選ぶ",
+  "blog.note.1.body": "英語が開いてほしい状況から始めましょう——会議、申請、空港——そして火曜日に練習できるほど具体的に目標を定めましょう。",
+  "blog.note.1.meta": "メソッド",
+  "blog.note.2.title": "フィードバックを聞く価値のあるものにするもの",
+  "blog.note.2.body": "最良の訂正は、文がまだ新鮮なうちに届き、ひとつの具体的な点を示し、あなたが言おうとしていたことにつながります。それがレッスンノートの役割です。",
+  "blog.note.2.meta": "フィードバック",
+  "blog.note.3.title": "継続は強度に勝る",
+  "blog.note.3.body": "現実的な毎週のリズムが、新しい言語が自動になるのに十分な反復を与えます。英雄式の週末の勉強は、流暢さではなく熱意で測れます。",
+  "blog.note.3.meta": "習慣",
+  "blog.cta.title": "読むことは第一歩。",
+  "blog.cta.body": "認定チューターがこれらの考えをあなたの計画に変えます——まずは一レッスンから。",
+  "blog.cta.habits": "練習の習慣",
 };
 
 export default ja;

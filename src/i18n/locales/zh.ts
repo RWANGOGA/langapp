@@ -99,6 +99,43 @@ const zh: Record<string, string> = {
   "features.cta.body": "选择一个课程，与认证导师匹配，把第一节课安排进本周的日历。",
   "features.cta.choose": "选择课程",
   "features.cta.account": "创建账户",
+
+  "resources.hero.kicker": "练习",
+  "resources.hero.title": "课程建立它，练习留住它。",
+  "resources.hero.lede":
+    "与导师的一小时定下方向；课后那五十分钟你做什么，决定了它能否扎根。四个习惯，无需任何应用——你的导师能把它们变成贴合你水平的每周计划。",
+  "resources.hero.ctaTutor": "找一位导师",
+  "resources.hero.ctaBrowse": "浏览导师",
+  "resources.step.1.title": "记录一份口语日志",
+  "resources.step.1.body": "在每次真实对话后，写下你需要却卡住的一个表达——第二天刻意用上它。那些你费力搜寻的语言，正是值得记住的语言。",
+  "resources.step.2.title": "十分钟快速复习",
+  "resources.step.2.body": "每天专注十分钟，胜过每月一次的三小时苦战。短循环给新词所需的重复，让它们变成自动反应。",
+  "resources.step.3.title": "带上真实的问题",
+  "resources.step.3.body": "记下工作中、网上或通勤时让你困惑的句子。那些未被回答的问题，是最好的、你们谁都无法提前写好的教案。",
+  "resources.habit4.kicker": "第四个习惯",
+  "resources.habit4.title": "先使用，再学习。",
+  "resources.habit4.lede":
+    "把你已经在做的一件事切换成英语——手机、游戏，或你每天早上阅读的新闻应用。当语言不再是一门学科，而变成你顺手拿起的工具时，流利度增长得最快。告诉你的导师你选了哪个工具；第三节课会因此更好。",
+  "resources.cta.title": "带反馈的练习更快。",
+  "resources.cta.body": "认证的导师会把这些习惯变成计划，并每周检查你的功课——从一节课开始。",
+  "resources.cta.how": "了解运作方式",
+
+  "blog.hero.kicker": "日志",
+  "blog.hero.title": "关于正确学习的笔记。",
+  "blog.hero.lede":
+    "来自与 Nile Language 一起教学与学习的人的简短实用文章。没有榜单，没有十条技巧——只有真正能改变结果的那几件事。",
+  "blog.note.1.title": "选一个你能想象的目标",
+  "blog.note.1.body": "从你希望英语为你打开的场景出发——那场会议、那份申请、那座机场——再把目标具体到周二就能练习。",
+  "blog.note.1.meta": "方法",
+  "blog.note.2.title": "让反馈值得倾听的是什么",
+  "blog.note.2.body": "最好的纠正出现在句子还新鲜时，指向一个具体的点，并与你正想说的事物相连。这正是课堂笔记的意义。",
+  "blog.note.2.meta": "反馈",
+  "blog.note.3.title": "坚持胜过突击",
+  "blog.note.3.body": "切合实际的每周节奏，给新语言足够的重复以变成自动。那种英雄式的周末苦读，能量化的是热情，而非流利度。",
+  "blog.note.3.meta": "习惯",
+  "blog.cta.title": "阅读只是第一步。",
+  "blog.cta.body": "认证的导师会把这些理念变成你的计划——从一节课开始。",
+  "blog.cta.habits": "练习习惯",
 };
 
 export default zh;

@@ -99,6 +99,43 @@ const fr: Record<string, string> = {
   "features.cta.body": "Choisissez un programme, associez-vous à un tuteur vérifié et inscrivez la première session à votre agenda cette semaine.",
   "features.cta.choose": "Choisir un programme",
   "features.cta.account": "Créer un compte",
+
+  "resources.hero.kicker": "Pratique",
+  "resources.hero.title": "Les cours le construisent. La pratique le garde.",
+  "resources.hero.lede":
+    "L'heure avec votre tuteur donne la direction ; ce que vous faites dans les cinquante minutes qui suivent décide si cela reste. Quatre habitudes, aucune application requise — votre tuteur peut en faire un plan hebdomadaire adapté à votre niveau.",
+  "resources.hero.ctaTutor": "Trouver un tuteur",
+  "resources.hero.ctaBrowse": "Parcourir les tuteurs",
+  "resources.step.1.title": "Tenez un journal oral",
+  "resources.step.1.body": "Notez une expression dont vous avez eu besoin dans chaque vraie conversation — et utilisez-la volontairement le lendemain. La langue qu'il a fallu aller chercher est celle qui mérite d'être gardée.",
+  "resources.step.2.title": "Révisez en dix minutes",
+  "resources.step.2.body": "Dix minutes concentrées chaque jour battent une session héroïque de trois heures par mois. Les cycles courts donnent aux mots nouveaux la répétition qu'il leur faut pour devenir automatiques.",
+  "resources.step.3.title": "Apportez de vraies questions",
+  "resources.step.3.body": "Gardez les phrases qui vous ont embrouillé au travail, en ligne ou en trajet. Les questions sans réponse sont le meilleur plan de cours que ni l'un ni l'autre n'auriez pu écrire à l'avance.",
+  "resources.habit4.kicker": "Habitude quatre",
+  "resources.habit4.title": "Utilisez-le avant de l'étudier.",
+  "resources.habit4.lede":
+    "Passez en anglais une chose que vous faites déjà — un téléphone, un jeu, l'app d'infos que vous lisez chaque matin. La fluidité progresse le plus vite là où la langue cesse d'être une matière et devient un outil que vous prenez de toute façon. Dites à votre tuteur quel outil vous avez choisi ; le troisième cours n'en sera que meilleur.",
+  "resources.cta.title": "Pratiquer avec des retours va plus vite.",
+  "resources.cta.body": "Un tuteur vérifié transforme ces habitudes en plan et vérifie le travail chaque semaine — en commençant par un cours.",
+  "resources.cta.how": "Voir comment ça marche",
+
+  "blog.hero.kicker": "Journal",
+  "blog.hero.title": "Notes pour bien apprendre.",
+  "blog.hero.lede":
+    "Des textes courts et pratiques de ceux qui enseignent et apprennent avec Nile Language. Pas de listes, pas de dix conseils — les rares choses qui changent vraiment les résultats.",
+  "blog.note.1.title": "Choisissez un objectif que vous pouvez voir",
+  "blog.note.1.body": "Partez de la situation que vous voulez que l'anglais débloque — la réunion, la candidature, l'aéroport — puis rendez l'objectif assez précis pour le pratiquer mardi.",
+  "blog.note.1.meta": "Méthode",
+  "blog.note.2.title": "Ce qui rend un retour mérite d'être entendu",
+  "blog.note.2.body": "Les meilleures corrections arrivent pendant que la phrase est encore fraîche, visent une chose concrète et se rattachent à quelque chose que vous essayiez de dire. C'est à cela que sert une note de cours.",
+  "blog.note.2.meta": "Retours",
+  "blog.note.3.title": "La régularité bat l'intensité",
+  "blog.note.3.body": "Un rythme hebdomadaire réaliste donne à la langue nouvelle assez de répétition pour devenir automatique. Le week-end héroïque d'étude se mesure en enthousiasme, pas en fluidité.",
+  "blog.note.3.meta": "Habitude",
+  "blog.cta.title": "En lire, c'est la première étape.",
+  "blog.cta.body": "Un tuteur vérifié transforme ces idées en votre plan — en commençant par un cours.",
+  "blog.cta.habits": "Habitudes de pratique",
 };
 
 export default fr;

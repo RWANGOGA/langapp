@@ -110,6 +110,45 @@ const en = {
   "features.cta.body": "Choose a program, get matched with a verified tutor, and put the first session on the calendar this week.",
   "features.cta.choose": "Choose a program",
   "features.cta.account": "Create an account",
+
+  // Resources (Practice)
+  "resources.hero.kicker": "Practice",
+  "resources.hero.title": "Lessons build it. Practice keeps it.",
+  "resources.hero.lede":
+    "The hour with your tutor sets the direction; what you do in the fifty minutes after decides whether it sticks. Four habits, no apps required — your tutor can turn them into a weekly plan shaped to your level.",
+  "resources.hero.ctaTutor": "Get a tutor",
+  "resources.hero.ctaBrowse": "Browse tutors",
+  "resources.step.1.title": "Keep a speaking log",
+  "resources.step.1.body": "Write down one phrase you needed in every real conversation — and use it on purpose the next day. Language you had to reach for is language worth keeping.",
+  "resources.step.2.title": "Review in ten minutes",
+  "resources.step.2.body": "Ten focused minutes daily beats a heroic three-hour session once a month. Short cycles give new words the repetition they need to become automatic.",
+  "resources.step.3.title": "Bring real questions",
+  "resources.step.3.body": "Save the sentences that confused you at work, online or in transit. Unanswered questions are the best lesson plan neither of you could have written in advance.",
+  "resources.habit4.kicker": "Habit four",
+  "resources.habit4.title": "Use it before you study it.",
+  "resources.habit4.lede":
+    "Switch one thing you already do into English — a phone, a game, the news app you read every morning. Fluency grows fastest where the language stops being a subject and becomes a tool you pick up anyway. Tell your tutor which tool you chose; lesson three will be better for it.",
+  "resources.cta.title": "Practice with feedback is faster.",
+  "resources.cta.body": "A verified tutor turns these habits into a plan and checks the work every week — starting with one lesson.",
+  "resources.cta.how": "See how it works",
+
+  // Blog (Journal)
+  "blog.hero.kicker": "Journal",
+  "blog.hero.title": "Notes on learning properly.",
+  "blog.hero.lede":
+    "Short, practical writing from the people who teach and learn with Nile Language. No listicles, no ten tips — the few things that actually change outcomes.",
+  "blog.note.1.title": "Choose a goal you can picture",
+  "blog.note.1.body": "Start from the situation you want English to unlock — the meeting, the application, the airport — then make the goal specific enough to practise on Tuesday.",
+  "blog.note.1.meta": "Method",
+  "blog.note.2.title": "What makes feedback worth hearing",
+  "blog.note.2.body": "The best corrections arrive while the sentence is still fresh, point at one concrete thing, and connect to something you were trying to say. That is what a lesson note is for.",
+  "blog.note.2.meta": "Feedback",
+  "blog.note.3.title": "Consistency beats intensity",
+  "blog.note.3.body": "A realistic weekly rhythm gives new language enough repetition to become automatic. The heroic weekend of study is measurable in enthusiasm, not in fluency.",
+  "blog.note.3.meta": "Habit",
+  "blog.cta.title": "Reading about it is step one.",
+  "blog.cta.body": "A verified tutor turns these ideas into your plan — starting with one lesson.",
+  "blog.cta.habits": "Practice habits",
 } as const;
 
 export type MessageKey = keyof typeof en;

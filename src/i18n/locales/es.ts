@@ -99,6 +99,43 @@ const es: Record<string, string> = {
   "features.cta.body": "Elige un programa, empareja con un tutor verificado y pon la primera sesión en el calendario esta semana.",
   "features.cta.choose": "Elige un programa",
   "features.cta.account": "Crear una cuenta",
+
+  "resources.hero.kicker": "Práctica",
+  "resources.hero.title": "Las clases lo construyen. La práctica lo mantiene.",
+  "resources.hero.lede":
+    "La hora con tu tutor marca la dirección; lo que haces en los cincuenta minutos siguientes decide si perdura. Cuatro hábitos, sin apps necesarias — tu tutor puede convertirlos en un plan semanal ajustado a tu nivel.",
+  "resources.hero.ctaTutor": "Consigue un tutor",
+  "resources.hero.ctaBrowse": "Explorar tutores",
+  "resources.step.1.title": "Lleva un registro al hablar",
+  "resources.step.1.body": "Anota una frase que necesitaste en cada conversación real — y úsala a propósito al día siguiente. El idioma al que tuviste que llegar es el que vale la pena conservar.",
+  "resources.step.2.title": "Repasa en diez minutos",
+  "resources.step.2.body": "Diez minutos diarios con foco le ganan a una sesión heroica de tres horas al mes. Los ciclos cortos dan a las palabras nuevas la repetición que necesitan para volverse automáticas.",
+  "resources.step.3.title": "Lleva preguntas reales",
+  "resources.step.3.body": "Guarda las frases que te confundieron en el trabajo, en línea o de camino. Las preguntas sin respuesta son el mejor plan de clase que ninguno de los dos habría podido escribir por adelantado.",
+  "resources.habit4.kicker": "Hábito cuatro",
+  "resources.habit4.title": "Úsalo antes de estudiarlo.",
+  "resources.habit4.lede":
+    "Cambia al inglés algo que ya haces — el teléfono, un juego, la app de noticias que lees cada mañana. La fluidez crece más rápido donde el idioma deja de ser una materia y se vuelve una herramienta que tomas de todos modos. Dile a tu tutor qué herramienta elegiste; la tercera clase será mejor por ello.",
+  "resources.cta.title": "Practicar con retroalimentación es más rápido.",
+  "resources.cta.body": "Un tutor verificado convierte estos hábitos en un plan y revisa el trabajo cada semana — empezando con una clase.",
+  "resources.cta.how": "Mira cómo funciona",
+
+  "blog.hero.kicker": "Diario",
+  "blog.hero.title": "Notas para aprender bien.",
+  "blog.hero.lede":
+    "Textos breves y prácticos de quienes enseñan y aprenden con Nile Language. Sin listas, sin diez consejos — las pocas cosas que de verdad cambian los resultados.",
+  "blog.note.1.title": "Elige una meta que puedas imaginar",
+  "blog.note.1.body": "Parte de la situación que quieres que el inglés desbloquee — la reunión, la solicitud, el aeropuerto — y luego haz la meta lo bastante concreta para practicarla el martes.",
+  "blog.note.1.meta": "Método",
+  "blog.note.2.title": "Qué hace que la retroalimentación merezca oírse",
+  "blog.note.2.body": "Las mejores correcciones llegan mientras la frase aún está fresca, señalan una cosa concreta y se conectan con algo que intentabas decir. Para eso sirve una nota de clase.",
+  "blog.note.2.meta": "Retroalimentación",
+  "blog.note.3.title": "La constancia le gana a la intensidad",
+  "blog.note.3.body": "Un ritmo semanal realista da al idioma nuevo suficiente repetición para volverse automático. El fin de semana heroico de estudio se mide en entusiasmo, no en fluidez.",
+  "blog.note.3.meta": "Hábito",
+  "blog.cta.title": "Leer sobre ello es el paso uno.",
+  "blog.cta.body": "Un tutor verificado convierte estas ideas en tu plan — empezando con una clase.",
+  "blog.cta.habits": "Hábitos de práctica",
 };
 
 export default es;
