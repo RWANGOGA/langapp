@@ -21,6 +21,7 @@ import { SubscriptionManagement } from "@/components/admin/SubscriptionManagemen
 import { ActivityLog } from "@/components/admin/ActivityLog";
 import PaymentOversight from "@/components/admin/PaymentOversight";
 import { useAuth } from "@/lib/auth";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import ui from "@/components/portal/bands.module.css";
 
 // Four headline numbers, each with the icon that names it. Keyed by label so a
@@ -35,6 +36,7 @@ const KPI_ICONS = {
 export default function AdminPage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, isAdmin } = useAuth();
+  const { t } = useLanguage();
   const [data, setData] = useState<AdminDashboard | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [paymentActivity, setPaymentActivity] = useState<PaymentActivity[]>([]);
@@ -71,7 +73,7 @@ export default function AdminPage() {
         })
         .catch((err) => {
           console.error("Admin dashboard fetch error:", err);
-          setError(err instanceof Error ? err.message : "Failed to load admin dashboard data.");
+          setError(err instanceof Error ? err.message : t("admin.state.errorOverview"));
         });
     }
   }, [isAuthenticated, isAdmin, isLoading, router]);
@@ -94,7 +96,7 @@ export default function AdminPage() {
     return (
       <AdminShell adminName={user?.full_name} unread={0}>
         <div className={ui.pageStack}>
-          <p className={ui.lede}>Checking your access…</p>
+          <p className={ui.lede}>{t("admin.state.checking")}</p>
         </div>
       </AdminShell>
     );
@@ -113,7 +115,7 @@ export default function AdminPage() {
           </p>
           <p>
             <button type="button" className={ui.btn} onClick={() => window.location.reload()}>
-              Try again
+              {t("admin.state.tryAgain")}
             </button>
           </p>
         </div>
@@ -125,7 +127,7 @@ export default function AdminPage() {
     return (
       <AdminShell adminName={user?.full_name} unread={0}>
         <div className={ui.pageStack}>
-          <p className={ui.lede}>Loading the overview…</p>
+          <p className={ui.lede}>{t("admin.state.loadingOverview")}</p>
         </div>
       </AdminShell>
     );
@@ -136,15 +138,12 @@ export default function AdminPage() {
       <div className={ui.pageStack}>
         <header className={ui.pageHeading}>
           <div>
-            <p className={ui.kicker}>Admin overview</p>
-            <h1>Everything the school is running</h1>
-            <p>
-              Tutors, learners, sessions and payments in one place. Every figure below is read from
-              the live database, and anything not yet connected says so instead of pretending.
-            </p>
+            <p className={ui.kicker}>{t("admin.overview.kicker")}</p>
+            <h1>{t("admin.overview.title")}</h1>
+            <p>{t("admin.overview.lede")}</p>
           </div>
           <Link className={ui.headerAction} href="/admin/tutors">
-            Tutor roster <ArrowRight size={14} aria-hidden />
+            {t("admin.overview.tutorRoster")} <ArrowRight size={14} aria-hidden />
           </Link>
         </header>
 
@@ -162,22 +161,19 @@ export default function AdminPage() {
 
         {/* The one task on the overview that is a decision, not a figure: how
             many tutor applications the school currently owes an answer on. */}
-        <section className={ui.band} aria-label="Tutor application review queue">
+        <section className={ui.band} aria-label={t("admin.overview.appsLabel")}>
           <div className={ui.figureRowAligned}>
             <div className={ui.figureBody}>
-              <p className={ui.bandLabel}>Tutor applications</p>
+              <p className={ui.bandLabel}>{t("admin.overview.appsLabel")}</p>
               <h3 className={ui.bandTitle}>
                 {data.applications_in_review === 0
-                  ? "No applications are waiting on a decision"
-                  : `${data.applications_in_review} ${data.applications_in_review === 1 ? "application is" : "applications are"} waiting on a decision`}
+                  ? t("admin.overview.appsNone")
+                  : t(data.applications_in_review === 1 ? "admin.overview.appsWaitingOne" : "admin.overview.appsWaitingOther", { n: data.applications_in_review })}
               </h3>
-              <p className={ui.rowNote}>
-                Open the review queue to read each applicant's evidence and move the file forward,
-                approve it, or reject it with a note.
-              </p>
+              <p className={ui.rowNote}>{t("admin.overview.appsNote")}</p>
             </div>
             <Link className={ui.headerAction} href="/admin/applications">
-              Review queue <ArrowRight size={14} aria-hidden />
+              {t("admin.overview.reviewQueue")} <ArrowRight size={14} aria-hidden />
             </Link>
           </div>
         </section>

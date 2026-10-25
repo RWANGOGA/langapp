@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import { getAdminDashboard, type AdminDashboard } from "@/lib/admin-data";
 import AdminShell from "@/components/admin/AdminShell";
 import TutorRoster from "@/components/admin/TutorRoster";
@@ -31,56 +32,6 @@ const SECTIONS = new Set<Section>([
   "settings",
 ]);
 
-// What each section promises, in the same voice as the overview. Sections that
-// are not wired to the backend say so in the heading rather than in a footnote.
-const SECTION_COPY: Record<Section, { kicker: string; title: string; lede: string }> = {
-  dashboard: {
-    kicker: "Overview",
-    title: "The overview lives at the front door",
-    lede: "Every figure the school is running is on /admin, where the rosters, the matrix and the payment ledger sit together.",
-  },
-  applications: {
-    kicker: "Applications",
-    title: "Decide who teaches here",
-    lede: "Every tutor application, from submitted to a final decision. Open a file to read its evidence, then move it forward, approve it, or reject it with a note. Nothing here changes an applicant's view of their own file.",
-  },
-  tutors: {
-    kicker: "Tutors",
-    title: "Every tutor on the books",
-    lede: "Credentials on file, how many sessions each tutor is carrying, and the country their profile records.",
-  },
-  students: {
-    kicker: "Learners",
-    title: "Every learner, and who teaches them",
-    lede: "Assign a tutor, move a learner between approved tutors, or return them to the awaiting pool. Every change tells the learner and both tutors.",
-  },
-  classes: {
-    kicker: "Classes",
-    title: "Every lesson, upcoming and archived",
-    lede: "The live lesson book: filter by what happened, search by learner, tutor or title, and book the next lesson for any learner who already has a tutor.",
-  },
-  meetings: {
-    kicker: "Meetings",
-    title: "Where sessions run",
-    lede: "The video providers your tutors are actually using in the next twenty-four hours.",
-  },
-  subscriptions: {
-    kicker: "Subscriptions",
-    title: "What learners have paid for",
-    lede: "The share of orders by package, the state those orders reached, and the tutors carrying the most sessions.",
-  },
-  reports: {
-    kicker: "Reports",
-    title: "The latest activity",
-    lede: "Completed lessons and confirmed payments, stamped with when they actually happened.",
-  },
-  settings: {
-    kicker: "Settings",
-    title: "Your account, your terms",
-    lede: "Change your display name, the language you work in and the timezone every lesson time is shown in - or set a new password. Email and role are issued by the school, not edited here.",
-  },
-};
-
 /** A band whose whole content is a sentence: the honest shape of "not built yet". */
 function HonestBand({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -93,7 +44,7 @@ function HonestBand({ label, children }: { label: string; children: ReactNode })
   );
 }
 
-function SectionContent({ section, data, onReload }: { section: Section; data: AdminDashboard; onReload: () => void }) {
+function SectionContent({ section, data, onReload, t }: { section: Section; data: AdminDashboard; onReload: () => void; t: (key: string, vars?: Record<string, string | number>) => string }) {
   switch (section) {
     case "applications":
       return <ApplicationReview />;
@@ -113,10 +64,10 @@ function SectionContent({ section, data, onReload }: { section: Section; data: A
       return <AccountSettings />;
     case "dashboard":
       return (
-        <HonestBand label="Overview">
-          <p>Choose a section from the sidebar, or open the overview that holds all of them together.</p>
+        <HonestBand label={t("admin.honest.overview.label")}>
+          <p>{t("admin.honest.overview.body")}</p>
           <p>
-            <Link className={ui.textLink} href="/admin">Open the overview <ArrowRight size={13} aria-hidden /></Link>
+            <Link className={ui.textLink} href="/admin">{t("admin.honest.overview.link")} <ArrowRight size={13} aria-hidden /></Link>
           </p>
         </HonestBand>
       );
@@ -124,8 +75,8 @@ function SectionContent({ section, data, onReload }: { section: Section; data: A
       // Every section is wired now; this band only guards a payload from an
       // older build naming a section the client does not know.
       return (
-        <HonestBand label="Nothing to show yet">
-          <p>The sidebar entry stays so the product shape is visible, but there is no data behind it.</p>
+        <HonestBand label={t("admin.honest.fallback.label")}>
+          <p>{t("admin.honest.fallback.body")}</p>
         </HonestBand>
       );
   }
@@ -135,10 +86,15 @@ export default function AdminSectionPage() {
   const router = useRouter();
   const params = useParams<{ section: string }>();
   const { user, isAuthenticated, isLoading, isAdmin } = useAuth();
+  const { t } = useLanguage();
   const [data, setData] = useState<AdminDashboard | null>(null);
   const [error, setError] = useState<string | null>(null);
   const section = SECTIONS.has(params.section as Section) ? (params.section as Section) : "dashboard";
-  const copy = SECTION_COPY[section];
+  const copy = {
+    kicker: t(`admin.section.${section}.kicker`),
+    title: t(`admin.section.${section}.title`),
+    lede: t(`admin.section.${section}.lede`),
+  };
 
   // After an assignment the roster, the KPIs and the matrix all shift, so the
   // whole dashboard is refetched rather than patched row by row in the client.
@@ -157,14 +113,14 @@ export default function AdminSectionPage() {
 
     getAdminDashboard()
       .then(setData)
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load admin data."));
+      .catch((err) => setError(err instanceof Error ? err.message : t("admin.state.errorSection")));
   }, [isAuthenticated, isAdmin, isLoading, router]);
 
   if (isLoading || !isAuthenticated || !isAdmin) {
     return (
       <AdminShell adminName={user?.full_name} unread={0}>
         <div className={ui.pageStack}>
-          <p className={ui.lede}>Checking your access…</p>
+          <p className={ui.lede}>{t("admin.state.checking")}</p>
         </div>
       </AdminShell>
     );
@@ -177,7 +133,7 @@ export default function AdminSectionPage() {
           <p role="alert" className={ui.statusBad}>{error}</p>
           <p>
             <button type="button" className={ui.btn} onClick={() => window.location.reload()}>
-              Try again
+              {t("admin.state.tryAgain")}
             </button>
           </p>
         </div>
@@ -189,7 +145,7 @@ export default function AdminSectionPage() {
     return (
       <AdminShell adminName={user?.full_name} unread={0}>
         <div className={ui.pageStack}>
-          <p className={ui.lede}>Loading {copy.kicker.toLowerCase()}…</p>
+          <p className={ui.lede}>{t("admin.state.loadingSection", { section: copy.kicker })}</p>
         </div>
       </AdminShell>
     );
@@ -205,7 +161,7 @@ export default function AdminSectionPage() {
             <p>{copy.lede}</p>
           </div>
         </header>
-        <SectionContent section={section} data={data} onReload={reload} />
+        <SectionContent section={section} data={data} onReload={reload} t={t} />
       </div>
     </AdminShell>
   );
