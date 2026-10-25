@@ -136,6 +136,32 @@ const es: Record<string, string> = {
   "blog.cta.title": "Leer sobre ello es el paso uno.",
   "blog.cta.body": "Un tutor verificado convierte estas ideas en tu plan — empezando con una clase.",
   "blog.cta.habits": "Hábitos de práctica",
+
+  "pricing.hero.kicker": "Programas",
+  "pricing.hero.title": "Precios claros. Sin sorpresas.",
+  "pricing.hero.lede":
+    "Tres duraciones, un precio cada una. Todos los programas son íntegramente uno a uno con tu tutor verificado asignado: clases en vivo, retroalimentación escrita tras cada clase y un registro de tu progreso.",
+  "pricing.hero.cta": "Ver los programas",
+  "pricing.badge.popular": "El más elegido",
+  "pricing.termOne": "para {n} mes de clases uno a uno",
+  "pricing.termOther": "para {n} meses de clases uno a uno",
+  "pricing.choose": "Elegir {name}",
+  "pricing.note":
+    "Los precios se muestran en USD con equivalentes orientativos en moneda local; el importe exacto y los métodos de pago disponibles para ti se confirman en el pago según tu región.",
+  "pricing.faq.kicker": "Antes de decidir",
+  "pricing.faq.title": "Las preguntas que importan al pagar.",
+  "pricing.faq.1.q": "¿Qué incluye cada programa?",
+  "pricing.faq.1.a": "Clases en vivo uno a uno con tu tutor asignado, retroalimentación escrita tras cada sesión completada, reprogramación según la política de 24 horas y un registro en tu panel de todo lo que has hecho.",
+  "pricing.faq.2.q": "¿Puedo pagar en mi moneda local?",
+  "pricing.faq.2.a": "El pago admite métodos según la región y muestra lo disponible para tu ubicación antes de que te comprometas.",
+  "pricing.faq.3.q": "¿Qué pasa después de comprar?",
+  "pricing.faq.3.a": "Tu pedido pasa a emparejamiento. Un administrador asigna un tutor verificado para tu nivel y objetivos, y te avisamos en el momento en que ocurre; luego pones la primera clase en el calendario.",
+  "pricing.faq.4.q": "¿El programa caduca?",
+  "pricing.faq.4.a": "Cada programa dura el período indicado desde su activación. Elige la duración que corresponda al plan que realmente puedas sostener: la constancia le gana a la intensidad.",
+  "pricing.cta.title": "Elige el ritmo que puedas sostener.",
+  "pricing.cta.body": "Una compra, un tutor, un camino claro. El pago toma menos de un minuto.",
+  "pricing.cta.checkout": "Ir al pago",
+  "pricing.cta.tutors": "Conoce primero a los tutores",
 };
 
 export default es;

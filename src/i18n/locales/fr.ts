@@ -136,6 +136,32 @@ const fr: Record<string, string> = {
   "blog.cta.title": "En lire, c'est la première étape.",
   "blog.cta.body": "Un tuteur vérifié transforme ces idées en votre plan — en commençant par un cours.",
   "blog.cta.habits": "Habitudes de pratique",
+
+  "pricing.hero.kicker": "Programmes",
+  "pricing.hero.title": "Des prix clairs. Pas de surprises.",
+  "pricing.hero.lede":
+    "Trois durées, un prix chacune. Tous les programmes sont entièrement en un-à-un avec votre tuteur vérifié assigné — cours en direct, retours écrits après chaque cours et un suivi de vos progrès.",
+  "pricing.hero.cta": "Voir les programmes",
+  "pricing.badge.popular": "Le plus choisi",
+  "pricing.termOne": "pour {n} mois de cours en un-à-un",
+  "pricing.termOther": "pour {n} mois de cours en un-à-un",
+  "pricing.choose": "Choisir {name}",
+  "pricing.note":
+    "Les prix sont affichés en USD avec des équivalents indicatifs en monnaie locale ; le montant exact et les moyens de paiement disponibles pour vous sont confirmés au paiement selon votre région.",
+  "pricing.faq.kicker": "Avant de décider",
+  "pricing.faq.title": "Les questions qui comptent au paiement.",
+  "pricing.faq.1.q": "Que comprend chaque programme ?",
+  "pricing.faq.1.a": "Des cours en direct en un-à-un avec votre tuteur assigné, des retours écrits après chaque session terminée, la reprogrammation selon la politique des 24 heures, et un suivi dans votre tableau de bord de tout ce que vous avez fait.",
+  "pricing.faq.2.q": "Puis-je payer en monnaie locale ?",
+  "pricing.faq.2.a": "Le paiement prend en charge des méthodes adaptées à la région et affiche ce qui est disponible pour votre lieu avant que vous vous engagiez.",
+  "pricing.faq.3.q": "Que se passe-t-il après l'achat ?",
+  "pricing.faq.3.a": "Votre commande passe en mise en relation. Un administrateur assigne un tuteur vérifié pour votre niveau et vos objectifs, et vous êtes notifié dès que cela se produit — puis vous inscrivez le premier cours à l'agenda.",
+  "pricing.faq.4.q": "Le programme expire-t-il ?",
+  "pricing.faq.4.a": "Chaque programme dure la période indiquée à partir de son activation. Choisissez la durée qui correspond au plan que vous pouvez vraiment tenir — la régularité bat l'intensité.",
+  "pricing.cta.title": "Choisissez le rythme que vous pouvez tenir.",
+  "pricing.cta.body": "Un achat, un tuteur, une voie claire. Le paiement prend moins d'une minute.",
+  "pricing.cta.checkout": "Aller au paiement",
+  "pricing.cta.tutors": "Rencontrez d'abord les tuteurs",
 };
 
 export default fr;

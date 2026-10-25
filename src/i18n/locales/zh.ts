@@ -136,6 +136,32 @@ const zh: Record<string, string> = {
   "blog.cta.title": "阅读只是第一步。",
   "blog.cta.body": "认证的导师会把这些理念变成你的计划——从一节课开始。",
   "blog.cta.habits": "练习习惯",
+
+  "pricing.hero.kicker": "课程",
+  "pricing.hero.title": "价格透明，没有意外。",
+  "pricing.hero.lede":
+    "三种时长，各一个价格。每个课程都完全与你所指派的认证导师一对一——直播课程、每节课后的书面反馈，以及你的进步记录。",
+  "pricing.hero.cta": "查看课程",
+  "pricing.badge.popular": "最多人选择",
+  "pricing.termOne": "用于 {n} 个月的一对一课程",
+  "pricing.termOther": "用于 {n} 个月的一对一课程",
+  "pricing.choose": "选择 {name}",
+  "pricing.note":
+    "价格以美元显示并附本地货币的参考等值；确切金额以及你可使用的支付方式，会在结账时根据你的所在地区确认。",
+  "pricing.faq.kicker": "决定之前",
+  "pricing.faq.title": "结账时真正重要的问题。",
+  "pricing.faq.1.q": "每个课程都包含什么？",
+  "pricing.faq.1.a": "与你指派的导师进行一对一直播课程、每次完成课程后的书面反馈、在 24 小时政策下的改期，以及仪表板上你所做一切的记录。",
+  "pricing.faq.2.q": "我能用本地货币支付吗？",
+  "pricing.faq.2.a": "结账支持符合所在地区的支付方式，并在你确认前显示你所在地区可用的选项。",
+  "pricing.faq.3.q": "购买之后会怎样？",
+  "pricing.faq.3.a": "你的订单进入匹配阶段。管理员会为你的水平和目标指派一位认证导师，那一刻发生时你会收到通知——然后把第一节课安排进日历。",
+  "pricing.faq.4.q": "课程会过期吗？",
+  "pricing.faq.4.a": "每个课程自激活起按其标明的时长运行。选择一个与你真正能坚持的计划相匹配的时长——坚持胜过突击。",
+  "pricing.cta.title": "选一个你能坚持的节奏。",
+  "pricing.cta.body": "一次购买，一位导师，一条清晰的路径。结账不到一分钟。",
+  "pricing.cta.checkout": "前往结账",
+  "pricing.cta.tutors": "先认识导师",
 };
 
 export default zh;

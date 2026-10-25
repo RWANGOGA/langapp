@@ -149,6 +149,33 @@ const en = {
   "blog.cta.title": "Reading about it is step one.",
   "blog.cta.body": "A verified tutor turns these ideas into your plan — starting with one lesson.",
   "blog.cta.habits": "Practice habits",
+
+  // Pricing
+  "pricing.hero.kicker": "Programs",
+  "pricing.hero.title": "Priced plainly. No surprises.",
+  "pricing.hero.lede":
+    "Three durations, one price each. Every program is entirely one-to-one with your assigned, verified tutor — live lessons, written feedback after each class, and a record of your progress.",
+  "pricing.hero.cta": "View the programs",
+  "pricing.badge.popular": "Most chosen",
+  "pricing.termOne": "for {n} month of one-to-one lessons",
+  "pricing.termOther": "for {n} months of one-to-one lessons",
+  "pricing.choose": "Choose {name}",
+  "pricing.note":
+    "Prices are shown in USD with indicative local-currency equivalents; the exact amount and the payment methods available to you are confirmed at checkout based on your region.",
+  "pricing.faq.kicker": "Before you decide",
+  "pricing.faq.title": "The questions that matter at checkout.",
+  "pricing.faq.1.q": "What is included in every program?",
+  "pricing.faq.1.a": "One-to-one live lessons with your assigned tutor, written feedback after every completed session, rescheduling under the 24-hour policy, and a dashboard record of everything you have done.",
+  "pricing.faq.2.q": "Can I pay in my local currency?",
+  "pricing.faq.2.a": "Checkout supports region-appropriate payment methods and shows what is available for your location before you commit.",
+  "pricing.faq.3.q": "What happens after I buy?",
+  "pricing.faq.3.a": "Your order moves into matching. An administrator assigns a verified tutor for your level and goals, and you are notified the moment that happens — then you put the first lesson on the calendar.",
+  "pricing.faq.4.q": "Does the program expire?",
+  "pricing.faq.4.a": "Each program runs for its stated duration from activation. Choose the length that matches the plan you can actually keep — consistency beats intensity.",
+  "pricing.cta.title": "Pick the rhythm you can keep.",
+  "pricing.cta.body": "One purchase, one tutor, one clear path. Checkout takes less than a minute.",
+  "pricing.cta.checkout": "Go to checkout",
+  "pricing.cta.tutors": "Meet the tutors first",
 } as const;
 
 export type MessageKey = keyof typeof en;
