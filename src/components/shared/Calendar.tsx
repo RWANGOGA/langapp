@@ -2,9 +2,18 @@
 
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageProvider";
+import type { LocaleCode } from "@/i18n/config";
 import styles from "./shared.module.css";
 
-const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+// BCP-47 tags for Intl date formatting, keyed by the app's own locale codes.
+const LOCALE_TAG: Record<LocaleCode, string> = {
+  en: "en-US",
+  zh: "zh-CN",
+  ja: "ja-JP",
+  es: "es-ES",
+  fr: "fr-FR",
+};
 
 // Bucket each event into the viewer's local calendar day, not the UTC one.
 const localDay = (iso: string) => new Date(iso).toLocaleDateString("en-CA");
@@ -20,6 +29,8 @@ export interface CalendarEvent {
  * Shared by the learner dashboard and the tutor portal.
  */
 export default function Calendar({ title, events }: { title: string; events: CalendarEvent[] }) {
+  const { t, locale } = useLanguage();
+  const tag = LOCALE_TAG[locale] ?? "en-US";
   const today = new Date().toLocaleDateString("en-CA");
   const [ty, tm] = [Number(today.slice(0, 4)), Number(today.slice(5, 7)) - 1];
   const [view, setView] = useState({ y: ty, m: tm });
@@ -33,8 +44,14 @@ export default function Calendar({ title, events }: { title: string; events: Cal
     });
   }, [view]);
 
+  // Weekday headers follow the active language; 2024-01-07 is a Sunday.
+  const days = useMemo(() => {
+    const fmt = new Intl.DateTimeFormat(tag, { weekday: "short", timeZone: "UTC" });
+    return Array.from({ length: 7 }, (_, i) => fmt.format(new Date(Date.UTC(2024, 0, 7 + i))));
+  }, [tag]);
+
   const shift = (n: number) => setView(({ y, m }) => { const d = new Date(Date.UTC(y, m + n, 1)); return { y: d.getUTCFullYear(), m: d.getUTCMonth() }; });
-  const monthTitle = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(Date.UTC(view.y, view.m, 1)));
+  const monthTitle = new Intl.DateTimeFormat(tag, { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(Date.UTC(view.y, view.m, 1)));
 
   return (
     <>
@@ -42,12 +59,12 @@ export default function Calendar({ title, events }: { title: string; events: Cal
         <h3 className={styles.calTitle}>{title}</h3>
       </div>
       <div className={styles.calNav}>
-        <button type="button" onClick={() => shift(-1)} aria-label="Previous month"><ChevronLeft size={18} /></button>
+        <button type="button" onClick={() => shift(-1)} aria-label={t("learner.cal.prev")}><ChevronLeft size={18} /></button>
         <strong>{monthTitle}</strong>
-        <button type="button" onClick={() => shift(1)} aria-label="Next month"><ChevronRight size={18} /></button>
+        <button type="button" onClick={() => shift(1)} aria-label={t("learner.cal.next")}><ChevronRight size={18} /></button>
       </div>
       <div className={styles.calGrid} role="grid" aria-label={monthTitle}>
-        {DAYS.map((d) => <span key={d} className={styles.calDow} role="columnheader">{d}</span>)}
+        {days.map((d) => <span key={d} className={styles.calDow} role="columnheader">{d}</span>)}
         {cells.map((c) => (
           <span key={c.iso} role="gridcell" aria-current={c.iso === today ? "date" : undefined}
             className={[styles.calDay, c.out && styles.calOut, eventDays.has(c.iso) && styles.calClass, c.iso === today && styles.calToday].filter(Boolean).join(" ")}>
