@@ -48,7 +48,7 @@ export default function PricingContent({ plans }: { plans: Plan[] }) {
                   </li>
                 ))}
               </ul>
-              <Link href="/checkout" className={`${styles.btnPrimary} ${styles.planCta}`}>
+              <Link href={`/checkout?package=${plan.id}`} className={`${styles.btnPrimary} ${styles.planCta}`}>
                 {t("pricing.choose", { name: plan.name.split(" (")[0] })}
               </Link>
             </article>

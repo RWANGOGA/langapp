@@ -179,6 +179,14 @@ const en = {
   "pricing.cta.checkout": "Go to checkout",
   "pricing.cta.tutors": "Meet the tutors first",
 
+  // Checkout
+  "checkout.err.forbidden":
+    "Orders can only be placed from a student account. You are signed in as a tutor or an administrator - sign in with your student account, or contact us and we will place the order for you.",
+  "checkout.err.rejected":
+    "The order was not accepted. Check the package and payment method you selected, then try again.",
+  "checkout.err.generic":
+    "We couldn't reach the server, so your order was not recorded. Check your connection and try again.",
+
   // Tutors directory
   "tutors.hero.kicker": "The faculty",
   "tutors.hero.title": "Meet the tutors you will actually study with.",

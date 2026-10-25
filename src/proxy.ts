@@ -18,7 +18,11 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const protectedPaths = ["/tutor", "/admin", "/dashboard"];
+  // /checkout is gated so the flow never sends a signed-out visitor into a form
+  // whose submit would only 401. The chosen package rides in the query string,
+  // so the callback keeps path and search together and sign-in returns to the
+  // same selection instead of a bare checkout page.
+  const protectedPaths = ["/tutor", "/admin", "/dashboard", "/checkout"];
   const isProtectedPath = protectedPaths.some((path) => pathname === path || pathname.startsWith(path + "/"));
 
   if (!isProtectedPath) {
@@ -28,7 +32,7 @@ export function proxy(request: NextRequest) {
   const accessToken = request.cookies.get("access_token");
 
   if (!accessToken) {
-    const callbackUrl = encodeURIComponent(pathname);
+    const callbackUrl = encodeURIComponent(pathname + request.nextUrl.search);
     return NextResponse.redirect(new URL(`/auth/login?callbackUrl=${callbackUrl}`, request.url));
   }
 

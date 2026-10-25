@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Check } from "lucide-react";
 import type { CheckoutRegion, Plan } from "@/lib/packages-data";
 import { formatMoney } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import ui from "@/components/portal/bands.module.css";
 import styles from "./checkout.module.css";
 
@@ -29,11 +30,23 @@ const SESSION_TYPES: [string, string][] = [
   ["business", "Business English"],
 ];
 
-export default function CheckoutClient({ plans, regions }: { plans: Plan[]; regions: CheckoutRegion[] }) {
+export default function CheckoutClient({
+  plans,
+  regions,
+  initialPlanId,
+}: {
+  plans: Plan[];
+  regions: CheckoutRegion[];
+  /** The package the visitor picked on /pricing, carried through sign-in. */
+  initialPlanId?: Plan["id"];
+}) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [regionCode, setRegionCode] = useState(regions[0]?.code ?? "intl");
   const region = regions.find((r) => r.code === regionCode) ?? regions[0];
-  const [planId, setPlanId] = useState<Plan["id"]>(plans.find((p) => p.popular)?.id ?? plans[0].id);
+  const [planId, setPlanId] = useState<Plan["id"]>(
+    initialPlanId ?? plans.find((p) => p.popular)?.id ?? plans[0].id,
+  );
   const [method, setMethod] = useState<string>(region.methods[0]);
   const [subject, setSubject] = useState(SUBJECTS[0]);
   const [sessionType, setSessionType] = useState(SESSION_TYPES[0][0]);
@@ -69,14 +82,29 @@ export default function CheckoutClient({ plans, regions }: { plans: Plan[]; regi
         }),
       });
       if (res.status === 401) {
-        router.push(`/auth/login?callbackUrl=${encodeURIComponent(`/checkout?package=${plan.id}`)}`);
+        // The session lapsed while the form was open. Send the student back to
+        // sign-in carrying the package they actually chose, not the default.
+        router.push(`/auth/login?callbackUrl=${encodeURIComponent(`/checkout?package=${planId}`)}`);
         return;
       }
-      if (!res.ok) throw new Error();
+      if (res.status === 403) {
+        // Signed in, but as a tutor or admin: the API only accepts orders from
+        // student accounts. Saying "check your connection" here would be a lie.
+        setError(t("checkout.err.forbidden"));
+        setBusy(false);
+        return;
+      }
+      if (!res.ok) {
+        // The order reached the API and was refused, so this is not a network
+        // failure and must not be reported as one.
+        setError(t("checkout.err.rejected"));
+        setBusy(false);
+        return;
+      }
       const order = await res.json();
       router.push(`/checkout/success?order=${order.id}`);
     } catch {
-      setError("We couldn't record your order. Please check your connection and try again.");
+      setError(t("checkout.err.generic"));
       setBusy(false);
     }
   }
