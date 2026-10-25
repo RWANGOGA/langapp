@@ -146,16 +146,26 @@ export default function AdminSectionPage() {
     );
   }
 
-  if (error || !data) {
+  if (error) {
     return (
       <AdminShell adminName={user?.full_name} unread={0}>
         <div className={ui.pageStack}>
-          <p role="alert" className={ui.statusBad}>{error || "The admin section could not be loaded."}</p>
+          <p role="alert" className={ui.statusBad}>{error}</p>
           <p>
             <button type="button" className={ui.btn} onClick={() => window.location.reload()}>
               Try again
             </button>
           </p>
+        </div>
+      </AdminShell>
+    );
+  }
+
+  if (!data) {
+    return (
+      <AdminShell adminName={user?.full_name} unread={0}>
+        <div className={ui.pageStack}>
+          <p className={ui.lede}>Loading {copy.kicker.toLowerCase()}…</p>
         </div>
       </AdminShell>
     );

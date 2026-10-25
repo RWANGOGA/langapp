@@ -94,18 +94,32 @@ export default function AdminPage() {
     );
   }
 
-  if (error || !data) {
+  // Loading and failure are different states. The overview runs several
+  // database round trips and can take a few seconds; showing "could not be
+  // loaded" while it is still arriving is a lie, so only a real error renders
+  // the retry band.
+  if (error) {
     return (
       <AdminShell adminName={user?.full_name} unread={0}>
         <div className={ui.pageStack}>
           <p role="alert" className={ui.statusBad}>
-            {error || "The admin overview could not be loaded."}
+            {error}
           </p>
           <p>
             <button type="button" className={ui.btn} onClick={() => window.location.reload()}>
               Try again
             </button>
           </p>
+        </div>
+      </AdminShell>
+    );
+  }
+
+  if (!data) {
+    return (
+      <AdminShell adminName={user?.full_name} unread={0}>
+        <div className={ui.pageStack}>
+          <p className={ui.lede}>Loading the overview…</p>
         </div>
       </AdminShell>
     );
