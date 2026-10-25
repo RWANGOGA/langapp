@@ -12,12 +12,14 @@ import StudentRoster from "@/components/admin/StudentRoster";
 import { MeetingsPanel } from "@/components/admin/MeetingsPanel";
 import { SubscriptionManagement } from "@/components/admin/SubscriptionManagement";
 import { ActivityLog } from "@/components/admin/ActivityLog";
+import ApplicationReview from "@/components/admin/ApplicationReview";
 import ui from "@/components/portal/bands.module.css";
 
-type Section = "dashboard" | "tutors" | "students" | "classes" | "meetings" | "subscriptions" | "reports" | "settings";
+type Section = "dashboard" | "applications" | "tutors" | "students" | "classes" | "meetings" | "subscriptions" | "reports" | "settings";
 
 const SECTIONS = new Set<Section>([
   "dashboard",
+  "applications",
   "tutors",
   "students",
   "classes",
@@ -34,6 +36,11 @@ const SECTION_COPY: Record<Section, { kicker: string; title: string; lede: strin
     kicker: "Overview",
     title: "The overview lives at the front door",
     lede: "Every figure the school is running is on /admin, where the rosters, the matrix and the payment ledger sit together.",
+  },
+  applications: {
+    kicker: "Applications",
+    title: "Decide who teaches here",
+    lede: "Every tutor application, from submitted to a final decision. Open a file to read its evidence, then move it forward, approve it, or reject it with a note. Nothing here changes an applicant's view of their own file.",
   },
   tutors: {
     kicker: "Tutors",
@@ -86,6 +93,8 @@ function HonestBand({ label, children }: { label: string; children: ReactNode })
 
 function SectionContent({ section, data }: { section: Section; data: AdminDashboard }) {
   switch (section) {
+    case "applications":
+      return <ApplicationReview />;
     case "tutors":
       return <TutorRoster tutors={data.tutors} />;
     case "students":

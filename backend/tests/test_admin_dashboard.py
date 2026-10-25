@@ -18,6 +18,7 @@ import pytest
 import pytest_asyncio
 
 from app.models.package import Order, OrderStatus, Package
+from app.models.tutor_application import ApplicationStatus, TutorApplication, VerificationStatus
 from app.models.user import Class, ClassStatus, TutorProfile, User, UserRole
 from tests.sqlite_fixtures import (  # noqa: F401
     db_session,
@@ -27,6 +28,36 @@ from tests.sqlite_fixtures import (  # noqa: F401
     make_class,
     make_client,
 )
+
+
+def make_application(user_id: int, status: ApplicationStatus, full_name: str) -> TutorApplication:
+    """A minimal application row in a given review state."""
+    return TutorApplication(
+        user_id=user_id,
+        status=status,
+        full_name=full_name,
+        country="Kenya",
+        id_verification_status=VerificationStatus.PENDING,
+        background_check_status=VerificationStatus.PENDING,
+    )
+
+
+async def applicant(db_session, email: str) -> int:
+    """Each person may hold only one application, so the queue is built from
+    distinct applicant accounts."""
+    user = User(
+        email=email,
+        hashed_password="x",
+        full_name=email.split("@")[0].title(),
+        role=UserRole.STUDENT,
+        is_active=True,
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+    return user.id
+
+
 
 
 @pytest_asyncio.fixture
@@ -190,3 +221,58 @@ class TestAdminTutorRoster:
         assert tutors["other.tutor@example.com"]["country"] is None, (
             "a tutor without a profile has no country on file, so none is claimed"
         )
+
+
+class TestAdminReviewQueue:
+    """The overview must say how many tutor applications are waiting on the
+    school, so an administrator can see the queue has work in it without
+    opening the review page first. Only states the school is actively working
+    count: a submitted file awaiting decision, or one mid-review. An approved,
+    rejected or withdrawn file is closed and must not inflate the number."""
+
+    @pytest.mark.asyncio
+    async def test_dashboard_counts_applications_awaiting_review(
+        self, db_session, admin_user, learner_user
+    ):
+        pending_states = [
+            (ApplicationStatus.SUBMITTED, "one"),
+            (ApplicationStatus.DOCUMENTS_REVIEW, "two"),
+            (ApplicationStatus.ENGLISH_TEST, "three"),
+            (ApplicationStatus.DEMO_LESSON, "four"),
+        ]
+        closed_states = [
+            (ApplicationStatus.APPROVED, "five"),
+            (ApplicationStatus.REJECTED, "six"),
+            (ApplicationStatus.WITHDRAWN, "seven"),
+        ]
+        for status, name in pending_states + closed_states:
+            uid = await applicant(db_session, f"{name}@example.com")
+            db_session.add(make_application(uid, status, name.title()))
+        await db_session.commit()
+
+        async with make_client(db_session, admin_user) as ac:
+            response = await ac.get("/api/v1/admin/dashboard")
+        assert response.status_code == 200
+
+        body = response.json()
+        assert body["applications_in_review"] == 4, (
+            "four files are with the school (submitted, documents_review, "
+            "english_test, demo_lesson); the three closed ones must not be counted"
+        )
+
+    @pytest.mark.asyncio
+    async def test_queue_is_zero_when_nothing_is_pending(
+        self, db_session, admin_user, learner_user
+    ):
+        uid = await applicant(db_session, "approved@example.com")
+        db_session.add(make_application(uid, ApplicationStatus.APPROVED, "Already Approved"))
+        await db_session.commit()
+
+        async with make_client(db_session, admin_user) as ac:
+            response = await ac.get("/api/v1/admin/dashboard")
+        assert response.status_code == 200
+        assert response.json()["applications_in_review"] == 0, (
+            "a fully-handled queue reads as empty, not as a leftover count"
+        )
+
+

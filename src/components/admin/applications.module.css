@@ -1,0 +1,115 @@
+/* The review queue composes the portal band vocabulary for everything shared
+   (bands, rows, forms, buttons, pills). What is specific to a decision queue
+   lives here: the stage filter, the expandable evidence panel, and the action
+   bar where an administrator moves a file forward. */
+
+/* — Stage filter: one row of chips that scopes the queue — */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+.filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #dfe6ec;
+  border-radius: 999px;
+  background: none;
+  color: #52607a;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.filter:hover { border-color: #0f1c33; color: #0f1c33; }
+.filterOn { border-color: var(--coral); color: var(--coral); box-shadow: inset 0 0 0 1px var(--coral); }
+.filterCount {
+  min-width: 1.1rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: #f2f5f8;
+  color: #33415c;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: center;
+}
+.filterOn .filterCount { background: var(--coral); color: #fff; }
+
+/* — A single application in the queue — */
+.item { border-top: 1px solid #dfe6ec; }
+.item:last-child { border-bottom: 1px solid #dfe6ec; }
+
+.head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.head:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+.name { color: #0f1c33; font-size: 1rem; font-weight: 800; letter-spacing: -0.01em; }
+.meta { margin-top: 0.15rem; color: #8a96a8; font-size: 0.78rem; }
+.chevron { color: #8a96a8; transition: transform 0.15s ease; }
+.chevronOpen { transform: rotate(180deg); }
+
+/* — Expanded evidence + decision surface — */
+.detail { padding: 0 0 1.4rem; }
+.evidence {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.1rem 1.5rem;
+  margin: 0 0 1.1rem;
+}
+.evidenceRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid #eef2f6;
+}
+.evidenceLabel { color: #8a96a8; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.evidenceValue { color: #0f1c33; font-size: 0.88rem; text-align: right; }
+.evidenceLink { color: var(--teal); font-size: 0.85rem; text-decoration: none; border-bottom: 1px solid currentColor; }
+.evidenceLink:hover { color: var(--coral); }
+.missing { color: #b0483f; }
+
+.note { margin-bottom: 1rem; }
+.noteLabel { display: block; margin-bottom: 0.4rem; color: #52607a; font-size: 0.82rem; }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  padding-top: 1rem;
+  border-top: 1px solid #dfe6ec;
+}
+.scoreBox { display: flex; align-items: center; gap: 0.4rem; margin-right: auto; }
+.scoreBox label { color: #8a96a8; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.scoreBox input { width: 4.5rem; padding: 0.4rem 0.5rem; border: 1px solid #dfe6ec; border-radius: 6px; font: inherit; font-size: 0.88rem; }
+
+.error {
+  margin-top: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #f0c9c3;
+  border-radius: 8px;
+  background: #fdf1ef;
+  color: #b0483f;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .evidence { grid-template-columns: minmax(0, 1fr); }
+  .head { grid-template-columns: minmax(0, 1fr) auto; }
+  .head .pill { grid-column: 1 / -1; justify-self: start; }
+}

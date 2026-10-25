@@ -154,6 +154,28 @@ export default function AdminPage() {
           })}
         </ul>
 
+        {/* The one task on the overview that is a decision, not a figure: how
+            many tutor applications the school currently owes an answer on. */}
+        <section className={ui.band} aria-label="Tutor application review queue">
+          <div className={ui.figureRowAligned}>
+            <div className={ui.figureBody}>
+              <p className={ui.bandLabel}>Tutor applications</p>
+              <h3 className={ui.bandTitle}>
+                {data.applications_in_review === 0
+                  ? "No applications are waiting on a decision"
+                  : `${data.applications_in_review} ${data.applications_in_review === 1 ? "application is" : "applications are"} waiting on a decision`}
+              </h3>
+              <p className={ui.rowNote}>
+                Open the review queue to read each applicant's evidence and move the file forward,
+                approve it, or reject it with a note.
+              </p>
+            </div>
+            <Link className={ui.headerAction} href="/admin/applications">
+              Review queue <ArrowRight size={14} aria-hidden />
+            </Link>
+          </div>
+        </section>
+
         <div className={ui.split}>
           <div className={ui.mainPane}>
             <TutorRoster tutors={data.tutors} />

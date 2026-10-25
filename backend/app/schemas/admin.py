@@ -103,6 +103,9 @@ class StatusCount(BaseModel):
 
 class AdminDashboardResponse(BaseModel):
     unread: int = 0
+    # Tutor applications the school currently owes a decision on. The overview
+    # badges its review queue with this so an admin sees the work is there.
+    applications_in_review: int = 0
     kpis: List[Kpi]
     tutors: List[Tutor]
     students: List[StudentSummary]

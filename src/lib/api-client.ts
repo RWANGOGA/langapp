@@ -36,3 +36,41 @@ export async function apiGetClient<T>(path: string): Promise<T | null> {
   }
   return (await res.json()) as T;
 }
+
+/** Client-side write (PATCH/POST/DELETE) to FastAPI via the Next proxy.
+ * Returns the parsed body, or throws with the server's `detail` so callers can
+ * surface the real reason a change was refused (e.g. an incomplete application
+ * that cannot be approved) instead of a generic failure. */
+export async function apiSendClient<T>(
+  method: "PATCH" | "POST" | "DELETE",
+  path: string,
+  body?: unknown,
+): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, {
+    method,
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+  });
+  if (res.status === 204) return undefined as T;
+  let payload: unknown = null;
+  try {
+    payload = await res.json();
+  } catch {
+    // No JSON body (proxy error page, empty 5xx).
+  }
+  if (!res.ok) {
+    const detail =
+      payload && typeof payload === "object" && "detail" in payload
+        ? (payload as { detail: unknown }).detail
+        : null;
+    const message =
+      typeof detail === "string"
+        ? detail
+        : detail
+          ? JSON.stringify(detail)
+          : `${method} ${path} failed: ${res.status} ${res.statusText}`;
+    throw new Error(message);
+  }
+  return payload as T;
+}

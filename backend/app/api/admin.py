@@ -8,6 +8,7 @@ from typing import List
 from app.db.session import get_db
 from app.core.time import to_utc_iso
 from app.models.user import User, UserRole, Class, ClassStatus, ProficiencyLevel, TutorProfile
+from app.models.tutor_application import ApplicationStatus, TutorApplication
 from app.models.package import Package, Order, OrderStatus, PaymentMethod, PlanName
 from app.api.auth import require_admin
 from app.api.tutors import availability_summary
@@ -237,6 +238,22 @@ async def get_admin_dashboard(
                 .where(upcoming, Class.meet_url.isnot(None))
                 .scalar_subquery()
                 .label("meet_sessions"),
+                # Applications the school owes a decision on: any state before
+                # a terminal one (approved / rejected / withdrawn). A rejected
+                # file is waiting on the applicant, not us, so it is excluded.
+                select(func.count(TutorApplication.id))
+                .where(
+                    TutorApplication.status.in_(
+                        [
+                            ApplicationStatus.SUBMITTED,
+                            ApplicationStatus.DOCUMENTS_REVIEW,
+                            ApplicationStatus.ENGLISH_TEST,
+                            ApplicationStatus.DEMO_LESSON,
+                        ]
+                    )
+                )
+                .scalar_subquery()
+                .label("applications_in_review"),
             )
         )
     ).one()
@@ -472,6 +489,7 @@ async def get_admin_dashboard(
 
     return {
         "unread": stats.unread,
+        "applications_in_review": stats.applications_in_review,
         "kpis": [
             {"label": "Total Tutors", "value": str(stats.total_tutors)},
             {"label": "Active Students", "value": str(stats.active_students)},

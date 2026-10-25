@@ -5,6 +5,7 @@ import PortalShell, { type PortalNavItem } from "@/components/portal/PortalShell
 // of the product.
 const NAV: PortalNavItem[] = [
   { href: "/admin", label: "Overview", icon: "dashboard" },
+  { href: "/admin/applications", label: "Applications", icon: "applications" },
   { href: "/admin/tutors", label: "Tutors", icon: "tutors" },
   { href: "/admin/students", label: "Students", icon: "students" },
   { href: "/admin/classes", label: "Classes", icon: "classes" },
