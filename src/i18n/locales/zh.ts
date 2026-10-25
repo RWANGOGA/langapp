@@ -191,6 +191,37 @@ const zh: Record<string, string> = {
     "员工一通过导师的申请，他们就会出现在这里——身份、资质、英语测试与一节被观摩的示范课。我们宁愿给你一份诚实的名单，而非粉饰过的。",
   "tutors.noMatch.title": "没有符合这些筛选条件的导师。",
   "tutors.noMatch.body": "放宽目标或语言——或清除搜索。",
+
+  // Auth (login + register)
+  "auth.email": "电子邮箱",
+  "auth.password": "密码",
+  "auth.loading": "加载中……",
+  "auth.login.title": "欢迎回来",
+  "auth.login.subtitle": "登录您的账户",
+  "auth.login.signingIn": "正在登录……",
+  "auth.login.submit": "登录",
+  "auth.login.failed": "登录失败",
+  "auth.login.noAccount": "还没有账户？",
+  "auth.login.signup": "注册",
+  "auth.register.title": "创建账户",
+  "auth.register.titleTutor": "创建您的账户",
+  "auth.register.subtitle": "加入我们的语言学习社区",
+  "auth.register.subtitleTutor": "在申请任教之前，还差一步",
+  "auth.register.fullName": "姓名",
+  "auth.register.confirmPassword": "确认密码",
+  "auth.register.nativeLanguage": "母语（可选）",
+  "auth.register.selectLanguage": "选择您的母语",
+  "auth.register.timezone": "时区（可选）",
+  "auth.register.selectTimezone": "选择您的时区",
+  "auth.register.submit": "创建账户",
+  "auth.register.submitting": "正在创建账户……",
+  "auth.register.haveAccount": "已经有账户？",
+  "auth.register.signin": "登录",
+  "auth.register.passwordMismatch": "两次输入的密码不一致",
+  "auth.register.passwordShort": "密码至少需要 8 个字符",
+  "auth.register.failed": "注册失败",
+  "auth.register.tutorNotice":
+    "您正在申请于 Nile Language 任教。您的账户最初为学生账户——文件审核通过并试讲合格后，您即成为导师。",
 };
 
 export default zh;

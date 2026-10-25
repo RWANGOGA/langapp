@@ -206,6 +206,37 @@ const en = {
     "Tutors appear here the moment staff approve their application — identity, credentials, tested English and an observed demo lesson. We would rather show you an honest list than a decorated one.",
   "tutors.noMatch.title": "No tutor matches those filters.",
   "tutors.noMatch.body": "Widen the goal or language — or clear the search.",
+
+  // Auth (login + register)
+  "auth.email": "Email",
+  "auth.password": "Password",
+  "auth.loading": "Loading...",
+  "auth.login.title": "Welcome Back",
+  "auth.login.subtitle": "Sign in to your account",
+  "auth.login.signingIn": "Signing in...",
+  "auth.login.submit": "Sign In",
+  "auth.login.failed": "Login failed",
+  "auth.login.noAccount": "Don't have an account?",
+  "auth.login.signup": "Sign up",
+  "auth.register.title": "Create Account",
+  "auth.register.titleTutor": "Create your account",
+  "auth.register.subtitle": "Join our language learning community",
+  "auth.register.subtitleTutor": "One more step before you can apply to teach",
+  "auth.register.fullName": "Full Name",
+  "auth.register.confirmPassword": "Confirm Password",
+  "auth.register.nativeLanguage": "Native Language (optional)",
+  "auth.register.selectLanguage": "Select your native language",
+  "auth.register.timezone": "Timezone (optional)",
+  "auth.register.selectTimezone": "Select your timezone",
+  "auth.register.submit": "Create Account",
+  "auth.register.submitting": "Creating account...",
+  "auth.register.haveAccount": "Already have an account?",
+  "auth.register.signin": "Sign in",
+  "auth.register.passwordMismatch": "Passwords do not match",
+  "auth.register.passwordShort": "Password must be at least 8 characters",
+  "auth.register.failed": "Registration failed",
+  "auth.register.tutorNotice":
+    "You are applying to teach on Nile Language. Your account starts as a student account — you become a tutor once your documents are reviewed and your demo lesson is passed.",
 } as const;
 
 export type MessageKey = keyof typeof en;

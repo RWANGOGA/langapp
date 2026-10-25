@@ -191,6 +191,37 @@ const fr: Record<string, string> = {
     "Les tuteurs apparaissent ici dès que le personnel approuve leur candidature — identité, diplômes, anglais évalué et un cours de démonstration observé. Nous préférons vous montrer une liste honnête plutôt qu'ornée.",
   "tutors.noMatch.title": "Aucun tuteur ne correspond à ces filtres.",
   "tutors.noMatch.body": "Élargissez l'objectif ou la langue — ou effacez la recherche.",
+
+  // Auth (login + register)
+  "auth.email": "E-mail",
+  "auth.password": "Mot de passe",
+  "auth.loading": "Chargement...",
+  "auth.login.title": "Bon retour",
+  "auth.login.subtitle": "Connectez-vous à votre compte",
+  "auth.login.signingIn": "Connexion en cours...",
+  "auth.login.submit": "Se connecter",
+  "auth.login.failed": "Échec de la connexion",
+  "auth.login.noAccount": "Vous n'avez pas de compte ?",
+  "auth.login.signup": "S'inscrire",
+  "auth.register.title": "Créer un compte",
+  "auth.register.titleTutor": "Créez votre compte",
+  "auth.register.subtitle": "Rejoignez notre communauté d'apprentissage des langues",
+  "auth.register.subtitleTutor": "Encore une étape avant de pouvoir postuler pour enseigner",
+  "auth.register.fullName": "Nom complet",
+  "auth.register.confirmPassword": "Confirmer le mot de passe",
+  "auth.register.nativeLanguage": "Langue maternelle (facultatif)",
+  "auth.register.selectLanguage": "Sélectionnez votre langue maternelle",
+  "auth.register.timezone": "Fuseau horaire (facultatif)",
+  "auth.register.selectTimezone": "Sélectionnez votre fuseau horaire",
+  "auth.register.submit": "Créer un compte",
+  "auth.register.submitting": "Création du compte...",
+  "auth.register.haveAccount": "Vous avez déjà un compte ?",
+  "auth.register.signin": "Se connecter",
+  "auth.register.passwordMismatch": "Les mots de passe ne correspondent pas",
+  "auth.register.passwordShort": "Le mot de passe doit comporter au moins 8 caractères",
+  "auth.register.failed": "Échec de l'inscription",
+  "auth.register.tutorNotice":
+    "Vous postulez pour enseigner sur Nile Language. Votre compte commence comme un compte d'apprenant — vous devenez tuteur une fois vos documents vérifiés et votre leçon de démonstration observée réussie.",
 };
 
 export default fr;

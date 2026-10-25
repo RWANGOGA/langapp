@@ -191,6 +191,37 @@ const es: Record<string, string> = {
     "Los tutores aparecen aquí en el momento en que el personal aprueba su solicitud — identidad, credenciales, inglés evaluado y una clase demostrativa observada. Preferimos mostrarte una lista honesta antes que una adornada.",
   "tutors.noMatch.title": "Ningún tutor coincide con esos filtros.",
   "tutors.noMatch.body": "Amplía el objetivo o el idioma — o borra la búsqueda.",
+
+  // Auth (login + register)
+  "auth.email": "Correo electrónico",
+  "auth.password": "Contraseña",
+  "auth.loading": "Cargando...",
+  "auth.login.title": "Bienvenido de nuevo",
+  "auth.login.subtitle": "Inicia sesión en tu cuenta",
+  "auth.login.signingIn": "Iniciando sesión...",
+  "auth.login.submit": "Iniciar sesión",
+  "auth.login.failed": "Error al iniciar sesión",
+  "auth.login.noAccount": "¿No tienes una cuenta?",
+  "auth.login.signup": "Regístrate",
+  "auth.register.title": "Crear cuenta",
+  "auth.register.titleTutor": "Crea tu cuenta",
+  "auth.register.subtitle": "Únete a nuestra comunidad de aprendizaje de idiomas",
+  "auth.register.subtitleTutor": "Un paso más antes de poder solicitar enseñar",
+  "auth.register.fullName": "Nombre completo",
+  "auth.register.confirmPassword": "Confirmar contraseña",
+  "auth.register.nativeLanguage": "Idioma nativo (opcional)",
+  "auth.register.selectLanguage": "Selecciona tu idioma nativo",
+  "auth.register.timezone": "Zona horaria (opcional)",
+  "auth.register.selectTimezone": "Selecciona tu zona horaria",
+  "auth.register.submit": "Crear cuenta",
+  "auth.register.submitting": "Creando cuenta...",
+  "auth.register.haveAccount": "¿Ya tienes una cuenta?",
+  "auth.register.signin": "Inicia sesión",
+  "auth.register.passwordMismatch": "Las contraseñas no coinciden",
+  "auth.register.passwordShort": "La contraseña debe tener al menos 8 caracteres",
+  "auth.register.failed": "Error al registrarse",
+  "auth.register.tutorNotice":
+    "Estás solicitando enseñar en Nile Language. Tu cuenta comienza como una cuenta de estudiante — te conviertes en tutor una vez que se revisan tus documentos y apruebas la clase de muestra observada.",
 };
 
 export default es;

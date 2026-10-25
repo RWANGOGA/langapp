@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import styles from "./page.module.css";
 
 interface FormData {
@@ -48,6 +49,7 @@ const languages = [
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
   const { register, isLoading } = useAuth();
   const [formData, setFormData] = useState<FormData>({
     email: "",
@@ -76,12 +78,12 @@ function RegisterForm() {
     setError("");
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setError(t("auth.register.passwordMismatch"));
       return;
     }
 
     if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters");
+      setError(t("auth.register.passwordShort"));
       return;
     }
 
@@ -101,7 +103,7 @@ function RegisterForm() {
       router.push(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      setError(err instanceof Error ? err.message : t("auth.register.failed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -111,11 +113,11 @@ function RegisterForm() {
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <h1>{tutorIntent ? "Create your account" : "Create Account"}</h1>
+          <h1>{tutorIntent ? t("auth.register.titleTutor") : t("auth.register.title")}</h1>
           <p>
             {tutorIntent
-              ? "One more step before you can apply to teach"
-              : "Join our language learning community"}
+              ? t("auth.register.subtitleTutor")
+              : t("auth.register.subtitle")}
           </p>
         </div>
 
@@ -123,7 +125,7 @@ function RegisterForm() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.field}>
-            <label htmlFor="full_name">Full Name</label>
+            <label htmlFor="full_name">{t("auth.register.fullName")}</label>
             <input
               id="full_name"
               name="full_name"
@@ -137,7 +139,7 @@ function RegisterForm() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">{t("auth.email")}</label>
             <input
               id="email"
               name="email"
@@ -154,14 +156,12 @@ function RegisterForm() {
               start at /tutor/apply and are promoted only on approval. */}
           {tutorIntent && (
             <div className={styles.notice}>
-              You are applying to teach on Nile Language. Your account starts as a
-              student account — you become a tutor once your documents are reviewed
-              and your demo lesson is passed.
+              {t("auth.register.tutorNotice")}
             </div>
           )}
 
           <div className={styles.field}>
-            <label htmlFor="native_language">Native Language (optional)</label>
+            <label htmlFor="native_language">{t("auth.register.nativeLanguage")}</label>
             <select
               id="native_language"
               name="native_language"
@@ -169,7 +169,7 @@ function RegisterForm() {
               onChange={handleChange}
               disabled={isSubmitting}
             >
-              <option value="">Select your native language</option>
+              <option value="">{t("auth.register.selectLanguage")}</option>
               {languages.map((lang) => (
                 <option key={lang} value={lang}>
                   {lang}
@@ -179,7 +179,7 @@ function RegisterForm() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="timezone">Timezone (optional)</label>
+            <label htmlFor="timezone">{t("auth.register.timezone")}</label>
             <select
               id="timezone"
               name="timezone"
@@ -187,7 +187,7 @@ function RegisterForm() {
               onChange={handleChange}
               disabled={isSubmitting}
             >
-              <option value="">Select your timezone</option>
+              <option value="">{t("auth.register.selectTimezone")}</option>
               {timezones.map((tz) => (
                 <option key={tz} value={tz}>
                   {tz}
@@ -197,7 +197,7 @@ function RegisterForm() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">{t("auth.password")}</label>
             <input
               id="password"
               name="password"
@@ -212,7 +212,7 @@ function RegisterForm() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="confirmPassword">Confirm Password</label>
+            <label htmlFor="confirmPassword">{t("auth.register.confirmPassword")}</label>
             <input
               id="confirmPassword"
               name="confirmPassword"
@@ -226,15 +226,15 @@ function RegisterForm() {
           </div>
 
           <button type="submit" className={styles.submitBtn} disabled={isSubmitting || isLoading}>
-            {isSubmitting ? "Creating account..." : "Create Account"}
+            {isSubmitting ? t("auth.register.submitting") : t("auth.register.submit")}
           </button>
         </form>
 
         <div className={styles.footer}>
           <p>
-            Already have an account?{" "}
+            {t("auth.register.haveAccount")}{" "}
             <Link href={`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`}>
-              Sign in
+              {t("auth.register.signin")}
             </Link>
           </p>
         </div>

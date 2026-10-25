@@ -191,6 +191,37 @@ const ja: Record<string, string> = {
     "職員が申請を承認した瞬間に、チューターがここに表示されます——身元、資格、英語力の測定、参観された模擬レッスン。飾り立てたリストではなく、正直なリストをお見せしたいのです。",
   "tutors.noMatch.title": "その条件に合うチューターはいません。",
   "tutors.noMatch.body": "目標や言語を広げる——または検索をクリアしてください。",
+
+  // Auth (login + register)
+  "auth.email": "メールアドレス",
+  "auth.password": "パスワード",
+  "auth.loading": "読み込み中…",
+  "auth.login.title": "おかえりなさい",
+  "auth.login.subtitle": "アカウントにサインイン",
+  "auth.login.signingIn": "サインイン中…",
+  "auth.login.submit": "サインイン",
+  "auth.login.failed": "ログインに失敗しました",
+  "auth.login.noAccount": "アカウントをお持ちでないですか？",
+  "auth.login.signup": "新規登録",
+  "auth.register.title": "アカウント作成",
+  "auth.register.titleTutor": "アカウントを作成",
+  "auth.register.subtitle": "語学学習コミュニティに参加しましょう",
+  "auth.register.subtitleTutor": "指導を申請するあと一歩",
+  "auth.register.fullName": "氏名",
+  "auth.register.confirmPassword": "パスワード（確認）",
+  "auth.register.nativeLanguage": "母語（任意）",
+  "auth.register.selectLanguage": "母語を選択してください",
+  "auth.register.timezone": "タイムゾーン（任意）",
+  "auth.register.selectTimezone": "タイムゾーンを選択してください",
+  "auth.register.submit": "アカウント作成",
+  "auth.register.submitting": "アカウントを作成中…",
+  "auth.register.haveAccount": "すでにアカウントをお持ちですか？",
+  "auth.register.signin": "サインイン",
+  "auth.register.passwordMismatch": "パスワードが一致しません",
+  "auth.register.passwordShort": "パスワードは8文字以上で入力してください",
+  "auth.register.failed": "登録に失敗しました",
+  "auth.register.tutorNotice":
+    "あなたは Nile Language での指導を申請しています。アカウントは当初、学習者アカウントとして開始します——書類審査と模擬レッスンの合格後にチューターになります。",
 };
 
 export default ja;
