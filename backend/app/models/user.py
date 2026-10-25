@@ -39,6 +39,9 @@ class User(Base):
 
     # Learner-specific fields
     tutor_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("users.id"), nullable=True)
+    # When the current placement happened. A stored fact, set the moment an
+    # admin (or auto-matching) places the learner - never invented at read time.
+    tutor_assigned_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     proficiency_level: Mapped[ProficiencyLevel | None] = mapped_column(SQLEnum(ProficiencyLevel), nullable=True)
 
     tutor_profile: Mapped["TutorProfile | None"] = relationship(

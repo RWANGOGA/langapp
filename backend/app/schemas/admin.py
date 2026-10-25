@@ -128,7 +128,9 @@ class StudentAssignmentResponse(BaseModel):
     student_name: str
     tutor_id: int
     tutor_name: str
-    assigned_at: datetime
+    # The stored placement moment; None for a placement made before the
+    # stamp existed - the API reports the gap instead of inventing a time.
+    assigned_at: Optional[datetime] = None
     assigned_by: Optional[int] = None
 
 

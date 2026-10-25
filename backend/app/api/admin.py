@@ -85,6 +85,9 @@ async def assign_student_to_tutor(
             )
 
     student.tutor_id = assignment_data.tutor_id
+    # The placement moment is stamped on the learner, so a later read reports
+    # the fact rather than inventing a time.
+    student.tutor_assigned_at = utc_now()
     await notify_user(
         db, student.id, "tutor_assigned", "Your tutor has been assigned",
         f"{tutor.full_name} is now your Nile Language tutor.",
@@ -105,7 +108,7 @@ async def assign_student_to_tutor(
         student_name=student.full_name,
         tutor_id=tutor.id,
         tutor_name=tutor.full_name,
-        assigned_at=datetime.utcnow(),
+        assigned_at=student.tutor_assigned_at,
         assigned_by=current_user.id,
     )
 
@@ -144,6 +147,7 @@ async def unassign_student(
     
     # Unassign student
     student.tutor_id = None
+    student.tutor_assigned_at = None
     await notify_user(
         db, student.id, "tutor_unassigned", "Your tutor assignment changed",
         f"Your assignment to {previous_tutor_name} was removed. An administrator will follow up with your next match.",
@@ -195,8 +199,12 @@ async def list_assignments(
                 student_name=student.full_name,
                 tutor_id=student.tutor_id,
                 tutor_name=student.assigned_tutor.full_name if student.assigned_tutor else "Unknown",
-                assigned_at=datetime.utcnow(),  # Would need to track actual assignment time
-                assigned_by=student.assigned_tutor.id if student.assigned_tutor else None,
+                # The stored placement moment. Rows placed before the stamp
+                # existed report None rather than a dressed-up request time;
+                # who made an old placement was never recorded, so it stays
+                # unknown instead of crediting the tutor by mistake.
+                assigned_at=student.tutor_assigned_at,
+                assigned_by=None,
             ))
     
     return assignments

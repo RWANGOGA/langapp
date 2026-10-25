@@ -8,6 +8,8 @@ tutor to another without first deleting the assignment. The old code answered
 a reassignment with a 400 and made the admin unassign, then assign - two
 calls, one of which briefly leaves the learner with no tutor at all.
 """
+from datetime import datetime
+
 import pytest
 import pytest_asyncio
 
@@ -226,3 +228,84 @@ class TestUnassignment:
             response = await ac.delete(f"/api/v1/admin/unassign-student/{learner_user.id}")
         assert response.status_code == 400
         assert "not currently assigned" in response.json()["detail"]
+
+
+class TestAssignmentTimeIsReal:
+    """GET /admin/assignments used to answer every row with
+    `assigned_at=datetime.utcnow()` - the time of the request dressed up as
+    the time of the assignment. An assignment moment is a fact, so it is
+    stored when the move happens and reported from storage."""
+
+    @pytest.mark.asyncio
+    async def test_assigning_stamps_the_moment_on_the_learner(
+        self, db_session, admin_user, tutor_user, learner_user
+    ):
+        await approve(db_session, tutor_user)
+
+        async with make_client(db_session, admin_user) as ac:
+            response = await ac.post(
+                "/api/v1/admin/assign-student",
+                json={"student_id": learner_user.id, "tutor_id": tutor_user.id},
+            )
+        assert response.status_code == 200
+
+        await db_session.refresh(learner_user)
+        assert learner_user.tutor_assigned_at is not None, (
+            "the moment of placement is a stored fact, not a guess per request"
+        )
+
+    @pytest.mark.asyncio
+    async def test_the_list_reports_the_stored_moment_not_the_request_time(
+        self, db_session, admin_user, tutor_user, learner_user
+    ):
+        await approve(db_session, tutor_user)
+        learner_user.tutor_id = tutor_user.id
+        learner_user.tutor_assigned_at = datetime(2026, 9, 1, 8, 30)
+        await db_session.commit()
+
+        async with make_client(db_session, admin_user) as ac:
+            response = await ac.get("/api/v1/admin/assignments")
+        assert response.status_code == 200
+
+        rows = {row["student_id"]: row for row in response.json()}
+        assert rows[learner_user.id]["assigned_at"].startswith("2026-09-01T08:30"), (
+            "a September placement must not read as assigned a moment ago"
+        )
+
+    @pytest.mark.asyncio
+    async def test_unassigning_clears_the_stamp(
+        self, db_session, admin_user, tutor_user, learner_user
+    ):
+        await approve(db_session, tutor_user)
+        learner_user.tutor_id = tutor_user.id
+        learner_user.tutor_assigned_at = datetime(2026, 9, 1, 8, 30)
+        await db_session.commit()
+
+        async with make_client(db_session, admin_user) as ac:
+            await ac.delete(f"/api/v1/admin/unassign-student/{learner_user.id}")
+
+        await db_session.refresh(learner_user)
+        assert learner_user.tutor_assigned_at is None, (
+            "a cleared placement has no assignment moment either"
+        )
+
+    @pytest.mark.asyncio
+    async def test_a_move_re_stamps_the_learner(
+        self, db_session, admin_user, tutor_user, other_tutor_user, learner_user
+    ):
+        await approve(db_session, tutor_user)
+        await approve(db_session, other_tutor_user)
+        learner_user.tutor_id = tutor_user.id
+        learner_user.tutor_assigned_at = datetime(2026, 9, 1, 8, 30)
+        await db_session.commit()
+
+        async with make_client(db_session, admin_user) as ac:
+            await ac.post(
+                "/api/v1/admin/assign-student",
+                json={"student_id": learner_user.id, "tutor_id": other_tutor_user.id},
+            )
+
+        await db_session.refresh(learner_user)
+        assert learner_user.tutor_assigned_at > datetime(2026, 9, 1, 8, 30), (
+            "the stamp must mark the latest placement, not the first one"
+        )

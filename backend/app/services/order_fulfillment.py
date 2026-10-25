@@ -62,6 +62,9 @@ async def match_paid_student(db: AsyncSession, order: Order) -> bool:
         return False
 
     student.tutor_id = tutor.id
+    # Auto-matching places the learner too, so it stamps the same fact the
+    # admin assignment records - when the placement happened.
+    student.tutor_assigned_at = datetime.utcnow()
     order.status = OrderStatus.COMPLETED
     package = await db.scalar(select(Package).where(Package.id == order.package_id))
     if package:
