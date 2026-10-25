@@ -1,7 +1,13 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8004/api/v1";
+// Server-rendered calls go straight to FastAPI through API_URL, the same origin
+// the rewrite proxy uses. Falling back to the public URL makes this server
+// re-enter its own edge on every render, where all traffic shares one client IP
+// - and therefore one rate-limit budget.
+const BASE = process.env.API_URL
+  ? `${process.env.API_URL.replace(/\/+$/, "")}/api/v1`
+  : process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8004/api/v1";
 
 /** The backend stores the cookie as: "Bearer <jwt>" (quoted, URL-encoded by Next). Normalise to the raw JWT. */
 function extractToken(raw?: string): string | null {
