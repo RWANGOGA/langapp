@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, CalendarDays, GraduationCap, LayoutDashboard, UserPlus, Users } from "lucide-react";
@@ -39,6 +39,12 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [paymentActivity, setPaymentActivity] = useState<PaymentActivity[]>([]);
   const [paymentAnalytics, setPaymentAnalytics] = useState<PaymentAnalytics | null>(null);
+
+  // An assignment shifts the rosters, the KPIs and the matrix at once, so the
+  // overview refetches the operation side rather than patching single rows.
+  const reloadDashboard = useCallback(() => {
+    getAdminDashboard().then(setData).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!isLoading) {
@@ -179,7 +185,7 @@ export default function AdminPage() {
         <div className={ui.split}>
           <div className={ui.mainPane}>
             <TutorRoster tutors={data.tutors} />
-            <StudentRoster students={data.students} />
+            <StudentRoster students={data.students} tutors={data.tutors} onRefresh={reloadDashboard} />
             <SubscriptionManagement plans={data.plans} leaders={data.leaders} statuses={data.statuses} />
           </div>
           <aside className={ui.sidePane}>

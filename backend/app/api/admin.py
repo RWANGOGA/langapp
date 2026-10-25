@@ -66,15 +66,21 @@ async def assign_student_to_tutor(
     if not tutor.tutor_profile or not tutor.tutor_profile.is_approved:
         raise HTTPException(status_code=400, detail="Tutor profile is not approved")
     
-    # Check if student is already assigned to a different tutor
-    if student.tutor_id and student.tutor_id != assignment_data.tutor_id:
-        raise HTTPException(
-            status_code=400, 
-            detail=f"Student is already assigned to tutor {student.tutor_id}"
-        )
-    
-    # Assign student to tutor
+    # Moving a learner between approved tutors is a normal admin action - one
+    # call, no window where the learner is unassigned. The previous tutor is
+    # told the learner is no longer theirs.
     previous_tutor_id = student.tutor_id
+    if previous_tutor_id and previous_tutor_id != assignment_data.tutor_id:
+        previous_result = await db.execute(
+            select(User).where(User.id == previous_tutor_id)
+        )
+        previous_tutor = previous_result.scalar_one_or_none()
+        if previous_tutor:
+            await notify_user(
+                db, previous_tutor.id, "learner_unassigned", "A learner was reassigned",
+                f"{student.full_name} is no longer assigned to you.",
+            )
+
     student.tutor_id = assignment_data.tutor_id
     await notify_user(
         db, student.id, "tutor_assigned", "Your tutor has been assigned",

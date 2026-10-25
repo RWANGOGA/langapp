@@ -152,3 +152,30 @@ export async function reviewApplication(
 ): Promise<ApplicationDetail> {
   return apiSendClient<ApplicationDetail>("PATCH", `/tutor/applications/${id}`, body);
 }
+
+/* — Learner ↔ tutor assignment —
+   The backend refuses to place a learner with a tutor whose profile is not
+   approved, and a reassignment is a single call: the learner moves without
+   ever being tutor-less in between. Every move notifies the learner, both
+   tutors and the admins, so the roster is only half the story. */
+export interface AssignmentResult {
+  student_id: number;
+  student_name: string;
+  tutor_id: number;
+  tutor_name: string;
+  assigned_at: string;
+  assigned_by: number | null;
+}
+
+/** POST /admin/assign-student - place (or move) a learner with an approved tutor. */
+export async function assignStudent(studentId: number, tutorId: number): Promise<AssignmentResult> {
+  return apiSendClient<AssignmentResult>("POST", "/admin/assign-student", {
+    student_id: studentId,
+    tutor_id: tutorId,
+  });
+}
+
+/** DELETE /admin/unassign-student/{id} - return a learner to the awaiting pool. */
+export async function unassignStudent(studentId: number): Promise<void> {
+  await apiSendClient<void>("DELETE", `/admin/unassign-student/${studentId}`);
+}

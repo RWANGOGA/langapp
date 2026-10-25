@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
@@ -50,7 +50,7 @@ const SECTION_COPY: Record<Section, { kicker: string; title: string; lede: strin
   students: {
     kicker: "Learners",
     title: "Every learner, and who teaches them",
-    lede: "The registered roster, the level each learner is studying at, and the tutor they are matched with.",
+    lede: "Assign a tutor, move a learner between approved tutors, or return them to the awaiting pool. Every change tells the learner and both tutors.",
   },
   classes: {
     kicker: "Classes",
@@ -91,14 +91,14 @@ function HonestBand({ label, children }: { label: string; children: ReactNode })
   );
 }
 
-function SectionContent({ section, data }: { section: Section; data: AdminDashboard }) {
+function SectionContent({ section, data, onReload }: { section: Section; data: AdminDashboard; onReload: () => void }) {
   switch (section) {
     case "applications":
       return <ApplicationReview />;
     case "tutors":
       return <TutorRoster tutors={data.tutors} />;
     case "students":
-      return <StudentRoster students={data.students} />;
+      return <StudentRoster students={data.students} tutors={data.tutors} onRefresh={onReload} />;
     case "meetings":
       return <MeetingsPanel meetings={data.meetings} />;
     case "subscriptions":
@@ -132,6 +132,14 @@ export default function AdminSectionPage() {
   const [error, setError] = useState<string | null>(null);
   const section = SECTIONS.has(params.section as Section) ? (params.section as Section) : "dashboard";
   const copy = SECTION_COPY[section];
+
+  // After an assignment the roster, the KPIs and the matrix all shift, so the
+  // whole dashboard is refetched rather than patched row by row in the client.
+  const reload = useCallback(() => {
+    getAdminDashboard()
+      .then(setData)
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (isLoading) return;
@@ -190,7 +198,7 @@ export default function AdminSectionPage() {
             <p>{copy.lede}</p>
           </div>
         </header>
-        <SectionContent section={section} data={data} />
+        <SectionContent section={section} data={data} onReload={reload} />
       </div>
     </AdminShell>
   );
