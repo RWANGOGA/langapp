@@ -6,6 +6,7 @@ import Link from "next/link";
 import ApplicantFrame from "@/components/tutor/ApplicantFrame";
 import { useAuth } from "@/lib/auth";
 import { type ApplicationCompleteness } from "@/lib/tutor-requirements";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import ui from "@/components/portal/bands.module.css";
 import styles from "./apply.module.css";
 
@@ -42,40 +43,42 @@ interface TutorApplicationData {
   background_check_provider: string;
 }
 
-const specialtiesOptions = [
-  "Business English",
-  "Conversational English",
-  "IELTS Prep",
-  "TOEFL Prep",
-  "TOEIC Prep",
-  "Academic Writing",
-  "General English",
-  "English Grammar",
-  "English Pronunciation",
-  "Spanish",
-  "French",
-  "German",
-  "Chinese",
-  "Japanese",
-  "Korean",
+// Display labels are translated; the stored value stays the English name the
+// API expects.
+const specialtiesOptions: { value: string; key: string }[] = [
+  { value: "Business English", key: "apply.spec.business" },
+  { value: "Conversational English", key: "apply.spec.conversation" },
+  { value: "IELTS Prep", key: "apply.spec.ielts" },
+  { value: "TOEFL Prep", key: "apply.spec.toefl" },
+  { value: "TOEIC Prep", key: "apply.spec.toeic" },
+  { value: "Academic Writing", key: "apply.spec.academic" },
+  { value: "General English", key: "apply.spec.general" },
+  { value: "English Grammar", key: "apply.spec.grammar" },
+  { value: "English Pronunciation", key: "apply.spec.pronunciation" },
+  { value: "Spanish", key: "apply.lang.es" },
+  { value: "French", key: "apply.lang.fr" },
+  { value: "German", key: "apply.lang.de" },
+  { value: "Chinese", key: "apply.lang.zh" },
+  { value: "Japanese", key: "apply.lang.ja" },
+  { value: "Korean", key: "apply.lang.ko" },
 ];
 
-const languagesOptions = [
-  "English",
-  "Spanish",
-  "French",
-  "German",
-  "Chinese",
-  "Japanese",
-  "Korean",
-  "Vietnamese",
-  "Portuguese",
-  "Italian",
-  "Russian",
-  "Arabic",
-  "Thai",
-  "Indonesian",
-  "Turkish",
+const languagesOptions: { value: string; key: string }[] = [
+  { value: "English", key: "apply.lang.en" },
+  { value: "Spanish", key: "apply.lang.es" },
+  { value: "French", key: "apply.lang.fr" },
+  { value: "German", key: "apply.lang.de" },
+  { value: "Chinese", key: "apply.lang.zh" },
+  { value: "Japanese", key: "apply.lang.ja" },
+  { value: "Korean", key: "apply.lang.ko" },
+  { value: "Vietnamese", key: "apply.lang.vi" },
+  { value: "Portuguese", key: "apply.lang.pt" },
+  { value: "Italian", key: "apply.lang.it" },
+  { value: "Russian", key: "apply.lang.ru" },
+  { value: "Arabic", key: "apply.lang.ar" },
+  { value: "Thai", key: "apply.lang.th" },
+  { value: "Indonesian", key: "apply.lang.id" },
+  { value: "Turkish", key: "apply.lang.tr" },
 ];
 
 type RequiredField = keyof TutorApplicationData;
@@ -86,12 +89,12 @@ type RequiredField = keyof TutorApplicationData;
 // form can gate submit on what the applicant has actually typed - the
 // server-side completeness endpoint only ever sees a saved draft, and
 // nothing is saved until submit.
-const requiredByStep: { step: number; title: string; intro: string; fields: RequiredField[] }[] = [
-  { step: 1, title: "Personal details", intro: "Your legal name and the country you're applying from.", fields: ["full_name", "country"] },
+const requiredByStep: { step: number; titleKey: string; introKey: string; fields: RequiredField[] }[] = [
+  { step: 1, titleKey: "apply.step1.title", introKey: "apply.step1.intro", fields: ["full_name", "country"] },
   {
     step: 2,
-    title: "Identity and qualification documents",
-    intro: "Link a government photo ID and your teaching qualification. Set the sharing permission so the review team can open each file.",
+    titleKey: "apply.step2.title",
+    introKey: "apply.step2.intro",
     fields: [
       "id_verification_provider",
       "id_verification_id",
@@ -102,22 +105,22 @@ const requiredByStep: { step: number; title: string; intro: string; fields: Requ
   },
   {
     step: 3,
-    title: "English proficiency evidence",
-    intro: "Enter your test and score, then link the score report or certificate.",
+    titleKey: "apply.step3.title",
+    introKey: "apply.step3.intro",
     fields: ["english_proof_type", "english_score", "english_proof_url"],
   },
   {
     step: 4,
-    title: "Introduction video",
-    intro: "A 2-5 minute video introducing yourself and your teaching style. An unlisted link is fine.",
+    titleKey: "apply.step4.title",
+    introKey: "apply.step4.intro",
     fields: ["intro_video_url"],
   },
-  { step: 5, title: "Specialties and languages", intro: "What you teach, and the languages you can teach in.", fields: ["specialties", "languages"] },
-  { step: 6, title: "Availability", intro: "The days and hours you can reliably take lessons - say which time zone.", fields: ["availability"] },
+  { step: 5, titleKey: "apply.step5.title", introKey: "apply.step5.intro", fields: ["specialties", "languages"] },
+  { step: 6, titleKey: "apply.step6.title", introKey: "apply.step6.intro", fields: ["availability"] },
   {
     step: 7,
-    title: "Agreements and consent",
-    intro: "Four confirmations are required before you can teach. Tick each one to accept.",
+    titleKey: "apply.step7.title",
+    introKey: "apply.step7.intro",
     fields: [
       "tech_confirmed",
       "code_of_conduct_accepted",
@@ -125,32 +128,32 @@ const requiredByStep: { step: number; title: string; intro: string; fields: Requ
       "recording_consent",
     ],
   },
-  { step: 8, title: "References", intro: "At least one referee who can confirm your teaching experience. A second is optional.", fields: ["reference_1_name", "reference_1_email"] },
+  { step: 8, titleKey: "apply.step8.title", introKey: "apply.step8.intro", fields: ["reference_1_name", "reference_1_email"] },
 ];
 
-// Human names for the fields the rail reports as outstanding, so "what's left"
-// reads as an instruction rather than a column name.
+// Translation keys for the fields the rail reports as outstanding, so "what's
+// left" reads as an instruction rather than a column name.
 const FIELD_LABEL: Record<string, string> = {
-  full_name: "full name",
-  country: "country",
-  id_verification_provider: "ID verification provider",
-  id_verification_id: "ID verification number",
-  id_document_url: "government ID link",
-  qualification_type: "qualification type",
-  qualification_file_url: "qualification file link",
-  english_proof_type: "English test",
-  english_score: "English score",
-  english_proof_url: "English proof link",
-  intro_video_url: "introduction video link",
-  specialties: "specialties",
-  languages: "languages",
-  availability: "availability",
-  tech_confirmed: "technical setup confirmation",
-  code_of_conduct_accepted: "code of conduct",
-  privacy_agreement_accepted: "privacy agreement",
-  recording_consent: "recording consent",
-  reference_1_name: "reference 1 name",
-  reference_1_email: "reference 1 email",
+  full_name: "apply.field.fullName",
+  country: "apply.field.country",
+  id_verification_provider: "apply.field.idProvider",
+  id_verification_id: "apply.field.idNumber",
+  id_document_url: "apply.field.idLink",
+  qualification_type: "apply.field.qualType",
+  qualification_file_url: "apply.field.qualLink",
+  english_proof_type: "apply.field.englishTest",
+  english_score: "apply.field.englishScore",
+  english_proof_url: "apply.field.englishLink",
+  intro_video_url: "apply.field.videoLink",
+  specialties: "apply.field.specialties",
+  languages: "apply.field.languages",
+  availability: "apply.field.availability",
+  tech_confirmed: "apply.miss.tech",
+  code_of_conduct_accepted: "apply.miss.conduct",
+  privacy_agreement_accepted: "apply.miss.privacy",
+  recording_consent: "apply.miss.recording",
+  reference_1_name: "apply.field.ref1Name",
+  reference_1_email: "apply.field.ref1Email",
 };
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -166,10 +169,13 @@ function isFieldMissing(name: RequiredField, value: TutorApplicationData[Require
   return false;
 }
 
-function evaluateLocalCompleteness(data: TutorApplicationData): ApplicationCompleteness {
-  const steps = requiredByStep.map(({ step, title, fields }) => {
+function evaluateLocalCompleteness(
+  data: TutorApplicationData,
+  translate: (key: string) => string,
+): ApplicationCompleteness {
+  const steps = requiredByStep.map(({ step, titleKey, fields }) => {
     const missing = fields.filter((name) => isFieldMissing(name, data[name]));
-    return { step, title, complete: missing.length === 0, missing };
+    return { step, title: translate(titleKey), complete: missing.length === 0, missing };
   });
   const incomplete_steps = steps.filter((s) => !s.complete).map((s) => s.step);
   return { steps, incomplete_steps, can_submit: incomplete_steps.length === 0 };
@@ -177,6 +183,7 @@ function evaluateLocalCompleteness(data: TutorApplicationData): ApplicationCompl
 
 export default function TutorApplicationPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const { isAuthenticated, isTutor, isLoading: authLoading } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -222,7 +229,7 @@ export default function TutorApplicationPage() {
   // Recomputed on every keystroke so the rail and the submit gate reflect what
   // the applicant has actually typed - a server round-trip can never see
   // unsaved input.
-  const completeness = useMemo(() => evaluateLocalCompleteness(data), [data]);
+  const completeness = useMemo(() => evaluateLocalCompleteness(data, t), [data, t]);
 
   const checkExistingApplication = useCallback(async () => {
     try {
@@ -381,7 +388,7 @@ export default function TutorApplicationPage() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || "Submission failed");
+        throw new Error(errorData.detail || t("apply.error.generic"));
       }
 
       setSuccess(true);
@@ -392,7 +399,7 @@ export default function TutorApplicationPage() {
         router.push("/tutor/requirements");
       }, 2500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : t("apply.error.fallback"));
     } finally {
       setIsSubmitting(false);
     }
@@ -426,7 +433,7 @@ export default function TutorApplicationPage() {
   if (authLoading) {
     return (
       <ApplicantFrame>
-        <p className={ui.bandEmpty}>Loading your application…</p>
+        <p className={ui.bandEmpty}>{t("apply.loading")}</p>
       </ApplicantFrame>
     );
   }
@@ -439,15 +446,12 @@ export default function TutorApplicationPage() {
     return (
       <ApplicantFrame signedIn>
         <section className={ui.bandStatement} role="status">
-          <span className={ui.bandLabel}>Submitted</span>
-          <h1 className={ui.bandTitle}>Your application is in</h1>
-          <p>
-            We've received it. Taking you to your application status now, where you can see which
-            stage it's at and what happens next.
-          </p>
+          <span className={ui.bandLabel}>{t("apply.success.label")}</span>
+          <h1 className={ui.bandTitle}>{t("apply.success.title")}</h1>
+          <p>{t("apply.success.body")}</p>
           <p className={ui.joinRow}>
             <Link href="/tutor/requirements" className={ui.btnCoral}>
-              See where my file stands
+              {t("apply.success.action")}
             </Link>
           </p>
         </section>
@@ -460,18 +464,14 @@ export default function TutorApplicationPage() {
     return (
       <ApplicantFrame signedIn>
         <section className={ui.bandStatement} role="status">
-          <span className={ui.bandLabel}>Application in review</span>
+          <span className={ui.bandLabel}>{t("apply.locked.label")}</span>
           <h1 className={ui.bandTitle}>
-            {approved ? "You're approved" : "Your application is with our team"}
+            {approved ? t("apply.locked.approvedTitle") : t("apply.locked.reviewTitle")}
           </h1>
-          <p>
-            {approved
-              ? "Your tutor account is active. Open your dashboard to start teaching."
-              : "This stage is no longer editable by you - a reviewer is working through your file. You can follow exactly where it stands and what happens next on your application status page."}
-          </p>
+          <p>{approved ? t("apply.locked.approvedBody") : t("apply.locked.reviewBody")}</p>
           <p className={ui.joinRow}>
             <Link href={approved ? "/tutor" : "/tutor/requirements"} className={ui.btnCoral}>
-              {approved ? "Open my dashboard" : "See where my file stands"}
+              {approved ? t("apply.locked.openDashboard") : t("apply.locked.reviewAction")}
             </Link>
           </p>
         </section>
@@ -485,29 +485,23 @@ export default function TutorApplicationPage() {
     <ApplicantFrame signedIn>
       <div className={ui.pageHeading}>
         <div>
-          <span className={ui.kicker}>Tutor application</span>
-          <h1>Become a tutor</h1>
-          <p>
-            Eight short steps. Nothing is saved until you submit, so keep your documents to hand.
-            The progress list shows exactly what is still outstanding.
-          </p>
+          <span className={ui.kicker}>{t("apply.kicker")}</span>
+          <h1>{t("apply.title")}</h1>
+          <p>{t("apply.lede")}</p>
         </div>
       </div>
 
       {applicationExists && applicationStatus === "rejected" && (
         <section className={ui.band}>
-          <span className={ui.bandLabel}>Reopened</span>
-          <h2 className={ui.bandTitle}>Update and resubmit</h2>
-          <p className={ui.bandEmpty}>
-            Your previous application wasn't approved. You can revise anything below and submit
-            again; your earlier answers are already filled in.
-          </p>
+          <span className={ui.bandLabel}>{t("apply.reopened.label")}</span>
+          <h2 className={ui.bandTitle}>{t("apply.reopened.title")}</h2>
+          <p className={ui.bandEmpty}>{t("apply.reopened.body")}</p>
         </section>
       )}
 
       {error && (
         <section className={ui.band} role="alert">
-          <span className={ui.bandLabel}>Not submitted</span>
+          <span className={ui.bandLabel}>{t("apply.error.label")}</span>
           <p className={ui.bandEmpty}>{error}</p>
         </section>
       )}
@@ -516,26 +510,30 @@ export default function TutorApplicationPage() {
         <div className={ui.mainPane}>
           <section className={ui.band} aria-labelledby="step-heading">
             <div className={ui.bandHead}>
-              <span className={ui.bandLabel}>Step {currentStep} of 8</span>
-              <span className={ui.bandLabel}>{completeness.can_submit ? "Ready to submit" : `${completeness.incomplete_steps.length} to finish`}</span>
+              <span className={ui.bandLabel}>{t("apply.stepCounter", { step: currentStep })}</span>
+              <span className={ui.bandLabel}>
+                {completeness.can_submit
+                  ? t("apply.readyToSubmit")
+                  : t("apply.toFinish", { count: completeness.incomplete_steps.length })}
+              </span>
             </div>
             <h2 id="step-heading" className={ui.bandTitle}>
-              {meta.title}
+              {t(meta.titleKey)}
             </h2>
-            <p className={ui.bandEmpty}>{meta.intro}</p>
+            <p className={ui.bandEmpty}>{t(meta.introKey)}</p>
 
             {currentStep === 1 && (
               <div className={ui.form}>
                 <label>
-                  Full name
+                  {t("apply.field.fullName")}
                   <input className={ui.input} type="text" value={data.full_name} onChange={(e) => set("full_name", e.target.value)} />
                 </label>
                 <label>
-                  Country
+                  {t("apply.field.country")}
                   <input className={ui.input} type="text" value={data.country} onChange={(e) => set("country", e.target.value)} />
                 </label>
                 <label>
-                  Date of birth
+                  {t("apply.field.dob")}
                   <input className={ui.input} type="date" value={data.date_of_birth} onChange={(e) => set("date_of_birth", e.target.value)} />
                 </label>
               </div>
@@ -544,29 +542,29 @@ export default function TutorApplicationPage() {
             {currentStep === 2 && (
               <div className={ui.form}>
                 <label>
-                  ID verification provider
+                  {t("apply.field.idProvider")}
                   <select className={ui.select} value={data.id_verification_provider} onChange={(e) => set("id_verification_provider", e.target.value)}>
-                    <option value="">Select provider</option>
+                    <option value="">{t("apply.ph.selectProvider")}</option>
                     <option value="jumio">Jumio</option>
                     <option value="onfido">Onfido</option>
-                    <option value="other">Other</option>
+                    <option value="other">{t("apply.opt.other")}</option>
                   </select>
                 </label>
                 <label>
-                  ID verification number
+                  {t("apply.field.idNumber")}
                   <input className={ui.input} type="text" value={data.id_verification_id} onChange={(e) => set("id_verification_id", e.target.value)} />
                 </label>
                 <label>
-                  Government ID link
+                  {t("apply.field.idLink")}
                   <input className={ui.input} type="url" placeholder="https://…" value={data.id_document_url} onChange={(e) => set("id_document_url", e.target.value)} />
-                  <span className={styles.fieldNote}>A Google Drive or secure file link the review team can open.</span>
+                  <span className={styles.fieldNote}>{t("apply.field.idLinkNote")}</span>
                 </label>
                 <label>
-                  Qualification type
-                  <input className={ui.input} type="text" placeholder="e.g. TEFL, CELTA" value={data.qualification_type} onChange={(e) => set("qualification_type", e.target.value)} />
+                  {t("apply.field.qualType")}
+                  <input className={ui.input} type="text" placeholder={t("apply.ph.qualType")} value={data.qualification_type} onChange={(e) => set("qualification_type", e.target.value)} />
                 </label>
                 <label>
-                  Qualification file link
+                  {t("apply.field.qualLink")}
                   <input className={ui.input} type="url" placeholder="https://…" value={data.qualification_file_url} onChange={(e) => set("qualification_file_url", e.target.value)} />
                 </label>
               </div>
@@ -575,23 +573,23 @@ export default function TutorApplicationPage() {
             {currentStep === 3 && (
               <div className={ui.form}>
                 <label>
-                  English proficiency test
+                  {t("apply.field.englishTest")}
                   <select className={ui.select} value={data.english_proof_type} onChange={(e) => set("english_proof_type", e.target.value)}>
-                    <option value="">Select test type</option>
+                    <option value="">{t("apply.ph.selectTest")}</option>
                     <option value="IELTS">IELTS</option>
                     <option value="TOEFL">TOEFL</option>
                     <option value="TOEIC">TOEIC</option>
-                    <option value="Cambridge">Cambridge English</option>
-                    <option value="Duolingo">Duolingo English Test</option>
-                    <option value="other">Other</option>
+                    <option value="Cambridge">{t("apply.opt.cambridge")}</option>
+                    <option value="Duolingo">{t("apply.opt.duolingo")}</option>
+                    <option value="other">{t("apply.opt.other")}</option>
                   </select>
                 </label>
                 <label>
-                  English score
-                  <input className={ui.input} type="text" placeholder="e.g. 8.0, 105" value={data.english_score} onChange={(e) => set("english_score", e.target.value)} />
+                  {t("apply.field.englishScore")}
+                  <input className={ui.input} type="text" placeholder={t("apply.ph.score")} value={data.english_score} onChange={(e) => set("english_score", e.target.value)} />
                 </label>
                 <label className={ui.wide}>
-                  English proof link
+                  {t("apply.field.englishLink")}
                   <input className={ui.input} type="url" placeholder="https://…" value={data.english_proof_url} onChange={(e) => set("english_proof_url", e.target.value)} />
                 </label>
               </div>
@@ -600,11 +598,11 @@ export default function TutorApplicationPage() {
             {currentStep === 4 && (
               <div className={ui.form}>
                 <label className={ui.wide}>
-                  Introduction video link
+                  {t("apply.field.videoLink")}
                   <input className={ui.input} type="url" placeholder="https://…" value={data.intro_video_url} onChange={(e) => set("intro_video_url", e.target.value)} />
                 </label>
                 <label>
-                  Years of teaching experience
+                  {t("apply.field.years")}
                   <input className={ui.input} type="number" min="0" max="50" value={data.years_experience} onChange={(e) => set("years_experience", parseInt(e.target.value) || 0)} />
                 </label>
               </div>
@@ -612,21 +610,21 @@ export default function TutorApplicationPage() {
 
             {currentStep === 5 && (
               <>
-                <span className={ui.subHead}>Teaching specialties</span>
+                <span className={ui.subHead}>{t("apply.field.specialties")}</span>
                 <div className={styles.chips}>
                   {specialtiesOptions.map((spec) => (
-                    <label key={spec} className={`${styles.chip} ${data.specialties.includes(spec) ? styles.chipOn : ""}`}>
-                      <input type="checkbox" checked={data.specialties.includes(spec)} onChange={() => toggleSpecialty(spec)} />
-                      {spec}
+                    <label key={spec.value} className={`${styles.chip} ${data.specialties.includes(spec.value) ? styles.chipOn : ""}`}>
+                      <input type="checkbox" checked={data.specialties.includes(spec.value)} onChange={() => toggleSpecialty(spec.value)} />
+                      {t(spec.key)}
                     </label>
                   ))}
                 </div>
-                <span className={ui.subHead}>Languages you can teach</span>
+                <span className={ui.subHead}>{t("apply.field.languages")}</span>
                 <div className={styles.chips}>
                   {languagesOptions.map((lang) => (
-                    <label key={lang} className={`${styles.chip} ${data.languages.includes(lang) ? styles.chipOn : ""}`}>
-                      <input type="checkbox" checked={data.languages.includes(lang)} onChange={() => toggleLanguage(lang)} />
-                      {lang}
+                    <label key={lang.value} className={`${styles.chip} ${data.languages.includes(lang.value) ? styles.chipOn : ""}`}>
+                      <input type="checkbox" checked={data.languages.includes(lang.value)} onChange={() => toggleLanguage(lang.value)} />
+                      {t(lang.key)}
                     </label>
                   ))}
                 </div>
@@ -635,8 +633,8 @@ export default function TutorApplicationPage() {
 
             {currentStep === 6 && (
               <label>
-                Your availability
-                <textarea className={ui.textarea} rows={5} placeholder="e.g. Monday–Friday 9am–5pm UTC, weekends flexible" value={data.availability} onChange={(e) => set("availability", e.target.value)} />
+                {t("apply.field.availability")}
+                <textarea className={ui.textarea} rows={5} placeholder={t("apply.ph.availability")} value={data.availability} onChange={(e) => set("availability", e.target.value)} />
               </label>
             )}
 
@@ -644,15 +642,15 @@ export default function TutorApplicationPage() {
               <div className={styles.consents}>
                 {(
                   [
-                    ["tech_confirmed", "I have confirmed my technical setup."],
-                    ["code_of_conduct_accepted", "I accept the Code of Conduct."],
-                    ["privacy_agreement_accepted", "I accept the Privacy Agreement."],
-                    ["recording_consent", "I consent to my demo lesson being recorded."],
+                    ["tech_confirmed", "apply.consent.tech"],
+                    ["code_of_conduct_accepted", "apply.consent.conduct"],
+                    ["privacy_agreement_accepted", "apply.consent.privacy"],
+                    ["recording_consent", "apply.consent.recording"],
                   ] as const
-                ).map(([key, label]) => (
+                ).map(([key, labelKey]) => (
                   <label key={key} className={`${styles.consent} ${data[key] ? styles.consentOn : ""}`}>
                     <input type="checkbox" checked={data[key]} onChange={(e) => set(key, e.target.checked)} />
-                    {label}
+                    {t(labelKey)}
                   </label>
                 ))}
               </div>
@@ -661,25 +659,25 @@ export default function TutorApplicationPage() {
             {currentStep === 8 && (
               <div className={ui.form}>
                 <label>
-                  Reference 1 name
+                  {t("apply.field.ref1Name")}
                   <input className={ui.input} type="text" value={data.reference_1_name} onChange={(e) => set("reference_1_name", e.target.value)} />
                 </label>
                 <label>
-                  Reference 1 email
+                  {t("apply.field.ref1Email")}
                   <input className={ui.input} type="email" value={data.reference_1_email} onChange={(e) => set("reference_1_email", e.target.value)} />
                 </label>
                 <label>
-                  Reference 2 name (optional)
+                  {t("apply.field.ref2Name")}
                   <input className={ui.input} type="text" value={data.reference_2_name} onChange={(e) => set("reference_2_name", e.target.value)} />
                 </label>
                 <label>
-                  Reference 2 email (optional)
+                  {t("apply.field.ref2Email")}
                   <input className={ui.input} type="email" value={data.reference_2_email} onChange={(e) => set("reference_2_email", e.target.value)} />
                 </label>
                 <label className={ui.wide}>
-                  Background check provider (optional)
+                  {t("apply.field.bgProvider")}
                   <select className={ui.select} value={data.background_check_provider} onChange={(e) => set("background_check_provider", e.target.value)}>
-                    <option value="">Select provider</option>
+                    <option value="">{t("apply.ph.selectProvider")}</option>
                     <option value="checkr">Checkr</option>
                     <option value="goodhire">GoodHire</option>
                     <option value="goodly">Goodly</option>
@@ -691,14 +689,14 @@ export default function TutorApplicationPage() {
             <div className={styles.stepNav}>
               {currentStep > 1 ? (
                 <button type="button" className={ui.btn} onClick={prevStep} disabled={isSubmitting}>
-                  Previous
+                  {t("apply.nav.previous")}
                 </button>
               ) : (
                 <span />
               )}
               {currentStep < 8 ? (
                 <button type="button" className={ui.btnCoral} onClick={nextStep} disabled={isSubmitting}>
-                  Next
+                  {t("apply.nav.next")}
                 </button>
               ) : (
                 <button
@@ -710,7 +708,7 @@ export default function TutorApplicationPage() {
                   // submission the server would reject with 422.
                   disabled={isSubmitting || !completeness.can_submit}
                 >
-                  {isSubmitting ? "Submitting…" : "Submit application"}
+                  {isSubmitting ? t("apply.nav.submitting") : t("apply.nav.submit")}
                 </button>
               )}
             </div>
@@ -718,12 +716,12 @@ export default function TutorApplicationPage() {
         </div>
 
         <aside className={ui.sidePane}>
-          <span className={ui.bandLabel}>Your progress</span>
-          <ol className={styles.steps} aria-label="Application steps">
+          <span className={ui.bandLabel}>{t("apply.progress.label")}</span>
+          <ol className={styles.steps} aria-label={t("apply.progress.aria")}>
             {completeness.steps.map((s) => {
               const note = s.complete
-                ? "Complete"
-                : s.missing.map((m) => FIELD_LABEL[m] ?? m).join(", ");
+                ? t("apply.progress.complete")
+                : s.missing.map((m) => t(FIELD_LABEL[m] ?? m)).join(", ");
               return (
                 <li
                   key={s.step}
@@ -742,7 +740,11 @@ export default function TutorApplicationPage() {
                       <span className={styles.stepNote}>{note}</span>
                     </span>
                     <span className={styles.stepWhen}>
-                      {s.step === currentStep ? "Now" : s.complete ? "Done" : `Step ${s.step}`}
+                      {s.step === currentStep
+                        ? t("apply.progress.now")
+                        : s.complete
+                          ? t("apply.progress.done")
+                          : t("apply.progress.step", { step: s.step })}
                     </span>
                   </button>
                 </li>
@@ -751,7 +753,7 @@ export default function TutorApplicationPage() {
           </ol>
           <p className={styles.fieldNote}>
             <Link href="/tutor/requirements" className={ui.textLink}>
-              Review the full requirements first
+              {t("apply.progress.reviewLink")}
             </Link>
           </p>
         </aside>

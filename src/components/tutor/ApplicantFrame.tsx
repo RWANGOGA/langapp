@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import type { ReactNode } from "react";
 import BackLink from "@/components/layout/BackLink";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import styles from "./applicant.module.css";
 
 /**
@@ -16,6 +19,8 @@ export default function ApplicantFrame({
   signedIn?: boolean;
   children: ReactNode;
 }) {
+  const { t } = useLanguage();
+
   return (
     <div className={styles.page}>
       <header className={styles.bar}>
@@ -27,17 +32,17 @@ export default function ApplicantFrame({
           </svg>
           <span>Nile Language</span>
         </Link>
-        <nav className={styles.nav} aria-label="Main">
+        <nav className={styles.nav} aria-label={t("frame.mainNav")}>
           <Link href="/tutors" className={styles.navLink}>
-            Find a tutor
+            {t("frame.findTutor")}
           </Link>
           {signedIn ? (
             <Link href="/dashboard" className={styles.navLink}>
-              My dashboard
+              {t("frame.myDashboard")}
             </Link>
           ) : (
             <Link href="/auth/login" className={styles.navLink}>
-              Sign in
+              {t("frame.signIn")}
             </Link>
           )}
         </nav>
