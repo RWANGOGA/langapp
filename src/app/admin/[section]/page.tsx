@@ -14,6 +14,7 @@ import { SubscriptionManagement } from "@/components/admin/SubscriptionManagemen
 import { ActivityLog } from "@/components/admin/ActivityLog";
 import ApplicationReview from "@/components/admin/ApplicationReview";
 import ClassMonitor from "@/components/admin/ClassMonitor";
+import AccountSettings from "@/components/admin/AccountSettings";
 import ui from "@/components/portal/bands.module.css";
 
 type Section = "dashboard" | "applications" | "tutors" | "students" | "classes" | "meetings" | "subscriptions" | "reports" | "settings";
@@ -75,8 +76,8 @@ const SECTION_COPY: Record<Section, { kicker: string; title: string; lede: strin
   },
   settings: {
     kicker: "Settings",
-    title: "Admin settings are not connected yet",
-    lede: "Administration is read-only for now. Nothing on this page would change anything, so it holds no switches that do nothing.",
+    title: "Your account, your terms",
+    lede: "Change your display name, the language you work in and the timezone every lesson time is shown in - or set a new password. Email and role are issued by the school, not edited here.",
   },
 };
 
@@ -108,6 +109,8 @@ function SectionContent({ section, data, onReload }: { section: Section; data: A
       return <SubscriptionManagement plans={data.plans} leaders={data.leaders} statuses={data.statuses} />;
     case "reports":
       return <ActivityLog items={data.activity} />;
+    case "settings":
+      return <AccountSettings />;
     case "dashboard":
       return (
         <HonestBand label="Overview">
@@ -118,7 +121,8 @@ function SectionContent({ section, data, onReload }: { section: Section; data: A
         </HonestBand>
       );
     default:
-      // settings: the heading already says it is not connected.
+      // Every section is wired now; this band only guards a payload from an
+      // older build naming a section the client does not know.
       return (
         <HonestBand label="Nothing to show yet">
           <p>The sidebar entry stays so the product shape is visible, but there is no data behind it.</p>

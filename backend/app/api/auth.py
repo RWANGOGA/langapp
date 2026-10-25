@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Optional
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -12,7 +13,7 @@ from app.core.config import settings
 from app.models.user import User, UserRole, TutorProfile
 from app.schemas.auth import (
     UserCreate, UserLogin, UserRead, Token, TokenPayload, 
-    RefreshTokenRequest, Message
+    Message, UserUpdate, PasswordChangeRequest,
 )
 
 router = APIRouter()
@@ -250,6 +251,59 @@ async def logout(response: Response):
 @router.get("/auth/me", response_model=UserRead)
 async def get_me(current_user: User = Depends(get_current_active_user)):
     return current_user
+
+
+@router.patch("/auth/me", response_model=UserRead)
+async def update_me(
+    payload: UserUpdate,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """The settings an account owns: display name, native language and the
+    timezone every rendered time is shown in. Email and role are not here -
+    identity is issued by the school, not chosen at the form."""
+    if payload.full_name is not None:
+        name = payload.full_name.strip()
+        if not name:
+            raise HTTPException(status_code=400, detail="A name cannot be blank")
+        current_user.full_name = name
+
+    if payload.native_language is not None:
+        current_user.native_language = payload.native_language.strip() or None
+
+    if payload.timezone is not None:
+        zone = payload.timezone.strip()
+        if zone:
+            # A made-up zone would poison every time rendered from it, so
+            # only real IANA zones are stored.
+            try:
+                ZoneInfo(zone)
+            except (KeyError, ZoneInfoNotFoundError):
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Unknown timezone '{zone}'. Use an IANA name like Asia/Tokyo.",
+                )
+        current_user.timezone = zone or None
+
+    await db.commit()
+    await db.refresh(current_user)
+    return current_user
+
+
+@router.post("/auth/change-password", response_model=Message)
+async def change_password(
+    payload: PasswordChangeRequest,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Proof of the current password buys the change; the old one stops
+    being a key the moment the new hash is written."""
+    if not verify_password(payload.current_password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+
+    current_user.hashed_password = get_password_hash(payload.new_password)
+    await db.commit()
+    return Message(message="Password updated")
 
 
 require_tutor = require_role(UserRole.TUTOR, UserRole.ADMIN)

@@ -27,6 +27,19 @@ class UserLogin(BaseModel):
     password: str
 
 
+class UserUpdate(BaseModel):
+    """The settings an account may change about itself. Role, email and the
+    verification flags deliberately do not appear here."""
+    full_name: Optional[str] = Field(None, min_length=1, max_length=100)
+    native_language: Optional[str] = Field(None, max_length=60)
+    timezone: Optional[str] = Field(None, max_length=60)
+
+
+class PasswordChangeRequest(BaseModel):
+    current_password: str
+    new_password: str = Field(..., min_length=8, max_length=128)
+
+
 class UserRead(UserBase):
     id: int
     role: UserRole

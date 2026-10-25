@@ -33,6 +33,8 @@ interface AuthContextType {
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   refreshToken: () => Promise<void>;
+  /** Re-reads /auth/me - call after PATCH /auth/me so the shell shows the new name. */
+  refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
   isTutor: boolean;
   isAdmin: boolean;
@@ -149,6 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         register,
         logout,
         refreshToken,
+        refreshUser: fetchUser,
         isAuthenticated,
         isTutor,
         isAdmin,
