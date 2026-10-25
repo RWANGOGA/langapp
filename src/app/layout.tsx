@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
+import { LanguageProvider } from "@/i18n/LanguageProvider";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
 
@@ -20,11 +21,13 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
-        <AuthProvider>
-          <SiteHeader />
-          {children}
-          <SiteFooter />
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <SiteHeader />
+            {children}
+            <SiteFooter />
+          </AuthProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

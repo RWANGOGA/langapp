@@ -6,20 +6,22 @@ import { usePathname, useRouter } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth";
+import { useLanguage } from "@/i18n/LanguageProvider";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import styles from "./SiteHeader.module.css";
 
 const NAV = [
-  { href: "/", label: "Home" },
-  { href: "/features", label: "Features" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/tutors", label: "Tutors" },
-  { href: "/resources", label: "Resources" },
-  { href: "/blog", label: "Blog" },
+  { href: "/", key: "nav.home" },
+  { href: "/features", key: "nav.features" },
+  { href: "/pricing", key: "nav.pricing" },
+  { href: "/tutors", key: "nav.tutors" },
+  { href: "/resources", key: "nav.resources" },
+  { href: "/blog", key: "nav.blog" },
 ];
 
 const PORTALS = [
-  { href: "/tutor", label: "Tutor Portal" },
-  { href: "/admin", label: "Admin" },
+  { href: "/tutor", key: "nav.tutorPortal" },
+  { href: "/admin", key: "nav.admin" },
 ];
 
 function Logo() {
@@ -53,6 +55,7 @@ export default function SiteHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout, isAuthenticated, isLoading, isTutor, isAdmin } = useAuth();
+  const { t } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   // Close mobile nav on route change
@@ -81,24 +84,24 @@ export default function SiteHeader() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className={styles.nav} aria-label="Main">
+        <nav className={styles.nav} aria-label={t("a11y.mainNav")}>
           {NAV.map((n) => (
             <Link
               key={n.href}
               href={n.href}
               className={`${styles.navLink} ${isActive(n.href) ? styles.active : ""}`}
             >
-              {n.label}
+              {t(n.key)}
             </Link>
           ))}
         </nav>
 
         {/* Portal links (role gated) */}
         {isAuthenticated && (isTutor || isAdmin) && (
-          <nav className={styles.portals} aria-label="Portals">
+          <nav className={styles.portals} aria-label={t("a11y.portals")}>
             {PORTALS.map((p) => (
               <Link key={p.href} href={p.href} className={styles.portalLink}>
-                {p.label}
+                {t(p.key)}
               </Link>
             ))}
           </nav>
@@ -106,8 +109,9 @@ export default function SiteHeader() {
 
         {/* Actions */}
         <div className={styles.actions}>
+          <LanguageSwitcher variant="dark" />
           {isLoading ? (
-            <span className={styles.loading}>Loading…</span>
+            <span className={styles.loading}>{t("actions.loading")}</span>
           ) : isAuthenticated ? (
             <>
               {user?.avatar_url && (
@@ -126,7 +130,7 @@ export default function SiteHeader() {
                 onClick={handleLogout}
                 className={`${styles.btn} ${styles.outline}`}
               >
-                Logout
+                {t("actions.logout")}
               </button>
             </>
           ) : (
@@ -135,13 +139,13 @@ export default function SiteHeader() {
                 href="/auth/login"
                 className={`${styles.btn} ${styles.outline}`}
               >
-                Sign In
+                {t("actions.signIn")}
               </Link>
               <Link
                 href="/auth/register"
                 className={`${styles.btn} ${styles.solid}`}
               >
-                Get Started
+                {t("actions.getStarted")}
               </Link>
             </>
           )}
@@ -152,7 +156,7 @@ export default function SiteHeader() {
           type="button"
           className={styles.burger}
           onClick={() => setMobileOpen((v) => !v)}
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          aria-label={mobileOpen ? t("a11y.closeMenu") : t("a11y.openMenu")}
           aria-expanded={mobileOpen}
         >
           {mobileOpen ? <X size={24} /> : <Menu size={24} />}
@@ -161,14 +165,14 @@ export default function SiteHeader() {
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <nav className={styles.drawer} aria-label="Mobile navigation">
+        <nav className={styles.drawer} aria-label={t("a11y.mobileNav")}>
           {NAV.map((n) => (
             <Link
               key={n.href}
               href={n.href}
               className={`${styles.drawerLink} ${isActive(n.href) ? styles.active : ""}`}
             >
-              {n.label}
+              {t(n.key)}
             </Link>
           ))}
 
@@ -178,21 +182,26 @@ export default function SiteHeader() {
           {isAuthenticated && (isTutor || isAdmin) &&
             PORTALS.map((p) => (
               <Link key={p.href} href={p.href} className={styles.drawerLink}>
-                {p.label}
+                {t(p.key)}
               </Link>
             ))}
 
           <div className={styles.drawerDivider} />
 
+          <div className={styles.drawerLang}>
+            <LanguageSwitcher variant="dark" />
+          </div>
+          <div className={styles.drawerDivider} />
+
           <div className={styles.drawerActions}>
             {isLoading ? (
-              <span className={styles.loading}>Loading…</span>
+              <span className={styles.loading}>{t("actions.loading")}</span>
             ) : isAuthenticated ? (
               <button
                 onClick={handleLogout}
                 className={`${styles.btn} ${styles.outline} ${styles.full}`}
               >
-                Logout
+                {t("actions.logout")}
               </button>
             ) : (
               <>
@@ -200,13 +209,13 @@ export default function SiteHeader() {
                   href="/auth/login"
                   className={`${styles.btn} ${styles.outline} ${styles.full}`}
                 >
-                  Sign In
+                  {t("actions.signIn")}
                 </Link>
                 <Link
                   href="/auth/register"
                   className={`${styles.btn} ${styles.solid} ${styles.full}`}
                 >
-                  Get Started
+                  {t("actions.getStarted")}
                 </Link>
               </>
             )}

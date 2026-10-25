@@ -2,14 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import styles from "./SiteFooter.module.css";
 
 const LINKS = [
-  { href: "/features", label: "Features" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/tutors", label: "Tutors" },
-  { href: "/resources", label: "Resources" },
-  { href: "/blog", label: "Blog" },
+  { href: "/features", key: "nav.features" },
+  { href: "/pricing", key: "nav.pricing" },
+  { href: "/tutors", key: "nav.tutors" },
+  { href: "/resources", key: "nav.resources" },
+  { href: "/blog", key: "nav.blog" },
+];
+
+const LEGAL = [
+  { href: "/terms", key: "footer.terms" },
+  { href: "/privacy", key: "footer.privacy" },
+  { href: "/contact", key: "footer.contact" },
 ];
 
 const SOCIAL = [
@@ -23,6 +30,7 @@ const PORTAL_PREFIXES = ["/dashboard", "/tutor", "/admin"];
 
 export default function SiteFooter() {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   // Don't render on portal pages
   // Segment match so the public /tutors pages keep the footer.
@@ -56,10 +64,10 @@ export default function SiteFooter() {
             <span>Nile Language</span>
           </Link>
 
-          <nav className={styles.links} aria-label="Footer navigation">
+          <nav className={styles.links} aria-label={t("a11y.footerNav")}>
             {LINKS.map((l) => (
               <Link key={l.href} href={l.href} className={styles.link}>
-                {l.label}
+                {t(l.key)}
               </Link>
             ))}
           </nav>
@@ -85,11 +93,11 @@ export default function SiteFooter() {
 
         {/* Bottom row */}
         <div className={styles.bottom}>
-          <p>© {new Date().getFullYear()} Nile Language. All rights reserved.</p>
+          <p>{t("footer.rights", { year: new Date().getFullYear() })}</p>
           <div className={styles.legal}>
-            <Link href="/terms">Terms</Link>
-            <Link href="/privacy">Privacy</Link>
-            <Link href="/contact">Contact</Link>
+            {LEGAL.map((l) => (
+              <Link key={l.href} href={l.href}>{t(l.key)}</Link>
+            ))}
           </div>
         </div>
       </div>

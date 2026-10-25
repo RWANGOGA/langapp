@@ -8,6 +8,7 @@ import {
   LayoutDashboard, NotebookPen, Settings, TrendingUp, UserPlus, Users, Video,
 } from "lucide-react";
 import styles from "./portal.module.css";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 /**
  * Portal chrome shared by the learner, tutor and admin surfaces.
@@ -93,6 +94,7 @@ export default function PortalShell({
             <span>Nile<br />Language</span>
           </Link>
           <p className={styles.portalLabel}>{portalLabel}</p>
+          <LanguageSwitcher variant="light" />
           <div className={styles.userBox}>
             {identity.avatar ? (
               <img src={identity.avatar} alt="" width={34} height={34} className={styles.avatar} />

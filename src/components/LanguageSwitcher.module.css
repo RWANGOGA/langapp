@@ -1,0 +1,110 @@
+.root {
+  position: relative;
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, monospace);
+}
+
+/* ── Trigger ── */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 7px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  white-space: nowrap;
+}
+
+.current {
+  font-variant-numeric: tabular-nums;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.trigger svg {
+  transition: transform 160ms ease;
+}
+
+/* Dark trigger for the navy marketing header */
+.triggerDark {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+.triggerDark:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.36);
+}
+
+/* Light trigger for the white portal topbar */
+.triggerLight {
+  background: #fff;
+  border: 1px solid #dfe6ec;
+  color: #0f1c33;
+}
+.triggerLight:hover {
+  border-color: #b7c4d4;
+  background: #f6f8fb;
+}
+
+/* ── Panel ── */
+.panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 200;
+  min-width: 208px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #dfe6ec;
+  border-radius: 10px;
+  box-shadow: 0 12px 34px rgba(15, 28, 51, 0.16);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #0f1c33;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: background 130ms ease;
+}
+.option:hover {
+  background: #f2f5f9;
+}
+
+.optionActive {
+  background: #eef7f5;
+}
+
+.optionNative {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #0f1c33;
+}
+
+.optionLabel {
+  font-size: 0.72rem;
+  color: #8a96a8;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.check {
+  margin-left: auto;
+  color: var(--teal, #2a8c82);
+}
