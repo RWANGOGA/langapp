@@ -162,6 +162,35 @@ const es: Record<string, string> = {
   "pricing.cta.body": "Una compra, un tutor, un camino claro. El pago toma menos de un minuto.",
   "pricing.cta.checkout": "Ir al pago",
   "pricing.cta.tutors": "Conoce primero a los tutores",
+
+  "tutors.hero.kicker": "El profesorado",
+  "tutors.hero.title": "Conoce a los tutores con los que realmente estudiarás.",
+  "tutors.hero.lede":
+    "Todos en esta página superaron el proceso completo de revisión: identidad, credenciales de enseñanza, dominio del inglés evaluado, referencias y una clase demostrativa observada. Las valoraciones de abajo vienen de estudiantes reales tras sesiones completadas — un tutor sin valoraciones simplemente fue aprobado hace poco.",
+  "tutors.search.placeholder": "Buscar por nombre o enfoque",
+  "tutors.search.aria": "Buscar tutores",
+  "tutors.filter.goal": "Objetivo",
+  "tutors.filter.language": "Apoyo de idioma",
+  "tutors.filter.order": "Ordenar por",
+  "tutors.filter.all": "Todos",
+  "tutors.filter.any": "Cualquiera",
+  "tutors.sort.rating": "Mejor valorados",
+  "tutors.sort.reviews": "Más reseñados",
+  "tutors.sort.experience": "Más experiencia",
+  "tutors.count": "{shown} de {total} tutores",
+  "tutors.fromReviewsOne": "de {n} reseña",
+  "tutors.fromReviewsOther": "de {n} reseñas",
+  "tutors.newlyApproved": "Profesorado recién aprobado",
+  "tutors.yrsTeaching": "{n} años de enseñanza",
+  "tutors.speaks": "Habla {langs}",
+  "tutors.defaultLang": "Inglés",
+  "tutors.viewProfile": "Ver perfil",
+  "tutors.startTrial": "Empieza con una prueba",
+  "tutors.empty.title": "La lista del profesorado está vacía ahora mismo.",
+  "tutors.empty.body":
+    "Los tutores aparecen aquí en el momento en que el personal aprueba su solicitud — identidad, credenciales, inglés evaluado y una clase demostrativa observada. Preferimos mostrarte una lista honesta antes que una adornada.",
+  "tutors.noMatch.title": "Ningún tutor coincide con esos filtros.",
+  "tutors.noMatch.body": "Amplía el objetivo o el idioma — o borra la búsqueda.",
 };
 
 export default es;

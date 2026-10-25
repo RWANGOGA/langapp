@@ -4,11 +4,13 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { SPECIALTIES, type DirectoryTutor, type Specialty } from "@/lib/tutors-data";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import styles from "./page.module.css";
 
 type Sort = "rating" | "reviews" | "experience";
 
 export default function TutorDirectory({ tutors }: { tutors: DirectoryTutor[] }) {
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [specialty, setSpecialty] = useState<Specialty | "All">("All");
   const [language, setLanguage] = useState("Any");
@@ -29,10 +31,8 @@ export default function TutorDirectory({ tutors }: { tutors: DirectoryTutor[] })
     return (
       <div className={styles.wrap}>
         <p className={styles.empty}>
-          <strong>The faculty list is empty right now.</strong>
-          Tutors appear here the moment staff approve their application — identity,
-          credentials, tested English and an observed demo lesson. We would rather
-          show you an honest list than a decorated one.
+          <strong>{t("tutors.empty.title")}</strong>
+          {t("tutors.empty.body")}
         </p>
       </div>
     );
@@ -43,63 +43,63 @@ export default function TutorDirectory({ tutors }: { tutors: DirectoryTutor[] })
       <div className={styles.filters} role="search">
         <label className={styles.search}>
           <Search size={18} aria-hidden />
-          <input type="search" placeholder="Search by name or focus" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search tutors" />
+          <input type="search" placeholder={t("tutors.search.placeholder")} value={query} onChange={(e) => setQuery(e.target.value)} aria-label={t("tutors.search.aria")} />
         </label>
         <label className={styles.field}>
-          <span>Goal</span>
-          <select value={specialty} onChange={(e) => setSpecialty(e.target.value as Specialty | "All")} aria-label="Specialty">
-            <option value="All">All</option>
+          <span>{t("tutors.filter.goal")}</span>
+          <select value={specialty} onChange={(e) => setSpecialty(e.target.value as Specialty | "All")} aria-label={t("tutors.filter.goal")}>
+            <option value="All">{t("tutors.filter.all")}</option>
             {SPECIALTIES.map((s) => <option key={s}>{s}</option>)}
           </select>
         </label>
         <label className={styles.field}>
-          <span>Language support</span>
-          <select value={language} onChange={(e) => setLanguage(e.target.value)} aria-label="Also speaks">
-            <option value="Any">Any</option>
+          <span>{t("tutors.filter.language")}</span>
+          <select value={language} onChange={(e) => setLanguage(e.target.value)} aria-label={t("tutors.filter.language")}>
+            <option value="Any">{t("tutors.filter.any")}</option>
             {languages.map((l) => <option key={l}>{l}</option>)}
           </select>
         </label>
         <label className={styles.field}>
-          <span>Order by</span>
-          <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label="Sort by">
-            <option value="rating">Highest rated</option>
-            <option value="reviews">Most reviewed</option>
-            <option value="experience">Most experienced</option>
+          <span>{t("tutors.filter.order")}</span>
+          <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label={t("tutors.filter.order")}>
+            <option value="rating">{t("tutors.sort.rating")}</option>
+            <option value="reviews">{t("tutors.sort.reviews")}</option>
+            <option value="experience">{t("tutors.sort.experience")}</option>
           </select>
         </label>
       </div>
 
-      <p className={styles.count} aria-live="polite">{list.length} of {tutors.length} tutors</p>
+      <p className={styles.count} aria-live="polite">{t("tutors.count", { shown: list.length, total: tutors.length })}</p>
 
       <ul className={styles.roster}>
-        {list.map((t) => (
-          <li key={t.id} className={styles.tutor}>
+        {list.map((tutor) => (
+          <li key={tutor.id} className={styles.tutor}>
             <div>
-              <h2>{t.name}</h2>
-              {t.specialties.length > 0 && <span className={styles.goals}>{t.specialties.join(" · ")}</span>}
-              <p className={styles.headline}>{t.headline}</p>
+              <h2>{tutor.name}</h2>
+              {tutor.specialties.length > 0 && <span className={styles.goals}>{tutor.specialties.join(" · ")}</span>}
+              <p className={styles.headline}>{tutor.headline}</p>
               <p className={styles.meta}>
-                {t.reviews > 0 ? (
-                  <><strong>{t.rating.toFixed(1)}</strong> from {t.reviews} review{t.reviews === 1 ? "" : "s"}</>
+                {tutor.reviews > 0 ? (
+                  <><strong>{tutor.rating.toFixed(1)}</strong> {t(tutor.reviews === 1 ? "tutors.fromReviewsOne" : "tutors.fromReviewsOther", { n: tutor.reviews })}</>
                 ) : (
-                  <>Newly approved faculty</>
+                  <>{t("tutors.newlyApproved")}</>
                 )}
-                <span>{t.years} yrs teaching</span>
-                {t.country && <span>{t.country}</span>}
-                <span>Speaks {t.speaks.join(", ") || "English"}</span>
+                <span>{t("tutors.yrsTeaching", { n: tutor.years })}</span>
+                {tutor.country && <span>{tutor.country}</span>}
+                <span>{t("tutors.speaks", { langs: tutor.speaks.join(", ") || t("tutors.defaultLang") })}</span>
               </p>
             </div>
             <div className={styles.side}>
-              <Link href={`/tutors/${t.id}`} className={styles.actionGhost}>View profile</Link>
-              <Link href={`/auth/register?role=learner&tutor=${t.id}`} className={styles.actionPrimary}>Start with a trial</Link>
+              <Link href={`/tutors/${tutor.id}`} className={styles.actionGhost}>{t("tutors.viewProfile")}</Link>
+              <Link href={`/auth/register?role=learner&tutor=${tutor.id}`} className={styles.actionPrimary}>{t("tutors.startTrial")}</Link>
             </div>
           </li>
         ))}
       </ul>
       {list.length === 0 && (
         <p className={styles.notice}>
-          <strong>No tutor matches those filters.</strong>
-          Widen the goal or language — or clear the search.
+          <strong>{t("tutors.noMatch.title")}</strong>
+          {t("tutors.noMatch.body")}
         </p>
       )}
     </div>

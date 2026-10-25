@@ -162,6 +162,35 @@ const fr: Record<string, string> = {
   "pricing.cta.body": "Un achat, un tuteur, une voie claire. Le paiement prend moins d'une minute.",
   "pricing.cta.checkout": "Aller au paiement",
   "pricing.cta.tutors": "Rencontrez d'abord les tuteurs",
+
+  "tutors.hero.kicker": "Le corps enseignant",
+  "tutors.hero.title": "Rencontrez les tuteurs avec qui vous étudierez vraiment.",
+  "tutors.hero.lede":
+    "Tous les membres de cette page ont franchi le parcours complet de vérification : identité, diplômes d'enseignement, niveau d'anglais évalué, références et un cours de démonstration observé. Les notes ci-dessous viennent de vrais apprenants après des sessions terminées — un tuteur sans note a simplement été agréé récemment.",
+  "tutors.search.placeholder": "Rechercher par nom ou spécialité",
+  "tutors.search.aria": "Rechercher des tuteurs",
+  "tutors.filter.goal": "Objectif",
+  "tutors.filter.language": "Soutien linguistique",
+  "tutors.filter.order": "Trier par",
+  "tutors.filter.all": "Tous",
+  "tutors.filter.any": "Peu importe",
+  "tutors.sort.rating": "Les mieux notés",
+  "tutors.sort.reviews": "Les plus avisés",
+  "tutors.sort.experience": "Les plus expérimentés",
+  "tutors.count": "{shown} sur {total} tuteurs",
+  "tutors.fromReviewsOne": "à partir de {n} avis",
+  "tutors.fromReviewsOther": "à partir de {n} avis",
+  "tutors.newlyApproved": "Corps enseignant récemment agréé",
+  "tutors.yrsTeaching": "{n} ans d'enseignement",
+  "tutors.speaks": "Parle {langs}",
+  "tutors.defaultLang": "Anglais",
+  "tutors.viewProfile": "Voir le profil",
+  "tutors.startTrial": "Commencer par un essai",
+  "tutors.empty.title": "La liste du corps enseignant est vide pour le moment.",
+  "tutors.empty.body":
+    "Les tuteurs apparaissent ici dès que le personnel approuve leur candidature — identité, diplômes, anglais évalué et un cours de démonstration observé. Nous préférons vous montrer une liste honnête plutôt qu'ornée.",
+  "tutors.noMatch.title": "Aucun tuteur ne correspond à ces filtres.",
+  "tutors.noMatch.body": "Élargissez l'objectif ou la langue — ou effacez la recherche.",
 };
 
 export default fr;

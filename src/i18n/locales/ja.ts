@@ -162,6 +162,35 @@ const ja: Record<string, string> = {
   "pricing.cta.body": "ひとりの購入、ひとりのチューター、ひとつの明確な道。チェックアウトは1分とかかりません。",
   "pricing.cta.checkout": "チェックアウトへ",
   "pricing.cta.tutors": "まずチューターに会う",
+
+  "tutors.hero.kicker": "ファカルティ",
+  "tutors.hero.title": "実際に一緒に学ぶチューターに出会おう。",
+  "tutors.hero.lede":
+    "このページの全員が、完全な審査パイプラインを通過しています。身元、指導資格、測定済みの英語力、推薦状、そして参観された模擬レッスン。下の評価は、レッスンを完了した実際の学習者によるものです——評価のないチューターは、単に最近承認されたばかりの人です。",
+  "tutors.search.placeholder": "名前や専門で検索",
+  "tutors.search.aria": "チューターを検索",
+  "tutors.filter.goal": "目標",
+  "tutors.filter.language": "言語サポート",
+  "tutors.filter.order": "並び替え",
+  "tutors.filter.all": "すべて",
+  "tutors.filter.any": "指定なし",
+  "tutors.sort.rating": "評価が高い順",
+  "tutors.sort.reviews": "レビューが多い順",
+  "tutors.sort.experience": "経験が豊富な順",
+  "tutors.count": "{total} 人中 {shown} 人のチューター",
+  "tutors.fromReviewsOne": "{n} 件のレビューから",
+  "tutors.fromReviewsOther": "{n} 件のレビューから",
+  "tutors.newlyApproved": "最近承認されたファカルティ",
+  "tutors.yrsTeaching": "指導 {n} 年",
+  "tutors.speaks": "{langs} を話します",
+  "tutors.defaultLang": "英語",
+  "tutors.viewProfile": "プロフィールを見る",
+  "tutors.startTrial": "体験レッスンから始める",
+  "tutors.empty.title": "現在、ファカルティリストは空です。",
+  "tutors.empty.body":
+    "職員が申請を承認した瞬間に、チューターがここに表示されます——身元、資格、英語力の測定、参観された模擬レッスン。飾り立てたリストではなく、正直なリストをお見せしたいのです。",
+  "tutors.noMatch.title": "その条件に合うチューターはいません。",
+  "tutors.noMatch.body": "目標や言語を広げる——または検索をクリアしてください。",
 };
 
 export default ja;

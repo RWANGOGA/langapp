@@ -176,6 +176,36 @@ const en = {
   "pricing.cta.body": "One purchase, one tutor, one clear path. Checkout takes less than a minute.",
   "pricing.cta.checkout": "Go to checkout",
   "pricing.cta.tutors": "Meet the tutors first",
+
+  // Tutors directory
+  "tutors.hero.kicker": "The faculty",
+  "tutors.hero.title": "Meet the tutors you will actually study with.",
+  "tutors.hero.lede":
+    "Everyone on this page cleared the full review pipeline: identity, teaching credentials, tested English proficiency, references and an observed demo lesson. Ratings below come from real learners after completed sessions — an unrated tutor was simply approved recently.",
+  "tutors.search.placeholder": "Search by name or focus",
+  "tutors.search.aria": "Search tutors",
+  "tutors.filter.goal": "Goal",
+  "tutors.filter.language": "Language support",
+  "tutors.filter.order": "Order by",
+  "tutors.filter.all": "All",
+  "tutors.filter.any": "Any",
+  "tutors.sort.rating": "Highest rated",
+  "tutors.sort.reviews": "Most reviewed",
+  "tutors.sort.experience": "Most experienced",
+  "tutors.count": "{shown} of {total} tutors",
+  "tutors.fromReviewsOne": "from {n} review",
+  "tutors.fromReviewsOther": "from {n} reviews",
+  "tutors.newlyApproved": "Newly approved faculty",
+  "tutors.yrsTeaching": "{n} yrs teaching",
+  "tutors.speaks": "Speaks {langs}",
+  "tutors.defaultLang": "English",
+  "tutors.viewProfile": "View profile",
+  "tutors.startTrial": "Start with a trial",
+  "tutors.empty.title": "The faculty list is empty right now.",
+  "tutors.empty.body":
+    "Tutors appear here the moment staff approve their application — identity, credentials, tested English and an observed demo lesson. We would rather show you an honest list than a decorated one.",
+  "tutors.noMatch.title": "No tutor matches those filters.",
+  "tutors.noMatch.body": "Widen the goal or language — or clear the search.",
 } as const;
 
 export type MessageKey = keyof typeof en;

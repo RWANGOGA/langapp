@@ -162,6 +162,35 @@ const zh: Record<string, string> = {
   "pricing.cta.body": "一次购买，一位导师，一条清晰的路径。结账不到一分钟。",
   "pricing.cta.checkout": "前往结账",
   "pricing.cta.tutors": "先认识导师",
+
+  "tutors.hero.kicker": "师资团队",
+  "tutors.hero.title": "认识你真正会一起学习的导师。",
+  "tutors.hero.lede":
+    "本页面上的每位导师都通过了完整的审核流程：身份、教学资质、英语水平测试、推荐信，以及一节被观摩的示范课。下方的评分来自完成课程后的真实学员——未评分的导师只是最近才通过认证。",
+  "tutors.search.placeholder": "按姓名或方向搜索",
+  "tutors.search.aria": "搜索导师",
+  "tutors.filter.goal": "目标",
+  "tutors.filter.language": "语言支持",
+  "tutors.filter.order": "排序方式",
+  "tutors.filter.all": "全部",
+  "tutors.filter.any": "任意",
+  "tutors.sort.rating": "评分最高",
+  "tutors.sort.reviews": "评价最多",
+  "tutors.sort.experience": "经验最丰富",
+  "tutors.count": "{total} 位导师中的 {shown} 位",
+  "tutors.fromReviewsOne": "来自 {n} 条评价",
+  "tutors.fromReviewsOther": "来自 {n} 条评价",
+  "tutors.newlyApproved": "新近认证的导师",
+  "tutors.yrsTeaching": "{n} 年教学经验",
+  "tutors.speaks": "会说 {langs}",
+  "tutors.defaultLang": "英语",
+  "tutors.viewProfile": "查看资料",
+  "tutors.startTrial": "预约试听课",
+  "tutors.empty.title": "师资名单目前为空。",
+  "tutors.empty.body":
+    "员工一通过导师的申请，他们就会出现在这里——身份、资质、英语测试与一节被观摩的示范课。我们宁愿给你一份诚实的名单，而非粉饰过的。",
+  "tutors.noMatch.title": "没有符合这些筛选条件的导师。",
+  "tutors.noMatch.body": "放宽目标或语言——或清除搜索。",
 };
 
 export default zh;
