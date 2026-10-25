@@ -15,11 +15,13 @@ from app.models.tutor_application import (
 )
 from app.schemas.tutor_application import (
     TutorApplicationCreate, TutorApplicationUpdate, TutorApplicationStatusUpdate,
-    TutorApplicationRead, TutorApplicationListResponse,
+    TutorApplicationApplicantRead, TutorApplicationRead, TutorApplicationListResponse,
     ApplicationCompleteness, RequirementDocument, ReviewStage, TutorRequirementsRead,
+    ApplicationStatusView,
 )
 from app.api.auth import get_current_active_user, require_admin
 from app.services import application_completeness as completeness
+from app.services import application_status
 from app.services.notifications import notify_admins, notify_user
 
 router = APIRouter()
@@ -160,32 +162,9 @@ async def get_tutor_requirements():
                 examples=["Conversation", "Business English", "Monday-Friday availability"],
             ),
         ],
-        review_stages=[
-            ReviewStage(
-                key="documents_review",
-                title="Document review",
-                description="We verify every document is current, legible and belongs to you.",
-                indicative_days="2-3 business days",
-            ),
-            ReviewStage(
-                key="english_test",
-                title="English assessment",
-                description="A short written and spoken check to confirm you can teach at the advertised level.",
-                indicative_days="2 business days",
-            ),
-            ReviewStage(
-                key="demo_lesson",
-                title="Demo lesson",
-                description="A short trial lesson with our academic team, scored out of 100.",
-                indicative_days="3-5 business days",
-            ),
-            ReviewStage(
-                key="approved",
-                title="Account activation",
-                description="Your tutor profile is published and you can accept your first class.",
-                indicative_days="Immediate",
-            ),
-        ],
+        # Same object the progress rail is built from, so the process promised
+        # here and the process shown after applying cannot diverge.
+        review_stages=list(application_status.REVIEW_STAGES),
         policies=[
             {
                 "id": "code_of_conduct",
@@ -217,7 +196,11 @@ async def get_tutor_requirements():
     )
 
 
-@router.post("/tutor/applications", response_model=TutorApplicationRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/tutor/applications",
+    response_model=TutorApplicationApplicantRead,
+    status_code=status.HTTP_201_CREATED,
+)
 async def submit_application(
     application_in: TutorApplicationCreate,
     current_user: User = Depends(get_current_active_user),
@@ -304,7 +287,10 @@ async def submit_application(
     return application
 
 
-@router.get("/tutor/applications/me", response_model=TutorApplicationRead)
+# The applicant endpoints answer with the applicant schema, never the staff
+# one: reading your own application must not hand back the reviewer's notes
+# about it. Reviewer endpoints below keep TutorApplicationRead.
+@router.get("/tutor/applications/me", response_model=TutorApplicationApplicantRead)
 async def get_my_application(
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
@@ -314,6 +300,23 @@ async def get_my_application(
     if not application:
         raise HTTPException(status_code=404, detail="No application found")
     return application
+
+
+@router.get("/tutor/applications/me/status", response_model=ApplicationStatusView)
+async def get_my_application_status(
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """What happens next, for the person waiting on the answer.
+
+    Deliberately not a 404 when there is nothing on file: having no
+    application is the normal state of the page this feeds, so it answers
+    with an empty view plus the guidance that goes with it.
+    """
+    result = await db.execute(
+        select(TutorApplication).where(TutorApplication.user_id == current_user.id)
+    )
+    return application_status.describe(result.scalar_one_or_none())
 
 
 @router.get("/tutor/applications/me/completeness", response_model=ApplicationCompleteness)
@@ -348,7 +351,7 @@ async def get_my_application_completeness(
     return ApplicationCompleteness(**completeness.evaluate(application))
 
 
-@router.patch("/tutor/applications/me", response_model=TutorApplicationRead)
+@router.patch("/tutor/applications/me", response_model=TutorApplicationApplicantRead)
 async def update_my_application(
     application_in: TutorApplicationUpdate,
     current_user: User = Depends(get_current_active_user),

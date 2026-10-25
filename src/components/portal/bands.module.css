@@ -143,12 +143,50 @@
 }
 .bandStatement p { margin-top: 0.7rem; color: #52607a; line-height: 1.65; }
 
+/* — Process rail: the stages a file moves through, marked by where it stands.
+   Squares, not circles - the same geometry as the matrix markers, so a stage
+   reads as data rather than as a wizard. — */
+.rail { list-style: none; margin-top: 1.3rem; border-top: 1px solid #dfe6ec; }
+.rail > li {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  gap: 0 1rem;
+  align-items: baseline;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid #dfe6ec;
+}
+.railMark { grid-row: 1 / span 2; align-self: center; justify-self: center; width: 9px; height: 9px; background: #cfd8e1; }
+.railComplete .railMark { background: var(--teal); }
+.railCurrent .railMark { background: var(--coral); }
+.railTitle { color: #0f1c33; font-size: 0.95rem; font-weight: 800; letter-spacing: -0.01em; }
+.railCurrent .railTitle { color: var(--coral); }
+.railDesc { margin-top: 0.2rem; color: #52607a; font-size: 0.82rem; line-height: 1.55; max-width: 62ch; }
+.railWhen { color: #8a96a8; font-size: 0.6rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
+
+/* — Conditions to satisfy: one sentence per hairline row — */
+.ticks { list-style: none; border-top: 1px solid #dfe6ec; }
+.ticks li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: start;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #dfe6ec;
+  color: #33415c;
+  line-height: 1.55;
+  max-width: 68ch;
+}
+.ticks svg { margin-top: 0.2rem; color: var(--teal); }
+
 /* — Rows: hairline-separated label/value pairs — */
 .rows { border-top: 1px solid #dfe6ec; }
 .rows > div { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 1.5rem; padding: 0.9rem 0; border-bottom: 1px solid #dfe6ec; }
 .rows dt { color: #8a96a8; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
 .rows dd { color: #0f1c33; font-weight: 600; font-variant-numeric: tabular-nums; }
 .rowNote { color: #52607a; font-weight: 400; line-height: 1.6; }
+/* A note that belongs under a value rather than beside it - used where the
+   value is a sentence and the note is a list of constraints. */
+.rowNoteUnder { composes: rowNote; display: block; margin-top: 0.25rem; }
 
 /* — Figures — */
 .figureRow { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.8rem; align-items: center; margin-top: 1.1rem; }
@@ -344,6 +382,8 @@
   .figureRow, .figureRowAligned { display: flex; flex-direction: column; align-items: flex-start; gap: 0.9rem; }
   .figureBody { width: 100%; }
   .rows > div { grid-template-columns: 1fr; gap: 0.3rem; padding: 0.8rem 0; }
+  .rail > li { grid-template-columns: 12px minmax(0, 1fr); }
+  .railWhen { grid-column: 2; margin-top: 0.35rem; }
   .sessions li { grid-template-columns: 68px minmax(0, 1fr); }
   .actions { grid-column: 1 / -1; justify-content: flex-start; }
   .form { grid-template-columns: 1fr; }

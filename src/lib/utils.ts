@@ -6,13 +6,27 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * The API stores naive UTC instants, so "2026-10-01T09:00:00" is 09:00 UTC.
+ * Parsed as written, a browser in another zone reads it as *local* time and
+ * every derived label lands hours out by the reader's offset - which is
+ * precisely the mistake a global audience would notice first.
+ */
+export function utcInstant(iso: string): number {
+  const hasOffset = /(?:Z|[+-]\d{2}:?\d{2})$/.test(iso);
+  // A bare date ("2026-09-30") is already UTC midnight per ISO 8601; only
+  // date-times need the offset made explicit.
+  const normalised = iso.includes("T") && !hasOffset ? `${iso}Z` : iso;
+  return new Date(normalised).getTime();
+}
+
+/**
  * How long ago an explicit UTC instant happened, in the reader's own clock.
  * Admin logs and payment feeds store the real instant, so the label has to be
  * derived from it rather than written into the record.
  */
 export function relativeTime(iso: string | null | undefined): string {
   if (!iso) return "time not recorded";
-  const then = new Date(iso).getTime();
+  const then = utcInstant(iso);
   if (Number.isNaN(then)) return "time not recorded";
   const minutes = Math.round((Date.now() - then) / 60000);
   if (minutes < 1) return "just now";
@@ -21,5 +35,5 @@ export function relativeTime(iso: string | null | undefined): string {
   if (hours < 24) return `${hours} h ago`;
   const days = Math.round(hours / 24);
   if (days < 30) return `${days} d ago`;
-  return new Date(iso).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
+  return new Date(then).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
 }

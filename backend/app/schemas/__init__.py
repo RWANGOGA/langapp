@@ -3,6 +3,7 @@ from app.schemas.tutor import TutorRead, TutorCreate, TutorUpdate, TutorListResp
 from app.schemas.auth import UserCreate, UserLogin, UserRead, Token, TokenPayload, RefreshTokenRequest, Message
 from app.schemas.tutor_application import (
     TutorApplicationCreate, TutorApplicationUpdate, TutorApplicationStatusUpdate,
+    TutorApplicationApplicantRead,
     TutorApplicationRead, TutorApplicationListResponse,
     TutorApplicationStep1, TutorApplicationStep2, TutorApplicationStep3,
     TutorApplicationStep4, TutorApplicationStep5, TutorApplicationStep6,
@@ -54,6 +55,7 @@ __all__ = [
     "TutorApplicationCreate",
     "TutorApplicationUpdate",
     "TutorApplicationStatusUpdate",
+    "TutorApplicationApplicantRead",
     "TutorApplicationRead",
     "TutorApplicationListResponse",
     "TutorApplicationStep1",

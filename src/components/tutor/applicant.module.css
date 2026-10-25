@@ -1,0 +1,59 @@
+/* Chrome for the applicant journey: the pages someone sees before they have a
+   tutor account. /tutor/* hides the site header and the portal shells belong
+   to signed-in roles, so these frames build their own - in the same
+   ink-and-hairline vocabulary, on a white page rather than a filled bar. */
+
+.page {
+  min-height: 100vh;
+  background: #fff;
+  color: #52607a;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.05rem clamp(1rem, 4vw, 2.6rem);
+  border-bottom: 1px solid #dfe6ec;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #0f1c33;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+}
+
+.navLink {
+  color: #52607a;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.navLink:hover { color: var(--coral); }
+.navLink:focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; }
+
+.wrap {
+  display: grid;
+  gap: 2.2rem;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 3.4rem) clamp(1rem, 4vw, 2rem) 4.5rem;
+}
+
+@media (max-width: 720px) {
+  .nav { gap: 1rem; }
+}

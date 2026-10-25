@@ -1,191 +1,287 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AlertTriangle, CheckCircle2, FileText, GraduationCap } from "lucide-react";
+import { AlertTriangle, Check } from "lucide-react";
+import ApplicantFrame from "@/components/tutor/ApplicantFrame";
+import ui from "@/components/portal/bands.module.css";
 import { getTutorRequirements } from "@/lib/tutor-requirements-server";
-import styles from "./requirements.module.css";
+import { getApplicantState, statementFor, type ApplicationStatusView } from "@/lib/application-status";
+import { utcInstant } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Become a tutor — requirements & verification",
+  title: "Become a tutor — requirements, review and your progress",
   description:
-    "Documents, checks and agreements needed to teach on Nile Language. Read before you apply.",
+    "Documents, checks and agreements needed to teach on Nile Language - and, once you have applied, where your application stands.",
 };
 
 export const dynamic = "force-dynamic";
 
+/** Day-month-year, fixed locale: this renders on the server, where the
+ *  machine's own locale would otherwise decide how a date reads. */
+const fileDate = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+const RAIL_LABEL: Record<ApplicationStatusView["stages"][number]["state"], string> = {
+  complete: "Done",
+  current: "Now",
+  upcoming: "Not started",
+};
+
+function StatusBand({ view }: { view: ApplicationStatusView }) {
+  const statement = statementFor(view);
+  const updated = view.last_update ? fileDate.format(new Date(utcInstant(view.last_update))) : null;
+  return (
+    <section className={ui.band} aria-labelledby="status-heading">
+      <div className={ui.bandHead}>
+        <span className={ui.bandLabel}>{statement.kicker}</span>
+        {updated && <span className={ui.bandLabel}>File updated {updated}</span>}
+      </div>
+      <h2 id="status-heading" className={ui.bandTitle}>
+        {statement.headline}
+      </h2>
+      <p className={ui.bandEmpty}>{statement.body}</p>
+      {statement.action && (
+        <p className={ui.joinRow}>
+          <Link href={statement.action.href} className={ui.btnCoral}>
+            {statement.action.label}
+          </Link>
+        </p>
+      )}
+
+      {view.stages.length > 0 && (
+        <>
+          <span className={ui.subHead} id="rail-heading">
+            Where your file stands
+          </span>
+          <ol className={ui.rail} aria-labelledby="rail-heading">
+            {view.stages.map((stage) => (
+              <li
+                key={stage.key}
+                className={
+                  stage.state === "complete"
+                    ? ui.railComplete
+                    : stage.state === "current"
+                      ? ui.railCurrent
+                      : undefined
+                }
+              >
+                <span className={ui.railMark} aria-hidden />
+                <div>
+                  <p className={ui.railTitle}>{stage.title}</p>
+                  <p className={ui.railDesc}>{stage.description}</p>
+                </div>
+                <span className={ui.railWhen}>
+                  {stage.state === "upcoming" ? stage.indicative_days : RAIL_LABEL[stage.state]}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </>
+      )}
+
+      {view.has_application && (
+        <>
+          <span className={ui.subHead} id="checks-heading">
+            Evidence on file
+          </span>
+          <dl className={ui.rows} aria-labelledby="checks-heading">
+            {view.checks.map((check) => (
+              <div key={check.id}>
+                <dt>{check.label}</dt>
+                <dd>
+                  <span
+                    className={`${ui.statusPill} ${
+                      check.state === "verified"
+                        ? ui.statusOk
+                        : check.state === "failed"
+                          ? ui.statusBad
+                          : ""
+                    }`}
+                  >
+                    {check.state}
+                  </span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </>
+      )}
+    </section>
+  );
+}
+
 export default async function TutorRequirementsPage() {
-  const requirements = await getTutorRequirements();
+  const [requirements, state] = await Promise.all([getTutorRequirements(), getApplicantState()]);
 
   if (!requirements) {
     return (
-      <main className={styles.page}>
-        <div className={styles.state}>
-          <h1 className={styles.stateTitle}>Requirements are unavailable right now</h1>
-          <p className={styles.stateText}>
-            We could not load the tutor requirements. Please try again shortly.
+      <ApplicantFrame>
+        <section className={ui.band}>
+          <span className={ui.bandLabel}>Unavailable</span>
+          <h1 className={ui.bandTitle}>The tutor requirements are not loading</h1>
+          <p className={ui.bandEmpty}>
+            We could not read the current requirements. Please try again shortly.
           </p>
-        </div>
-      </main>
+        </section>
+      </ApplicantFrame>
     );
   }
 
+  const view = state.kind === "ok" ? state.view : null;
+  // The rail and the published list describe the same process; showing both
+  // would let one screen state it twice.
+  const railShown = Boolean(view && view.stages.length > 0);
+
   return (
-    <div className={styles.page}>
-      <header className={styles.topbar}>
-        <Link href="/" className={styles.brand}>
-          <GraduationCap size={24} color="#f2541b" aria-hidden /> Nile Language
-        </Link>
-        <nav className={styles.nav} aria-label="Main">
-          <Link href="/tutors" className={styles.navLink}>
-            Find a tutor
-          </Link>
-          <Link href="/auth/login" className={styles.navLink}>
-            Sign in
-          </Link>
-        </nav>
-      </header>
-
-      <main className={styles.wrap}>
-        <span className={styles.eyebrow}>Step 0 of {requirements.total_steps}</span>
-        <h1 className={styles.title}>Become a tutor</h1>
-        <p className={styles.lede}>
-          Teaching on Nile Language is a reviewed process. Before you create an account,
-          here is everything you will need to provide and what we check. Gather your
-          documents first — most applicants finish in one sitting.
-        </p>
-
-        {/* Submitting is not approval. Stated before anything else. */}
-        <div className={styles.disclaimer} role="note">
-          <AlertTriangle size={20} aria-hidden />
-          <p>{requirements.disclaimer}</p>
+    <ApplicantFrame signedIn={view !== null}>
+      <div className={ui.pageHeading}>
+        <div>
+          <span className={ui.kicker}>Becoming a tutor</span>
+          <h1>Become a tutor</h1>
+          <p>
+            {view
+              ? "Below is everything we ask of a tutor and what happens to a file at each stage - the same list your application is being read against."
+              : "Teaching on Nile Language is a reviewed process. Here is everything you will need to provide, and what we check. Most applicants finish in one sitting."}
+          </p>
         </div>
+      </div>
 
-        <section className={styles.section} aria-labelledby="eligibility-heading">
-          <div className={styles.sectionHead}>
-            <h2 id="eligibility-heading" className={styles.sectionTitle}>
-              Who can apply
-            </h2>
-            <p className={styles.sectionHint}>You must be able to meet all of these.</p>
-          </div>
-          <ul className={styles.eligibility}>
-            {requirements.eligibility.map((item) => (
-              <li key={item}>
-                <CheckCircle2 size={18} aria-hidden />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
+      {state.kind === "unavailable" && (
+        <section className={ui.band}>
+          <span className={ui.bandLabel}>Not loaded</span>
+          <h2 className={ui.bandTitle}>We could not read your application</h2>
+          <p className={ui.bandEmpty}>
+            Your session is recognised, but the review file did not come back. Nothing has been
+            lost - reload this page, or sign in again if it persists.
+          </p>
+          <p className={ui.joinRow}>
+            <Link href="/auth/login?callbackUrl=%2Ftutor%2Frequirements" className={ui.btn}>
+              Sign in again
+            </Link>
+          </p>
         </section>
+      )}
 
-        <section className={styles.section} aria-labelledby="documents-heading">
-          <div className={styles.sectionHead}>
-            <h2 id="documents-heading" className={styles.sectionTitle}>
-              Documents and information you will need
-            </h2>
-            <p className={styles.sectionHint}>
-              Upload each document during your application and prepare the profile information below.
-            </p>
-          </div>
-          <div className={styles.docs}>
-            {requirements.documents.map((doc) => (
-              <article key={doc.id} className={styles.doc}>
-                <div className={styles.docHead}>
-                  <h3 className={styles.docTitle}>
-                    <FileText size={15} aria-hidden /> {doc.title}
-                  </h3>
-                  <span
-                    className={`${styles.badge} ${doc.required ? "" : styles.badgeOptional}`}
-                  >
-                    {doc.required ? "Required" : "Optional"}
-                  </span>
-                </div>
-                <p className={styles.docDesc}>{doc.description}</p>
-                <div className={styles.docMeta}>
-                  {doc.accepted_formats.length > 0 && (
-                    <p>
-                      <strong>Formats:</strong> {doc.accepted_formats.join(", ")}
-                      {doc.max_size_mb ? ` · max ${doc.max_size_mb} MB` : ""}
-                    </p>
-                  )}
-                  {doc.examples.length > 0 && (
-                    <p>
-                      <strong>Examples:</strong> {doc.examples.join(" · ")}
-                    </p>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
+      {view && <StatusBand view={view} />}
 
-        <section className={styles.section} aria-labelledby="review-heading">
-          <div className={styles.sectionHead}>
-            <h2 id="review-heading" className={styles.sectionTitle}>
+      <section className={ui.bandStatement} role="note">
+        <span className={ui.bandLabel}>Before you start</span>
+        <h2 className={ui.bandTitle}>Submitting is not approval</h2>
+        <p>{requirements.disclaimer}</p>
+      </section>
+
+      <section className={ui.band} aria-labelledby="eligibility-heading">
+        <div className={ui.bandHead}>
+          <h2 id="eligibility-heading" className={ui.bandTitle}>
+            Who can apply
+          </h2>
+          <span className={ui.bandLabel}>All must hold</span>
+        </div>
+        <ul className={ui.ticks}>
+          {requirements.eligibility.map((item) => (
+            <li key={item}>
+              <Check size={16} strokeWidth={2.4} aria-hidden />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className={ui.band} aria-labelledby="documents-heading">
+        <div className={ui.bandHead}>
+          <h2 id="documents-heading" className={ui.bandTitle}>
+            What you will provide
+          </h2>
+          <span className={ui.bandLabel}>{requirements.documents.length} items</span>
+        </div>
+        <dl className={ui.rows}>
+          {requirements.documents.map((doc) => (
+            <div key={doc.id}>
+              <dt>{doc.title}</dt>
+              <dd>
+                {doc.description}
+                <span className={ui.rowNoteUnder}>
+                  {doc.required ? "Required" : "Optional"}
+                  {doc.accepted_formats.length > 0 && ` · ${doc.accepted_formats.join(", ")}`}
+                  {doc.max_size_mb ? ` · max ${doc.max_size_mb} MB` : ""}
+                  {doc.examples.length > 0 && ` · e.g. ${doc.examples.join(", ")}`}
+                </span>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      {!railShown && (
+        <section className={ui.band} aria-labelledby="review-heading">
+          <div className={ui.bandHead}>
+            <h2 id="review-heading" className={ui.bandTitle}>
               What happens after you submit
             </h2>
-            <p className={styles.sectionHint}>
-              Each stage is reviewed by a person. Timings are indicative, not guaranteed.
-            </p>
+            <span className={ui.bandLabel}>Reviewed by a person</span>
           </div>
-          <ol className={styles.stages}>
+          <ol className={ui.rail}>
             {requirements.review_stages.map((stage) => (
-              <li key={stage.key} className={styles.stage}>
-                <span className={styles.stageNum} aria-hidden />
-                <div className={styles.stageBody}>
-                  <h3 className={styles.stageTitle}>{stage.title}</h3>
-                  <p className={styles.stageDesc}>{stage.description}</p>
-                  <span className={styles.stageDays}>{stage.indicative_days}</span>
+              <li key={stage.key}>
+                <span className={ui.railMark} aria-hidden />
+                <div>
+                  <p className={ui.railTitle}>{stage.title}</p>
+                  <p className={ui.railDesc}>{stage.description}</p>
                 </div>
+                <span className={ui.railWhen}>{stage.indicative_days}</span>
               </li>
             ))}
           </ol>
         </section>
+      )}
 
-        <section className={styles.section} aria-labelledby="policies-heading">
-          <div className={styles.sectionHead}>
-            <h2 id="policies-heading" className={styles.sectionTitle}>
-              Agreements you will accept
-            </h2>
-            <p className={styles.sectionHint}>
-              These are confirmed by you during the application and form part of your tutor
-              agreement.
-            </p>
-          </div>
-          <ul className={styles.policies}>
-            {requirements.policies.map((policy) => (
-              <li key={policy.id}>
-                <span className={styles.policyTitle}>{policy.title}</span>
-                <span className={styles.policySummary}>{policy.summary}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className={styles.cta} aria-labelledby="start-heading">
-          <h2 id="start-heading" className={styles.ctaTitle}>
-            Ready to apply?
+      <section className={ui.band} aria-labelledby="policies-heading">
+        <div className={ui.bandHead}>
+          <h2 id="policies-heading" className={ui.bandTitle}>
+            Agreements you will accept
           </h2>
-          <p className={styles.ctaText}>
-            Creating an account does not make you a tutor. Your account becomes a tutor
-            account only after every document has been reviewed and the demo lesson has
-            been passed.
+          <span className={ui.bandLabel}>Part of your tutor agreement</span>
+        </div>
+        <dl className={ui.rows}>
+          {requirements.policies.map((policy) => (
+            <div key={policy.id}>
+              <dt>{policy.title}</dt>
+              <dd>
+                <span className={ui.rowNote}>{policy.summary}</span>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      {!view && (
+        <section className={ui.bandStatement} aria-labelledby="start-heading">
+          <span className={ui.bandLabel}>
+            <AlertTriangle size={14} aria-hidden /> Ready when you are
+          </span>
+          <h2 id="start-heading" className={ui.bandTitle}>
+            {requirements.total_steps} steps, one sitting
+          </h2>
+          <p>
+            An account is not a tutor account. You get tutor access only after every document has
+            been reviewed and the demo lesson has been passed - and this page will tell you where
+            your file stands at every stage in between.
           </p>
-          <div className={styles.ctaActions}>
-            <Link
-              href="/auth/register?intent=tutor"
-              className={`${styles.btn} ${styles.btnPrimary}`}
-            >
+          <p className={ui.joinRow}>
+            <Link href="/auth/register?intent=tutor" className={ui.btnCoral}>
               Start my application
             </Link>
-            <Link href="/tutors" className={`${styles.btn} ${styles.btnGhost}`}>
+            <Link href="/tutors" className={ui.btn}>
               Browse tutors instead
             </Link>
-          </div>
+          </p>
         </section>
+      )}
 
-        <p className={styles.footnote}>
-          Requirements version {requirements.version}
-        </p>
-      </main>
-    </div>
+      <p className={ui.bandLabel}>Requirements version {requirements.version}</p>
+    </ApplicantFrame>
   );
 }

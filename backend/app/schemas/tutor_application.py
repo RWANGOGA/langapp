@@ -109,7 +109,15 @@ class TutorApplicationStatusUpdate(BaseModel):
     demo_lesson_score: Optional[int] = Field(None, ge=0, le=100)
 
 
-class TutorApplicationRead(BaseModel):
+class TutorApplicationApplicantRead(BaseModel):
+    """What an applicant may learn about their own application.
+
+    This is the default view; the staff view below extends it. Verification
+    outcomes, the demo score and the review date are the applicant's own
+    results, so they stay. What a reviewer *thinks* - the notes and who wrote
+    them - belongs to the internal file, not to the person being reviewed.
+    """
+
     id: int
     user_id: int
     status: ApplicationStatus
@@ -153,9 +161,7 @@ class TutorApplicationRead(BaseModel):
     background_check_provider: Optional[str] = None
     background_check_status: VerificationStatus
 
-    admin_notes: Optional[str] = None
     demo_lesson_score: Optional[int] = None
-    reviewed_by: Optional[int] = None
     reviewed_at: Optional[datetime] = None
 
     created_at: datetime
@@ -178,6 +184,13 @@ class TutorApplicationRead(BaseModel):
         return v or []
 
 
+class TutorApplicationRead(TutorApplicationApplicantRead):
+    """The staff view: the applicant's data plus the internal review file."""
+
+    admin_notes: Optional[str] = None
+    reviewed_by: Optional[int] = None
+
+
 class TutorApplicationListResponse(BaseModel):
     applications: List[TutorApplicationRead]
     total: int
@@ -197,6 +210,38 @@ class ApplicationCompleteness(BaseModel):
     steps: List[StepCompletion]
     incomplete_steps: List[int] = Field(default_factory=list)
     can_submit: bool
+
+
+class ApplicationStageView(BaseModel):
+    """One published review stage, placed on the applicant's rail."""
+
+    key: str
+    title: str
+    description: str
+    state: str  # complete | current | upcoming
+    indicative_days: str
+
+
+class ApplicationCheckView(BaseModel):
+    """One piece of evidence, with the outcome a reviewer recorded."""
+
+    id: str
+    label: str
+    state: str  # pending | verified | failed
+
+
+class ApplicationStatusView(BaseModel):
+    """Where an application stands, said in terms the applicant can act on."""
+
+    has_application: bool = False
+    status: Optional[str] = None
+    submitted: bool = False
+    waiting_on: str = "you"  # you | school | nobody
+    action_required: Optional[str] = None
+    can_reapply: bool = False
+    stages: List[ApplicationStageView] = Field(default_factory=list)
+    checks: List[ApplicationCheckView] = Field(default_factory=list)
+    last_update: Optional[datetime] = None
 
 
 class RequirementDocument(BaseModel):
