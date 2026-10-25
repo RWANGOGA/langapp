@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, Search } from "lucide-react";
 import type { Tutor, TutorStatus } from "@/lib/admin-data";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import ui from "@/components/portal/bands.module.css";
 
 const initials = (name: string) =>
@@ -17,29 +18,32 @@ const TONE: Record<TutorStatus, string> = {
 };
 
 /** What the application recorded, or an honest admission that it recorded nothing. */
-function credentials(tutor: Tutor) {
+function credentials(tutor: Tutor, none: string) {
   const proof = [tutor.qualification_type, tutor.english_proof_type, tutor.english_score]
     .filter(Boolean)
     .join(" · ");
-  return proof || "credentials not on file";
+  return proof || none;
 }
 
 export default function TutorRoster({ tutors }: { tutors: Tutor[] }) {
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [asc, setAsc] = useState(true);
 
   const rows = useMemo(() => {
     const q = query.trim().toLowerCase();
     return tutors
-      .filter((t) => !q || t.name.toLowerCase().includes(q) || t.email.toLowerCase().includes(q))
+      .filter((row) => !q || row.name.toLowerCase().includes(q) || row.email.toLowerCase().includes(q))
       .sort((a, b) => (asc ? 1 : -1) * a.name.localeCompare(b.name));
   }, [tutors, query, asc]);
 
   return (
     <section className={ui.band} aria-labelledby="tutor-roster-h">
       <div className={ui.bandHead}>
-        <h2 id="tutor-roster-h" className={ui.bandLabel}>Tutor roster</h2>
-        <span className={ui.bandLabel}>{tutors.length} {tutors.length === 1 ? "tutor" : "tutors"}</span>
+        <h2 id="tutor-roster-h" className={ui.bandLabel}>{t("admin.roster.title")}</h2>
+        <span className={ui.bandLabel}>
+          {t(tutors.length === 1 ? "admin.roster.countOne" : "admin.roster.countOther", { n: tutors.length })}
+        </span>
       </div>
 
       <div className={ui.rosterTools}>
@@ -49,12 +53,12 @@ export default function TutorRoster({ tutors }: { tutors: Tutor[] }) {
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search name or email"
-            aria-label="Search tutors"
+            placeholder={t("admin.roster.searchPlaceholder")}
+            aria-label={t("admin.roster.searchAria")}
           />
         </label>
         <button type="button" className={ui.textLink} onClick={() => setAsc(!asc)}>
-          Name {asc ? <ArrowUp size={12} aria-hidden /> : <ArrowDown size={12} aria-hidden />}
+          {t("admin.roster.name")} {asc ? <ArrowUp size={12} aria-hidden /> : <ArrowDown size={12} aria-hidden />}
         </button>
       </div>
 
@@ -67,20 +71,22 @@ export default function TutorRoster({ tutors }: { tutors: Tutor[] }) {
                 {tutor.name}
                 <small>{tutor.email}</small>
                 <small>
-                  {credentials(tutor)} · {tutor.assignments} upcoming{" "}
-                  {tutor.assignments === 1 ? "session" : "sessions"}
-                  {tutor.country ? ` · based in ${tutor.country}` : ""}
-                  {tutor.rating > 0 ? ` · rated ${tutor.rating.toFixed(1)}` : ""}
+                  {credentials(tutor, t("admin.roster.noCredentials"))} ·{" "}
+                  {t(tutor.assignments === 1 ? "admin.roster.upcomingOne" : "admin.roster.upcomingOther", { n: tutor.assignments })}
+                  {tutor.country ? ` · ${t("admin.roster.basedIn", { country: tutor.country })}` : ""}
+                  {tutor.rating > 0 ? ` · ${t("admin.roster.rated", { rating: tutor.rating.toFixed(1) })}` : ""}
                 </small>
               </span>
-              <span className={`${ui.statusPill} ${TONE[tutor.status]}`}>{tutor.status}</span>
+              <span className={`${ui.statusPill} ${TONE[tutor.status]}`}>{t(`admin.tutorstatus.${tutor.status}`)}</span>
             </li>
           ))}
         </ul>
       ) : (
         <div className={ui.bandStatement}>
-          <p className={ui.bandLabel}>No match</p>
-          <p>No tutor matches &ldquo;{query}&rdquo;. Clear the search to see all {tutors.length}.</p>
+          <p className={ui.bandLabel}>{t("admin.roster.noMatchTitle")}</p>
+          <p>
+            {t("admin.roster.noMatchBody", { query, total: t(tutors.length === 1 ? "admin.roster.countOne" : "admin.roster.countOther", { n: tutors.length }) })}
+          </p>
         </div>
       )}
     </section>

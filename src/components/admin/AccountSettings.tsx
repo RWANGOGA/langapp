@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { apiSendClient } from "@/lib/api-client";
 import { useAuth, type User } from "@/lib/auth";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import ui from "@/components/portal/bands.module.css";
 import styles from "./settings.module.css";
 
@@ -24,6 +25,7 @@ function detectedZone(): string {
 
 export default function AccountSettings() {
   const { user, refreshUser } = useAuth();
+  const { t } = useLanguage();
   const zones = Array.from(new Set([detectedZone(), ...ZONES]));
 
   const [profile, setProfile] = useState({
@@ -48,9 +50,9 @@ export default function AccountSettings() {
         timezone: profile.timezone || null,
       });
       await refreshUser();
-      setFlash("Your details are saved.");
+      setFlash(t("admin.settings.saved"));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "The settings could not be saved.");
+      setError(err instanceof Error ? err.message : t("admin.settings.saveError"));
     } finally {
       setBusy(null);
     }
@@ -59,7 +61,7 @@ export default function AccountSettings() {
   const savePassword = async (event: React.FormEvent) => {
     event.preventDefault();
     if (passwords.next !== passwords.confirm) {
-      setError("The two new passwords do not match yet.");
+      setError(t("admin.settings.passwordMismatch"));
       return;
     }
     setBusy("password");
@@ -71,9 +73,9 @@ export default function AccountSettings() {
         new_password: passwords.next,
       });
       setPasswords({ current: "", next: "", confirm: "" });
-      setFlash("Password updated. Your existing sessions keep working for now.");
+      setFlash(t("admin.settings.passwordUpdated"));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "The password could not be changed.");
+      setError(err instanceof Error ? err.message : t("admin.settings.passwordError"));
     } finally {
       setBusy(null);
     }
@@ -89,16 +91,15 @@ export default function AccountSettings() {
 
       <section className={ui.band} aria-labelledby="account-details-h">
         <div className={ui.bandHead}>
-          <h2 id="account-details-h" className={ui.bandLabel}>Your details</h2>
+          <h2 id="account-details-h" className={ui.bandLabel}>{t("admin.settings.details")}</h2>
           <span className={ui.bandLabel}>{user?.email}</span>
         </div>
         <p className={ui.rowNote}>
-          The timezone decides how every lesson time and payment stamp is shown to you.
-          Your email and role are issued by the school, not changed here.
+          {t("admin.settings.detailsNote")}
         </p>
         <form className={ui.form} onSubmit={saveProfile}>
           <label>
-            Display name
+            {t("admin.settings.displayName")}
             <input
               className={ui.input}
               required
@@ -107,16 +108,16 @@ export default function AccountSettings() {
             />
           </label>
           <label>
-            Native language
+            {t("admin.settings.nativeLanguage")}
             <input
               className={ui.input}
-              placeholder="e.g. Luganda"
+              placeholder={t("admin.settings.nativePlaceholder")}
               value={profile.native_language}
               onChange={(e) => setProfile({ ...profile, native_language: e.target.value })}
             />
           </label>
           <label className={ui.wide}>
-            Timezone
+            {t("admin.settings.timezone")}
             <select
               className={ui.select}
               value={profile.timezone}
@@ -129,7 +130,7 @@ export default function AccountSettings() {
           </label>
           <div className={ui.formActions}>
             <button type="submit" className={ui.btnCoral} disabled={busy !== null}>
-              {busy === "profile" ? "Saving…" : "Save details"}
+              {busy === "profile" ? t("admin.settings.saving") : t("admin.settings.save")}
             </button>
           </div>
         </form>
@@ -137,12 +138,12 @@ export default function AccountSettings() {
 
       <section className={ui.band} aria-labelledby="account-password-h">
         <div className={ui.bandHead}>
-          <h2 id="account-password-h" className={ui.bandLabel}>Password</h2>
-          <span className={ui.bandLabel}>8 characters minimum</span>
+          <h2 id="account-password-h" className={ui.bandLabel}>{t("admin.settings.password")}</h2>
+          <span className={ui.bandLabel}>{t("admin.settings.passwordHint")}</span>
         </div>
         <form className={ui.form} onSubmit={savePassword}>
           <label className={ui.wide}>
-            Current password
+            {t("admin.settings.currentPassword")}
             <input
               className={ui.input}
               type="password"
@@ -153,7 +154,7 @@ export default function AccountSettings() {
             />
           </label>
           <label>
-            New password
+            {t("admin.settings.newPassword")}
             <input
               className={ui.input}
               type="password"
@@ -165,7 +166,7 @@ export default function AccountSettings() {
             />
           </label>
           <label>
-            Repeat new password
+            {t("admin.settings.repeatPassword")}
             <input
               className={ui.input}
               type="password"
@@ -178,7 +179,7 @@ export default function AccountSettings() {
           </label>
           <div className={ui.formActions}>
             <button type="submit" className={ui.btn} disabled={busy !== null}>
-              {busy === "password" ? "Changing…" : "Change password"}
+              {busy === "password" ? t("admin.settings.changing") : t("admin.settings.change")}
             </button>
           </div>
         </form>

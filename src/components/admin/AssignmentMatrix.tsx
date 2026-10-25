@@ -1,4 +1,7 @@
+"use client";
+
 import type { MatrixRow } from "@/lib/admin-data";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import ui from "@/components/portal/bands.module.css";
 
 const initials = (name: string) =>
@@ -11,26 +14,25 @@ export default function AssignmentMatrix({
   rows: MatrixRow[];
   studentNames: string[];
 }) {
+  const { t } = useLanguage();
   const hasData = rows.length > 0 && studentNames.length > 0;
 
   return (
     <section className={ui.band} aria-labelledby="matrix-h">
       <div className={ui.bandHead}>
-        <h2 id="matrix-h" className={ui.bandLabel}>Assignment matrix</h2>
-        <span className={ui.bandLabel}>{rows.length} tutors × {studentNames.length} learners</span>
+        <h2 id="matrix-h" className={ui.bandLabel}>{t("admin.matrix.title")}</h2>
+        <span className={ui.bandLabel}>{t("admin.matrix.count", { tutors: rows.length, learners: studentNames.length })}</span>
       </div>
 
       {hasData ? (
         <div className={ui.matrixScroll}>
           <table className={ui.matrix}>
             <caption>
-              Who teaches whom. A filled marker means that learner is matched to that tutor; a
-              rule means no match exists. Learner columns carry initials — hover one to read the
-              full name.
+              {t("admin.matrix.caption")}
             </caption>
             <thead>
               <tr>
-                <th scope="col">Tutor</th>
+                <th scope="col">{t("admin.matrix.colTutor")}</th>
                 {studentNames.map((name, index) => (
                   <th key={`${name}-${index}`} scope="col" title={name}>{initials(name)}</th>
                 ))}
@@ -43,7 +45,7 @@ export default function AssignmentMatrix({
                   {row.cells.map((cell, index) => (
                     <td key={index}>
                       <span className={cell === "assigned" ? ui.matrixOn : ui.matrixOff} aria-hidden />
-                      <span className={ui.vh}>{cell === "assigned" ? "Matched" : "Not matched"}</span>
+                      <span className={ui.vh}>{cell === "assigned" ? t("admin.matrix.matched") : t("admin.matrix.notMatched")}</span>
                     </td>
                   ))}
                 </tr>
@@ -53,17 +55,16 @@ export default function AssignmentMatrix({
         </div>
       ) : (
         <div className={ui.bandStatement}>
-          <p className={ui.bandLabel}>Nothing to chart</p>
+          <p className={ui.bandLabel}>{t("admin.matrix.emptyTitle")}</p>
           <p>
-            The matrix fills in once at least one tutor and one learner exist and an administrator
-            has matched them.
+            {t("admin.matrix.emptyBody")}
           </p>
         </div>
       )}
 
       <div className={ui.matrixLegend}>
-        <span><i className={ui.matrixOn} aria-hidden /> Matched</span>
-        <span><i className={ui.matrixOff} aria-hidden /> Not matched</span>
+        <span><i className={ui.matrixOn} aria-hidden /> {t("admin.matrix.matched")}</span>
+        <span><i className={ui.matrixOff} aria-hidden /> {t("admin.matrix.notMatched")}</span>
       </div>
     </section>
   );

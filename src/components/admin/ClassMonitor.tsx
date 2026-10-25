@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import {
-  CLASS_STATUS_LABEL,
   getAdminClasses,
   scheduleClass,
   type AdminClassList,
@@ -11,15 +10,16 @@ import {
   type ClassStatusValue,
   type StudentSummary,
 } from "@/lib/admin-data";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import ui from "@/components/portal/bands.module.css";
 import styles from "./classes.module.css";
 
-const FILTERS: { key: ClassStatusValue | "all"; label: string }[] = [
-  { key: "all", label: "All lessons" },
-  { key: "scheduled", label: "Scheduled" },
-  { key: "completed", label: "Completed" },
-  { key: "cancelled", label: "Cancelled" },
-  { key: "no_show", label: "No-shows" },
+const FILTERS: { key: ClassStatusValue | "all"; labelKey: string }[] = [
+  { key: "all", labelKey: "admin.class.filterAll" },
+  { key: "scheduled", labelKey: "admin.class.filterScheduled" },
+  { key: "completed", labelKey: "admin.class.filterCompleted" },
+  { key: "cancelled", labelKey: "admin.class.filterCancelled" },
+  { key: "no_show", labelKey: "admin.class.filterNoShow" },
 ];
 
 const statusClass = (status: ClassStatusValue) =>
@@ -41,6 +41,7 @@ interface Props {
 }
 
 export default function ClassMonitor({ students, onReload }: Props) {
+  const { t } = useLanguage();
   const [filter, setFilter] = useState<ClassStatusValue | "all">("all");
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
@@ -60,8 +61,8 @@ export default function ClassMonitor({ students, onReload }: Props) {
       page_size: 50,
     })
       .then((result) => { setData(result); setError(null); })
-      .catch((err) => setError(err instanceof Error ? err.message : "The lesson book could not be loaded."));
-  }, [filter, debounced]);
+      .catch((err) => setError(err instanceof Error ? err.message : t("admin.class.loadError")));
+  }, [filter, debounced, t]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -86,12 +87,12 @@ export default function ClassMonitor({ students, onReload }: Props) {
         scheduled_at: new Date(form.when).toISOString(),
         duration_minutes: Number(form.duration) || 60,
       });
-      setFlash(`${result.title} booked with ${result.tutor_name} for ${localTime(result.scheduled_at)}.`);
+      setFlash(t("admin.class.booked", { title: result.title, tutor: result.tutor_name, time: localTime(result.scheduled_at) }));
       setForm({ learner_id: "", title: "", when: "", duration: "60" });
       load();
       onReload();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "The lesson could not be booked.");
+      setError(err instanceof Error ? err.message : t("admin.class.bookError"));
     } finally {
       setSubmitting(false);
     }
@@ -101,14 +102,14 @@ export default function ClassMonitor({ students, onReload }: Props) {
     <>
       <section className={ui.band} aria-labelledby="lesson-book-h">
         <div className={ui.bandHead}>
-          <h2 id="lesson-book-h" className={ui.bandLabel}>The lesson book</h2>
+          <h2 id="lesson-book-h" className={ui.bandLabel}>{t("admin.class.title")}</h2>
           <span className={ui.bandLabel}>
-            {data ? `${data.total} lesson${data.total === 1 ? "" : "s"}` : "Loading…"}
+            {data ? t(data.total === 1 ? "admin.class.countOne" : "admin.class.countOther", { n: data.total }) : t("admin.class.loading")}
           </span>
         </div>
 
         <div className={ui.rosterTools}>
-          <div className={styles.filters} role="group" aria-label="Filter lessons by status">
+          <div className={styles.filters} role="group" aria-label={t("admin.class.filterAria")}>
             {FILTERS.map((f) => (
               <button
                 key={f.key}
@@ -116,7 +117,7 @@ export default function ClassMonitor({ students, onReload }: Props) {
                 className={`${styles.filter} ${filter === f.key ? styles.filterOn : ""}`}
                 onClick={() => setFilter(f.key)}
               >
-                {f.label}
+                {t(f.labelKey)}
               </button>
             ))}
           </div>
@@ -125,8 +126,8 @@ export default function ClassMonitor({ students, onReload }: Props) {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search learner, tutor or lesson"
-              aria-label="Search lessons"
+              placeholder={t("admin.class.searchPlaceholder")}
+              aria-label={t("admin.class.searchAria")}
             />
           </label>
         </div>
@@ -135,14 +136,14 @@ export default function ClassMonitor({ students, onReload }: Props) {
         {flash && <p role="status" className={styles.flash}>{flash}</p>}
 
         {!data && !error ? (
-          <p className={ui.lede}>Loading the lesson book…</p>
+          <p className={ui.lede}>{t("admin.class.loadingBody")}</p>
         ) : data && data.classes.length === 0 ? (
           <div className={ui.bandStatement}>
-            <p className={ui.bandLabel}>Nothing here</p>
+            <p className={ui.bandLabel}>{t("admin.class.emptyTitle")}</p>
             <p>
               {debounced || filter !== "all"
-                ? "No lesson matches this filter."
-                : "No lesson has been scheduled yet. Book the first one below."}
+                ? t("admin.class.noMatch")
+                : t("admin.class.noneScheduled")}
             </p>
           </div>
         ) : (
@@ -155,7 +156,7 @@ export default function ClassMonitor({ students, onReload }: Props) {
                 </span>
                 <span className={ui.what}>
                   {cls.title}
-                  <small>{cls.learner_name} · {cls.tutor_name} · {cls.duration_minutes} min</small>
+                  <small>{cls.learner_name} · {cls.tutor_name} · {t("admin.class.durationMin", { n: cls.duration_minutes })}</small>
                   {(cls.zoom_url || cls.meet_url) && (
                     <small>
                       <a
@@ -164,12 +165,12 @@ export default function ClassMonitor({ students, onReload }: Props) {
                         target="_blank"
                         rel="noreferrer"
                       >
-                        {cls.zoom_url ? "Open Zoom link" : "Open Google Meet"}
+                        {cls.zoom_url ? t("admin.class.openZoom") : t("admin.class.openMeet")}
                       </a>
                     </small>
                   )}
                 </span>
-                <span className={statusClass(cls.status)}>{CLASS_STATUS_LABEL[cls.status]}</span>
+                <span className={statusClass(cls.status)}>{t(`admin.classstatus.${cls.status}`)}</span>
               </li>
             ))}
           </ul>
@@ -178,26 +179,27 @@ export default function ClassMonitor({ students, onReload }: Props) {
 
       <section className={ui.band} aria-labelledby="schedule-lesson-h">
         <div className={ui.bandHead}>
-          <h2 id="schedule-lesson-h" className={ui.bandLabel}>Book the next lesson</h2>
-          <span className={ui.bandLabel}>{placed.length} placed learner{placed.length === 1 ? "" : "s"}</span>
+          <h2 id="schedule-lesson-h" className={ui.bandLabel}>{t("admin.class.bookTitle")}</h2>
+          <span className={ui.bandLabel}>
+            {t(placed.length === 1 ? "admin.class.placedOne" : "admin.class.placedOther", { n: placed.length })}
+          </span>
         </div>
 
         {placed.length === 0 ? (
           <p className={ui.rowNote}>
-            Only a learner who already has a tutor can be scheduled. Assign one on
-            the Learners page first.
+            {t("admin.class.needsAssigned")}
           </p>
         ) : (
           <form className={styles.scheduleForm} onSubmit={submit}>
             <label>
-              Learner
+              {t("admin.class.learner")}
               <select
                 className={ui.select}
                 required
                 value={form.learner_id}
                 onChange={(e) => setForm({ ...form, learner_id: e.target.value })}
               >
-                <option value="">Choose a placed learner…</option>
+                <option value="">{t("admin.class.chooseLearner")}</option>
                 {placed.map((student) => (
                   <option key={student.id} value={student.id}>
                     {student.name} · {student.tutor_name}
@@ -206,17 +208,17 @@ export default function ClassMonitor({ students, onReload }: Props) {
               </select>
             </label>
             <label>
-              Lesson title
+              {t("admin.class.lessonTitle")}
               <input
                 className={ui.input}
                 required
-                placeholder="Unit 9 - Conversation Practice"
+                placeholder={t("admin.class.titlePlaceholder")}
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
               />
             </label>
             <label>
-              Starts
+              {t("admin.class.starts")}
               <input
                 className={ui.input}
                 type="datetime-local"
@@ -226,7 +228,7 @@ export default function ClassMonitor({ students, onReload }: Props) {
               />
             </label>
             <label>
-              Minutes
+              {t("admin.class.minutesLabel")}
               <input
                 className={ui.input}
                 type="number"
@@ -238,7 +240,7 @@ export default function ClassMonitor({ students, onReload }: Props) {
             </label>
             <div className={styles.scheduleAction}>
               <button type="submit" className={ui.btnCoral} disabled={submitting}>
-                {submitting ? "Booking…" : "Schedule lesson"}
+                {submitting ? t("admin.class.booking") : t("admin.class.schedule")}
               </button>
             </div>
           </form>

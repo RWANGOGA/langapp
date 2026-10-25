@@ -1,12 +1,16 @@
+"use client";
+
 import type { Meeting } from "@/lib/admin-data";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import ui from "@/components/portal/bands.module.css";
 
 export function MeetingsPanel({ meetings }: { meetings: Meeting[] }) {
+  const { t } = useLanguage();
   return (
     <section className={ui.band} aria-labelledby="meetings-h">
       <div className={ui.bandHead}>
-        <h2 id="meetings-h" className={ui.bandLabel}>Meetings</h2>
-        <span className={ui.bandLabel}>next 24 hours</span>
+        <h2 id="meetings-h" className={ui.bandLabel}>{t("admin.meetings.title")}</h2>
+        <span className={ui.bandLabel}>{t("admin.meetings.subtitle")}</span>
       </div>
 
       {meetings.length > 0 ? (
@@ -21,23 +25,23 @@ export function MeetingsPanel({ meetings }: { meetings: Meeting[] }) {
                 <small>
                   {meeting.sessions.length > 0
                     ? meeting.sessions.join(" · ")
-                    : "No session booked in the next 24 hours"}
+                    : t("admin.meetings.noSession")}
                 </small>
               </span>
               <span className={`${ui.statusPill} ${meeting.connected ? ui.statusOk : ""}`}>
-                {meeting.connected ? "In use" : "Not in use"}
+                {meeting.connected ? t("admin.meetings.inUse") : t("admin.meetings.notInUse")}
               </span>
             </li>
           ))}
         </ul>
       ) : (
-        <p className={ui.bandEmpty}>No video provider has been used for a session yet.</p>
+        <p className={ui.bandEmpty}>{t("admin.meetings.empty")}</p>
       )}
 
       {/* The old panel offered a "Create Link" button wired to nothing. Links
           are set by the tutor per session, so the panel says so instead. */}
       <p className={ui.packageNote}>
-        Provider accounts are not connected yet. Tutors paste a meeting link onto each session.
+        {t("admin.meetings.note")}
       </p>
     </section>
   );

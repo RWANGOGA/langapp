@@ -1,4 +1,7 @@
+"use client";
+
 import type { Leader, Plan, StatusCount } from "@/lib/admin-data";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import ui from "@/components/portal/bands.module.css";
 
 export function SubscriptionManagement({
@@ -10,6 +13,7 @@ export function SubscriptionManagement({
   leaders: Leader[];
   statuses: StatusCount[];
 }) {
+  const { t } = useLanguage();
   // Packages exist as a catalogue before anyone buys; a row of 0% bars would
   // look like measured demand, so the empty case is stated in words instead.
   const hasOrders = plans.some((plan) => plan.share > 0);
@@ -17,12 +21,13 @@ export function SubscriptionManagement({
   return (
     <section className={ui.band} aria-labelledby="subscriptions-h">
       <div className={ui.bandHead}>
-        <h2 id="subscriptions-h" className={ui.bandLabel}>Packages and subscriptions</h2>
-        <span className={ui.bandLabel}>{plans.length} {plans.length === 1 ? "package" : "packages"}</span>
+        <h2 id="subscriptions-h" className={ui.bandLabel}>{t("admin.subs.title")}</h2>
+        <span className={ui.bandLabel}>
+          {t(plans.length === 1 ? "admin.subs.countOne" : "admin.subs.countOther", { n: plans.length })}
+        </span>
       </div>
       <p className={ui.bandEmpty}>
-        Share of orders by package, the state those orders are in, and the tutors carrying the most
-        sessions.
+        {t("admin.subs.intro")}
       </p>
 
       {hasOrders ? (
@@ -35,7 +40,7 @@ export function SubscriptionManagement({
               </div>
               <div className={ui.figureMeta}>
                 <span>{plan.name}</span>
-                <span>of all orders</span>
+                <span>{t("admin.subs.ofOrders")}</span>
               </div>
             </div>
           </div>
@@ -43,12 +48,12 @@ export function SubscriptionManagement({
       ) : (
         <p className={ui.bandEmpty}>
           {plans.length > 0
-            ? `${plans.length} packages are on sale, but none has been ordered yet, so there is no share to show.`
-            : "No package has been created yet."}
+            ? t("admin.subs.noneOrdered", { n: plans.length })
+            : t("admin.subs.noPackage")}
         </p>
       )}
 
-      <h3 className={ui.subHead}>Order states</h3>
+      <h3 className={ui.subHead}>{t("admin.subs.orderStates")}</h3>
       {statuses.length > 0 ? (
         <dl className={ui.rows}>
           {statuses.map((status) => (
@@ -59,21 +64,21 @@ export function SubscriptionManagement({
           ))}
         </dl>
       ) : (
-        <p className={ui.bandEmpty}>No order has been recorded yet.</p>
+        <p className={ui.bandEmpty}>{t("admin.subs.noOrder")}</p>
       )}
 
-      <h3 className={ui.subHead}>Busiest tutors</h3>
+      <h3 className={ui.subHead}>{t("admin.subs.busiest")}</h3>
       {leaders.length > 0 ? (
         <dl className={ui.rows}>
           {leaders.map((leader) => (
             <div key={leader.name}>
               <dt>{leader.name}</dt>
-              <dd>{leader.value} upcoming {leader.value === 1 ? "session" : "sessions"}</dd>
+              <dd>{t(leader.value === 1 ? "admin.subs.upcomingOne" : "admin.subs.upcomingOther", { n: leader.value })}</dd>
             </div>
           ))}
         </dl>
       ) : (
-        <p className={ui.bandEmpty}>No tutor is carrying a scheduled session yet.</p>
+        <p className={ui.bandEmpty}>{t("admin.subs.noLeader")}</p>
       )}
     </section>
   );

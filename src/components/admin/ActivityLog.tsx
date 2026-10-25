@@ -1,13 +1,17 @@
+"use client";
+
 import type { Activity } from "@/lib/admin-data";
 import { relativeTime } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import ui from "@/components/portal/bands.module.css";
 
 export function ActivityLog({ items }: { items: Activity[] }) {
+  const { t } = useLanguage();
   return (
     <section className={ui.band} aria-labelledby="activity-h">
       <div className={ui.bandHead}>
-        <h2 id="activity-h" className={ui.bandLabel}>Recent activity</h2>
-        <span className={ui.bandLabel}>latest {items.length}</span>
+        <h2 id="activity-h" className={ui.bandLabel}>{t("admin.activity.title")}</h2>
+        <span className={ui.bandLabel}>{t("admin.activity.latest", { n: items.length })}</span>
       </div>
 
       {items.length > 0 ? (
@@ -22,7 +26,7 @@ export function ActivityLog({ items }: { items: Activity[] }) {
         </ul>
       ) : (
         <p className={ui.bandEmpty}>
-          Nothing has been logged yet. Completed lessons and confirmed payments appear here.
+          {t("admin.activity.empty")}
         </p>
       )}
     </section>

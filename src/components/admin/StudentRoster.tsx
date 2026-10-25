@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { assignStudent, unassignStudent, type StudentSummary, type Tutor } from "@/lib/admin-data";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import ui from "@/components/portal/bands.module.css";
 import styles from "./studentroster.module.css";
 
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export default function StudentRoster({ students, tutors, onRefresh }: Props) {
+  const { t } = useLanguage();
   const awaiting = students.filter((student) => !student.tutor_name).length;
   // Only an approved tutor may take learners - the same gate the API raises.
   const eligible = tutors.filter((tutor) => tutor.status !== "Onboarding");
@@ -32,15 +34,15 @@ export default function StudentRoster({ students, tutors, onRefresh }: Props) {
     try {
       if (action === "assign" && tutorId !== undefined) {
         const result = await assignStudent(student.id, tutorId);
-        setFlash(`${result.student_name} is now with ${result.tutor_name}.`);
+        setFlash(t("admin.learners.flashAssign", { student: result.student_name, tutor: result.tutor_name }));
       } else {
         await unassignStudent(student.id);
-        setFlash(`${student.name} is back in the awaiting pool.`);
+        setFlash(t("admin.learners.flashUnassign", { student: student.name }));
       }
       onRefresh();
     } catch (err) {
       // The server's own reason, shown as-is - it knows which guard fired.
-      setError(err instanceof Error ? err.message : "The assignment could not be saved.");
+      setError(err instanceof Error ? err.message : t("admin.learners.errorAssign"));
     } finally {
       setBusy(null);
     }
@@ -49,17 +51,17 @@ export default function StudentRoster({ students, tutors, onRefresh }: Props) {
   return (
     <section className={ui.band} aria-labelledby="student-roster-h">
       <div className={ui.bandHead}>
-        <h2 id="student-roster-h" className={ui.bandLabel}>Learners</h2>
+        <h2 id="student-roster-h" className={ui.bandLabel}>{t("admin.learners.title")}</h2>
         <span className={ui.bandLabel}>
-          {students.length} on the roster{awaiting > 0 ? ` · ${awaiting} awaiting a tutor` : ""}
+          {t("admin.learners.onRoster", { n: students.length })}{awaiting > 0 ? ` · ${t("admin.learners.awaiting", { n: awaiting })}` : ""}
         </span>
       </div>
 
       {eligible.length === 0 && students.length > 0 ? (
         <p className={styles.notice}>
-          No approved tutor can take learners yet.{" "}
+          {t("admin.learners.noApproved")}{" "}
           <Link className={ui.textLink} href="/admin/applications">
-            Open the review queue <ArrowRight size={13} aria-hidden />
+            {t("admin.learners.openQueue")} <ArrowRight size={13} aria-hidden />
           </Link>
         </p>
       ) : null}
@@ -78,17 +80,17 @@ export default function StudentRoster({ students, tutors, onRefresh }: Props) {
               <span className={ui.what}>
                 {student.name}
                 <small>{student.email}</small>
-                <small>{student.tutor_name ? `Tutor · ${student.tutor_name}` : "No tutor assigned yet"}</small>
+                <small>{student.tutor_name ? t("admin.learners.withTutor", { name: student.tutor_name }) : t("admin.learners.noneAssigned")}</small>
               </span>
               <span className={styles.controls}>
                 {student.tutor_name ? (
                   <span className={ui.statusPill}>{student.level}</span>
                 ) : (
-                  <span className={`${ui.statusPill} ${ui.statusBad}`}>Awaiting tutor</span>
+                  <span className={`${ui.statusPill} ${ui.statusBad}`}>{t("admin.learners.awaitingBadge")}</span>
                 )}
                 <select
                   className={ui.select}
-                  aria-label={student.tutor_name ? `Move ${student.name} to another tutor` : `Assign a tutor to ${student.name}`}
+                  aria-label={student.tutor_name ? t("admin.learners.ariaMove", { name: student.name }) : t("admin.learners.ariaAssign", { name: student.name })}
                   disabled={busy === student.id || eligible.length === 0}
                   value=""
                   onChange={(event) => {
@@ -98,13 +100,13 @@ export default function StudentRoster({ students, tutors, onRefresh }: Props) {
                   }}
                 >
                   <option value="">
-                    {student.tutor_name ? "Move to…" : "Assign tutor…"}
+                    {student.tutor_name ? t("admin.learners.moveTo") : t("admin.learners.assignTutor")}
                   </option>
                   {eligible
                     .filter((tutor) => tutor.name !== student.tutor_name)
                     .map((tutor) => (
                       <option key={tutor.id} value={tutor.id}>
-                        {tutor.name} · {tutor.status === "Assigned" ? `${tutor.assignments} session${tutor.assignments === 1 ? "" : "s"}` : tutor.status}
+                        {tutor.name} · {tutor.status === "Assigned" ? t(tutor.assignments === 1 ? "admin.roster.upcomingOne" : "admin.roster.upcomingOther", { n: tutor.assignments }) : t(`admin.tutorstatus.${tutor.status}`)}
                       </option>
                     ))}
                 </select>
@@ -115,7 +117,7 @@ export default function StudentRoster({ students, tutors, onRefresh }: Props) {
                     disabled={busy === student.id}
                     onClick={() => void act(student, "unassign")}
                   >
-                    Unassign
+                    {t("admin.learners.unassign")}
                   </button>
                 ) : null}
               </span>
@@ -124,8 +126,8 @@ export default function StudentRoster({ students, tutors, onRefresh }: Props) {
         </ul>
       ) : (
         <div className={ui.bandStatement}>
-          <p className={ui.bandLabel}>Roster empty</p>
-          <p>No learner has registered yet. Accounts appear here the moment someone signs up.</p>
+          <p className={ui.bandLabel}>{t("admin.learners.emptyTitle")}</p>
+          <p>{t("admin.learners.emptyBody")}</p>
         </div>
       )}
     </section>
