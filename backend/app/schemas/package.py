@@ -43,10 +43,21 @@ class PackageRead(PackageBase):
 
 class OrderCreate(BaseModel):
     package_id: PlanName
+    region: str
     payment_method: PaymentMethod
     subject: str
     session_type: str
     duration_minutes: int = 60
+
+
+class CheckoutRegionOption(BaseModel):
+    """One payment region: the currency it charges and the rails that serve it."""
+
+    code: str
+    label: str
+    currency: str
+    symbol: str
+    methods: List[str]
 
 
 class OrderRead(BaseModel):

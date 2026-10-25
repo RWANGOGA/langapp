@@ -73,3 +73,34 @@ export async function getPlans(): Promise<Plan[]> {
   }
   return PLANS;
 }
+
+/**
+ * A payment region: the single currency it is charged in and the methods that
+ * actually work there. Mirrors the backend's checkout_regions, which is the
+ * real source of truth - the fallback below exists only so the page still
+ * renders if that read fails.
+ */
+export interface CheckoutRegion {
+  code: string;
+  label: string;
+  currency: "JPY" | "VND" | "USD";
+  symbol: string;
+  methods: string[];
+}
+
+const FALLBACK_REGIONS: CheckoutRegion[] = [
+  { code: "jp", label: "Japan", currency: "JPY", symbol: "¥", methods: ["card", "line", "paypay", "paypal"] },
+  { code: "vn", label: "Vietnam", currency: "VND", symbol: "₫", methods: ["card", "zalopay", "momo", "paypal"] },
+  { code: "intl", label: "International", currency: "USD", symbol: "$", methods: ["card", "mobile_money", "paypal"] },
+];
+
+/** GET {API_URL}/api/checkout/regions (public). */
+export async function getCheckoutRegions(): Promise<CheckoutRegion[]> {
+  try {
+    const data = await apiGet<CheckoutRegion[]>("/checkout/regions", { public: true, revalidate: 600 });
+    if (data && data.length) return data;
+  } catch (err) {
+    console.error("Could not load checkout regions, using bundled defaults:", err);
+  }
+  return FALLBACK_REGIONS;
+}

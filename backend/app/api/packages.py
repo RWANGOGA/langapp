@@ -9,13 +9,33 @@ from typing import List
 from app.db.session import get_db
 from app.models.package import Package, Order, PlanName, PaymentMethod, OrderStatus
 from app.models.payment_tracking import PaymentEvent
-from app.schemas.package import PackageRead, PackageCreate, OrderCreate, OrderRead, PaymentWebhook
+from app.schemas.package import (
+    PackageRead, PackageCreate, OrderCreate, OrderRead, PaymentWebhook, CheckoutRegionOption,
+)
 from app.api.auth import get_current_active_user
 from app.models.user import User
 from app.core.config import settings
+from app.services import checkout_regions
 from app.services.order_fulfillment import match_paid_student
 
 router = APIRouter()
+
+
+@router.get("/checkout/regions", response_model=List[CheckoutRegionOption])
+async def get_checkout_regions():
+    """Where a student pays from fixes the currency shown and the methods that
+    work there. Public: the checkout page needs it before anyone signs in."""
+    return [
+        CheckoutRegionOption(
+            code=region.code,
+            label=region.label,
+            currency=region.currency,
+            symbol=region.symbol,
+            methods=[m.value for m in region.methods],
+        )
+        for region in checkout_regions.REGIONS
+    ]
+
 
 
 @router.get("/packages", response_model=List[PackageRead])
@@ -42,6 +62,19 @@ async def create_checkout(
 ):
     if current_user.role.value != "student":
         raise HTTPException(status_code=403, detail="Only students can create checkout orders")
+
+    # The region decides the currency charged and the rails that serve it; a
+    # method from another region is rejected rather than silently stored, so
+    # the order can never claim to be payable by a wallet that does not work
+    # where the student is.
+    region = checkout_regions.region_for(order_in.region)
+    if region is None:
+        raise HTTPException(status_code=422, detail=f"Unknown region '{order_in.region}'")
+    if not checkout_regions.serves(region.code, order_in.payment_method):
+        raise HTTPException(
+            status_code=422,
+            detail=f"{order_in.payment_method.value} is not a payment method for {region.label}",
+        )
 
     # Get package
     result = await db.execute(select(Package).where(Package.id == order_in.package_id))

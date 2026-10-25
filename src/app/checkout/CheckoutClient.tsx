@@ -2,29 +2,72 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Award, Clock, CreditCard, Crown, LayoutList, ListChecks, ShieldCheck, Users, Video } from "lucide-react";
-import type { FeatureIcon, Plan } from "@/lib/packages-data";
+import { Check } from "lucide-react";
+import type { CheckoutRegion, Plan } from "@/lib/packages-data";
+import { formatMoney } from "@/lib/utils";
+import ui from "@/components/portal/bands.module.css";
 import styles from "./checkout.module.css";
 
-const ICONS: Record<FeatureIcon, typeof Clock> = { clock: Clock, list: ListChecks, content: LayoutList, video: Video, cert: Award, mentor: Users };
-const n = (v: number) => v.toLocaleString("en-US");
-const yen = (v: number) => `¥${n(v)}`, dong = (v: number) => `₫${n(v)}`, usd = (v: number) => `$${n(v)}`;
-type Method = "card" | "line" | "paypay" | "zalopay" | "momo" | "mobile_money" | "paypal";
+/** Payment methods by their wire value - the same values the region list and
+ *  the order carry. Named in words, not fake brand tiles: a coloured rectangle
+ *  that only looks like a card logo is decoration, not information. */
+const METHOD_LABEL: Record<string, string> = {
+  card: "Credit or debit card",
+  line: "LINE Pay",
+  paypay: "PayPay",
+  zalopay: "ZaloPay",
+  momo: "MoMo",
+  mobile_money: "Mobile Money",
+  paypal: "PayPal",
+};
 
-export default function CheckoutClient({ plans }: { plans: Plan[] }) {
+const SUBJECTS = ["General English", "Business English", "IELTS Preparation", "TOEFL Preparation", "Academic Writing"];
+const SESSION_TYPES: [string, string][] = [
+  ["conversation", "Conversation practice"],
+  ["grammar", "Grammar and writing"],
+  ["exam_prep", "Exam preparation"],
+  ["business", "Business English"],
+];
+
+export default function CheckoutClient({ plans, regions }: { plans: Plan[]; regions: CheckoutRegion[] }) {
   const router = useRouter();
+  const [regionCode, setRegionCode] = useState(regions[0]?.code ?? "intl");
+  const region = regions.find((r) => r.code === regionCode) ?? regions[0];
   const [planId, setPlanId] = useState<Plan["id"]>(plans.find((p) => p.popular)?.id ?? plans[0].id);
-  const [method, setMethod] = useState<Method>("card");
-  const [subject, setSubject] = useState("General English");
-  const [sessionType, setSessionType] = useState("conversation");
+  const [method, setMethod] = useState<string>(region.methods[0]);
+  const [subject, setSubject] = useState(SUBJECTS[0]);
+  const [sessionType, setSessionType] = useState(SESSION_TYPES[0][0]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const plan = plans.find((p) => p.id === planId)!;
+  const amount = plan.price[region.currency];
 
-  async function pay() {
-    setBusy(true); setError(null);
+  function chooseRegion(code: string) {
+    const next = regions.find((r) => r.code === code);
+    if (!next) return;
+    setRegionCode(code);
+    // The chosen wallet may not serve the new region; fall back to one that does
+    // rather than leave the order holding a method that cannot pay there.
+    if (!next.methods.includes(method)) setMethod(next.methods[0]);
+  }
+
+  async function placeOrder() {
+    setBusy(true);
+    setError(null);
     try {
-      const res = await fetch("/api/v1/checkout", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ package_id: plan.id, payment_method: method, subject, session_type: sessionType, duration_minutes: 60 }) });
+      const res = await fetch("/api/v1/checkout", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          package_id: plan.id,
+          region: region.code,
+          payment_method: method,
+          subject,
+          session_type: sessionType,
+          duration_minutes: 60,
+        }),
+      });
       if (res.status === 401) {
         router.push(`/auth/login?callbackUrl=${encodeURIComponent(`/checkout?package=${plan.id}`)}`);
         return;
@@ -33,80 +76,177 @@ export default function CheckoutClient({ plans }: { plans: Plan[] }) {
       const order = await res.json();
       router.push(`/checkout/success?order=${order.id}`);
     } catch {
-      setError("We couldn't start your payment. Please try again.");
+      setError("We couldn't record your order. Please check your connection and try again.");
       setBusy(false);
     }
   }
 
-  const radio = (id: Method, children: React.ReactNode) => (
-    <label className={styles.method}>
-      <input type="radio" name="method" checked={method === id} onChange={() => setMethod(id)} />
-      {children}
-    </label>
-  );
-
   return (
-    <main className={styles.main}>
-      <section aria-labelledby="pk-h">
-        <h2 id="session-h">1. Choose your study session</h2>
-        <div className={styles.sessionChoices}>
-          <label>Subject<select value={subject} onChange={(event) => setSubject(event.target.value)}><option>General English</option><option>Business English</option><option>IELTS Preparation</option><option>TOEFL Preparation</option><option>Academic Writing</option></select></label>
-          <label>Session type<select value={sessionType} onChange={(event) => setSessionType(event.target.value)}><option value="conversation">Conversation practice</option><option value="grammar">Grammar and writing</option><option value="exam_prep">Exam preparation</option><option value="business">Business English</option></select></label>
+    <main className={styles.page}>
+      <div className={ui.pageHeading}>
+        <div>
+          <span className={ui.kicker}>Checkout</span>
+          <h1>Reserve your place</h1>
+          <p>
+            Choose your study focus, where you'll pay from and the package that fits. Placing the
+            order holds your place - you're not charged on this page.
+          </p>
         </div>
-        <h2 id="pk-h">2. Select Your Learning Package</h2>
-        <div className={styles.plans} role="radiogroup" aria-labelledby="pk-h">
-          {plans.map((p) => (
-            <article key={p.id} className={`${styles.plan} ${p.popular ? styles.popular : ""} ${p.id === planId ? styles.selected : ""}`}>
-              {p.popular && <span className={styles.badge}>POPULAR</span>}
-              <h3>{p.name}</h3>
-              <p className={styles.sub}>Elegant Pricing</p>
-              <p className={styles.price}>{yen(p.price.JPY)}</p>
-              <p className={styles.alt}>{dong(p.price.VND)}/{usd(p.price.USD)}</p>
-              <hr />
-              <ul>
-                {p.features.map((f) => { const I = ICONS[f.icon]; return <li key={f.label}><I size={20} strokeWidth={1.6} aria-hidden /> {f.label}</li>; })}
-                {p.popular && <li><Crown size={22} color="#f2541b" aria-hidden /> <span className={styles.pill}>POPULAR</span></li>}
-              </ul>
-              <button type="button" role="radio" aria-checked={p.id === planId} className={`${styles.subscribe} ${p.id === planId ? styles.subscribeOn : ""}`} onClick={() => setPlanId(p.id)}>
-                Subscribe Button
-              </button>
-            </article>
-          ))}
-        </div>
-      </section>
+      </div>
 
-      <aside aria-labelledby="co-h">
-          <h2 id="co-h">3. Secure Payment Checkout</h2>
-        <div className={styles.summary}>
-          <h3>Order Summary</h3>
-          <div className={styles.row}><span>Package: {plan.name}</span><span>{yen(plan.price.JPY)}</span></div>
-          <hr />
-          <div className={styles.row}><span>Price Summary in JPY</span><span>{yen(plan.price.JPY)}</span></div>
-          <div className={styles.row}><span>VND</span><span>{dong(plan.price.VND)}</span></div>
-          <div className={styles.row}><span>USD</span><span>{usd(plan.price.USD)}</span></div>
-          <hr />
-          <h3>Payment Method</h3>
-          {radio("card", <><CreditCard size={20} aria-hidden /> <span className={styles.grow}>Credit/Debit Card</span><b className={styles.visa}>VISA</b><i className={styles.mc}><u /><u /></i></>)}
-          <hr />
-          <p className={styles.group}>Asian Regional Methods</p>
-          <div className={styles.regional}>
-            {radio("line", <span className={styles.line}>LINE Pay</span>)}
-            {radio("paypay", <span className={styles.paypay}>PayPay</span>)}
-            {radio("zalopay", <><span className={styles.momo}>mo<br />mo</span><span className={styles.zalo}>ZaloPay</span></>)}
-            {radio("momo", <span className={styles.momo}>MoMo</span>)}
-            {radio("mobile_money", <span>Mobile Money</span>)}
-            {radio("paypal", <span className={styles.paypal}>PayPal</span>)}
-          </div>
-          <hr />
-          <p className={styles.total}>Total to Pay: {yen(plan.price.JPY)} <span>({dong(plan.price.VND)} / {usd(plan.price.USD)})</span></p>
-          <div className={styles.trust}>
-            <span><ShieldCheck size={34} strokeWidth={1.5} aria-hidden /> <b>Secure<br />Checkout</b></span>
-            <span><ShieldCheck size={34} strokeWidth={1.5} aria-hidden /> <b>30-DAY MONEY-BACK<br />GUARANTEE</b><small>Satisfaction Guaranteed</small></span>
-          </div>
-          {error && <p role="alert" className={styles.error}>{error}</p>}
-          <button type="button" className={styles.pay} onClick={pay} disabled={busy}>{busy ? "Processing…" : "Confirm & Pay Now"}</button>
+      <div className={ui.split}>
+        <div className={ui.mainPane}>
+          <section className={ui.band} aria-labelledby="session-h">
+            <span className={ui.bandLabel}>Step 1</span>
+            <h2 id="session-h" className={ui.bandTitle}>
+              Your study session
+            </h2>
+            <div className={ui.form}>
+              <label>
+                Subject
+                <select className={ui.select} value={subject} onChange={(e) => setSubject(e.target.value)}>
+                  {SUBJECTS.map((s) => (
+                    <option key={s}>{s}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Session focus
+                <select className={ui.select} value={sessionType} onChange={(e) => setSessionType(e.target.value)}>
+                  {SESSION_TYPES.map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <section className={ui.band} aria-labelledby="region-h">
+            <span className={ui.bandLabel}>Step 2</span>
+            <h2 id="region-h" className={ui.bandTitle}>
+              Where you'll pay from
+            </h2>
+            <p className={ui.bandEmpty}>
+              Your region sets the single currency you're charged and the payment options that
+              actually work there.
+            </p>
+            <div className={styles.choices} role="radiogroup" aria-labelledby="region-h">
+              {regions.map((r) => (
+                <label key={r.code} className={`${styles.choice} ${r.code === regionCode ? styles.choiceOn : ""}`}>
+                  <input type="radio" name="region" checked={r.code === regionCode} onChange={() => chooseRegion(r.code)} />
+                  <span>{r.label}</span>
+                  <small>{r.currency}</small>
+                </label>
+              ))}
+            </div>
+          </section>
+
+          <section className={ui.band} aria-labelledby="plan-h">
+            <span className={ui.bandLabel}>Step 3</span>
+            <h2 id="plan-h" className={ui.bandTitle}>
+              Choose your package
+            </h2>
+            <div className={styles.planList} role="radiogroup" aria-labelledby="plan-h">
+              {plans.map((p) => {
+                const on = p.id === planId;
+                return (
+                  <div key={p.id} className={`${styles.plan} ${on ? styles.planOn : ""}`}>
+                    <div className={styles.planHead}>
+                      <div className={styles.planId}>
+                        <h3 className={styles.planName}>
+                          {p.name}
+                          {p.popular && <span className={ui.statusPill}>Popular</span>}
+                        </h3>
+                        <p className={styles.planPrice}>
+                          {formatMoney(p.price[region.currency], region.currency)}
+                          <span>
+                            {" "}· {p.months} {p.months > 1 ? "months" : "month"}
+                          </span>
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={on}
+                        className={on ? ui.btnCoral : ui.btn}
+                        onClick={() => setPlanId(p.id)}
+                      >
+                        {on ? "Selected" : "Select"}
+                      </button>
+                    </div>
+                    {p.features.length > 0 && (
+                      <ul className={styles.planFeatures}>
+                        {p.features.map((f) => (
+                          <li key={f.label}>
+                            <Check size={15} strokeWidth={2.4} aria-hidden />
+                            {f.label}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
         </div>
-      </aside>
+
+        <aside className={ui.sidePane}>
+          <section className={ui.band} aria-labelledby="summary-h">
+            <span className={ui.bandLabel}>Order summary</span>
+            <h2 id="summary-h" className={ui.bandTitle}>
+              {plan.name}
+            </h2>
+            <dl className={ui.rows}>
+              <div>
+                <dt>Study focus</dt>
+                <dd>{subject}</dd>
+              </div>
+              <div>
+                <dt>Session</dt>
+                <dd>{SESSION_TYPES.find(([v]) => v === sessionType)?.[1]}</dd>
+              </div>
+              <div>
+                <dt>Paying from</dt>
+                <dd>{region.label}</dd>
+              </div>
+              <div>
+                <dt>Amount</dt>
+                <dd>{formatMoney(amount, region.currency)}</dd>
+              </div>
+            </dl>
+
+            <span className={ui.subHead} id="method-h">
+              How you'll pay
+            </span>
+            <div className={styles.methods} role="radiogroup" aria-labelledby="method-h">
+              {region.methods.map((m) => (
+                <label key={m} className={`${styles.method} ${m === method ? styles.methodOn : ""}`}>
+                  <input type="radio" name="method" checked={m === method} onChange={() => setMethod(m)} />
+                  <span>{METHOD_LABEL[m] ?? m}</span>
+                </label>
+              ))}
+            </div>
+
+            {error && (
+              <p role="alert" className={styles.error}>
+                {error}
+              </p>
+            )}
+            <p className={styles.place}>
+              <button type="button" className={ui.btnCoral} onClick={placeOrder} disabled={busy}>
+                {busy ? "Recording…" : "Place order"}
+              </button>
+            </p>
+            <p className={styles.fineprint}>
+              Placing an order does not charge you now. It holds your place; payment is confirmed
+              before tutor matching begins.
+            </p>
+          </section>
+        </aside>
+      </div>
     </main>
   );
 }

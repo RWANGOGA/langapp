@@ -6,6 +6,20 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * Render an amount in a specific ISO currency, the way that currency is
+ * actually written - symbol placement, grouping and decimals are the
+ * locale's, not ours. Prices here are whole units, so no cents are shown.
+ */
+const CURRENCY_LOCALE: Record<string, string> = { JPY: "ja-JP", VND: "vi-VN", USD: "en-US" };
+export function formatMoney(amount: number, currency: string): string {
+  return new Intl.NumberFormat(CURRENCY_LOCALE[currency] ?? "en-US", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+/**
  * The API stores naive UTC instants, so "2026-10-01T09:00:00" is 09:00 UTC.
  * Parsed as written, a browser in another zone reads it as *local* time and
  * every derived label lands hours out by the reader's offset - which is
