@@ -7,6 +7,8 @@ const fr: Record<string, string> = {
   "nav.blog": "Blog",
   "nav.tutorPortal": "Espace tuteur",
   "nav.admin": "Administration",
+  "nav.back": "Retour",
+  "common.notSet": "Non défini",
 
   "actions.signIn": "Se connecter",
   "actions.getStarted": "Commencer",

@@ -7,6 +7,8 @@ const zh: Record<string, string> = {
   "nav.blog": "博客",
   "nav.tutorPortal": "导师门户",
   "nav.admin": "管理后台",
+  "nav.back": "返回",
+  "common.notSet": "未设置",
 
   "actions.signIn": "登录",
   "actions.getStarted": "立即开始",

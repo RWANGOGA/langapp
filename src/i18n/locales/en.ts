@@ -13,6 +13,8 @@ const en = {
   "nav.blog": "Blog",
   "nav.tutorPortal": "Tutor Portal",
   "nav.admin": "Admin",
+  "nav.back": "Back",
+  "common.notSet": "Not set",
 
   // Account actions
   "actions.signIn": "Sign In",

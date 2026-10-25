@@ -54,6 +54,9 @@
   padding: clamp(2rem, 5vw, 3.4rem) clamp(1rem, 4vw, 2rem) 4.5rem;
 }
 
+/* Grid gap already separates rows; trim it so the back control sits close. */
+.backRow { margin-bottom: -1.1rem; }
+
 @media (max-width: 720px) {
   .nav { gap: 1rem; }
 }

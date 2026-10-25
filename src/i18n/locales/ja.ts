@@ -7,6 +7,8 @@ const ja: Record<string, string> = {
   "nav.blog": "ブログ",
   "nav.tutorPortal": "チューターポータル",
   "nav.admin": "管理",
+  "nav.back": "戻る",
+  "common.notSet": "未設定",
 
   "actions.signIn": "ログイン",
   "actions.getStarted": "はじめる",

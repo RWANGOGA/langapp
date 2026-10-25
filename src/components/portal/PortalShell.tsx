@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import styles from "./portal.module.css";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import BackLink from "@/components/layout/BackLink";
 import { useLanguage } from "@/i18n/LanguageProvider";
 
 /**
@@ -139,7 +140,12 @@ export default function PortalShell({
               </Link>
             )}
           </div>
-          <main className={styles.content}>{children}</main>
+          <main className={styles.content}>
+            <div className={styles.backRow}>
+              <BackLink fallback={homeHref} />
+            </div>
+            {children}
+          </main>
         </div>
       </div>
     </div>

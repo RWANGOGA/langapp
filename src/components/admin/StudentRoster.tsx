@@ -84,7 +84,7 @@ export default function StudentRoster({ students, tutors, onRefresh }: Props) {
               </span>
               <span className={styles.controls}>
                 {student.tutor_name ? (
-                  <span className={ui.statusPill}>{student.level}</span>
+                  <span className={ui.statusPill}>{student.level === "Not set" ? t("common.notSet") : student.level}</span>
                 ) : (
                   <span className={`${ui.statusPill} ${ui.statusBad}`}>{t("admin.learners.awaitingBadge")}</span>
                 )}

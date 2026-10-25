@@ -4,6 +4,7 @@ import { AuthProvider } from "@/lib/auth";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
+import BackLink from "@/components/layout/BackLink";
 
 export const metadata: Metadata = {
   title: "Nile Language — Learn English with Dedicated 1-on-1 Tutors",
@@ -24,6 +25,9 @@ export default function RootLayout({
         <LanguageProvider>
           <AuthProvider>
             <SiteHeader />
+            {/* Public pages get the global back control; the portals and the
+                applicant frame render their own so it is never doubled. */}
+            <BackLink framed hiddenOn={["/dashboard", "/tutor", "/admin"]} />
             {children}
             <SiteFooter />
           </AuthProvider>

@@ -1,0 +1,52 @@
+/* Back control — MIT editorial: uppercase micro-label, hairline rule, no pill. */
+
+.bar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+}
+
+.barInner {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 11px 24px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--mut);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.back:hover {
+  color: var(--coral);
+}
+
+.back svg {
+  transition: transform var(--transition-fast);
+}
+
+.back:hover svg {
+  transform: translateX(-3px);
+}
+
+.back:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 4px;
+}
+
+@media (max-width: 720px) {
+  .barInner {
+    padding: 10px 16px;
+  }
+}

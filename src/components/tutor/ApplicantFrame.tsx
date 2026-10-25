@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import BackLink from "@/components/layout/BackLink";
 import styles from "./applicant.module.css";
 
 /**
@@ -41,7 +42,12 @@ export default function ApplicantFrame({
           )}
         </nav>
       </header>
-      <main className={styles.wrap}>{children}</main>
+      <main className={styles.wrap}>
+        <div className={styles.backRow}>
+          <BackLink fallback="/tutors" />
+        </div>
+        {children}
+      </main>
     </div>
   );
 }
