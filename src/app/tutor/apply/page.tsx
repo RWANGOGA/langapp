@@ -3,9 +3,11 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import ApplicantFrame from "@/components/tutor/ApplicantFrame";
 import { useAuth } from "@/lib/auth";
 import { type ApplicationCompleteness } from "@/lib/tutor-requirements";
-import styles from "./page.module.css";
+import ui from "@/components/portal/bands.module.css";
+import styles from "./apply.module.css";
 
 // Relative so requests go through the Next rewrite and stay first-party.
 // Calling ${NEXT_PUBLIC_API_URL} directly is cross-origin and fails CORS
@@ -84,11 +86,12 @@ type RequiredField = keyof TutorApplicationData;
 // form can gate submit on what the applicant has actually typed - the
 // server-side completeness endpoint only ever sees a saved draft, and
 // nothing is saved until submit.
-const requiredByStep: { step: number; title: string; fields: RequiredField[] }[] = [
-  { step: 1, title: "Personal details", fields: ["full_name", "country"] },
+const requiredByStep: { step: number; title: string; intro: string; fields: RequiredField[] }[] = [
+  { step: 1, title: "Personal details", intro: "Your legal name and the country you're applying from.", fields: ["full_name", "country"] },
   {
     step: 2,
     title: "Identity and qualification documents",
+    intro: "Link a government photo ID and your teaching qualification. Set the sharing permission so the review team can open each file.",
     fields: [
       "id_verification_provider",
       "id_verification_id",
@@ -100,14 +103,21 @@ const requiredByStep: { step: number; title: string; fields: RequiredField[] }[]
   {
     step: 3,
     title: "English proficiency evidence",
+    intro: "Enter your test and score, then link the score report or certificate.",
     fields: ["english_proof_type", "english_score", "english_proof_url"],
   },
-  { step: 4, title: "Introduction video", fields: ["intro_video_url"] },
-  { step: 5, title: "Specialties and languages", fields: ["specialties", "languages"] },
-  { step: 6, title: "Availability", fields: ["availability"] },
+  {
+    step: 4,
+    title: "Introduction video",
+    intro: "A 2-5 minute video introducing yourself and your teaching style. An unlisted link is fine.",
+    fields: ["intro_video_url"],
+  },
+  { step: 5, title: "Specialties and languages", intro: "What you teach, and the languages you can teach in.", fields: ["specialties", "languages"] },
+  { step: 6, title: "Availability", intro: "The days and hours you can reliably take lessons - say which time zone.", fields: ["availability"] },
   {
     step: 7,
     title: "Agreements and consent",
+    intro: "Four confirmations are required before you can teach. Tick each one to accept.",
     fields: [
       "tech_confirmed",
       "code_of_conduct_accepted",
@@ -115,8 +125,33 @@ const requiredByStep: { step: number; title: string; fields: RequiredField[] }[]
       "recording_consent",
     ],
   },
-  { step: 8, title: "References", fields: ["reference_1_name", "reference_1_email"] },
+  { step: 8, title: "References", intro: "At least one referee who can confirm your teaching experience. A second is optional.", fields: ["reference_1_name", "reference_1_email"] },
 ];
+
+// Human names for the fields the rail reports as outstanding, so "what's left"
+// reads as an instruction rather than a column name.
+const FIELD_LABEL: Record<string, string> = {
+  full_name: "full name",
+  country: "country",
+  id_verification_provider: "ID verification provider",
+  id_verification_id: "ID verification number",
+  id_document_url: "government ID link",
+  qualification_type: "qualification type",
+  qualification_file_url: "qualification file link",
+  english_proof_type: "English test",
+  english_score: "English score",
+  english_proof_url: "English proof link",
+  intro_video_url: "introduction video link",
+  specialties: "specialties",
+  languages: "languages",
+  availability: "availability",
+  tech_confirmed: "technical setup confirmation",
+  code_of_conduct_accepted: "code of conduct",
+  privacy_agreement_accepted: "privacy agreement",
+  recording_consent: "recording consent",
+  reference_1_name: "reference 1 name",
+  reference_1_email: "reference 1 email",
+};
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -149,6 +184,10 @@ export default function TutorApplicationPage() {
   const [success, setSuccess] = useState(false);
   const [applicationExists, setApplicationExists] = useState(false);
   const [applicationStatus, setApplicationStatus] = useState<string | null>(null);
+  // A file that exists but is past the editable window (in review, approved or
+  // withdrawn) must not open a fresh form - that would invite a duplicate
+  // submission the API would reject. It points to the status page instead.
+  const [locked, setLocked] = useState(false);
 
   const [data, setData] = useState<TutorApplicationData>({
     full_name: "",
@@ -180,8 +219,9 @@ export default function TutorApplicationPage() {
     background_check_provider: "",
   });
 
-  // Recomputed on every keystroke so step 8 unlocks the moment the form
-  // itself is complete - a server round-trip can never see unsaved input.
+  // Recomputed on every keystroke so the rail and the submit gate reflect what
+  // the applicant has actually typed - a server round-trip can never see
+  // unsaved input.
   const completeness = useMemo(() => evaluateLocalCompleteness(data), [data]);
 
   const checkExistingApplication = useCallback(async () => {
@@ -227,6 +267,13 @@ export default function TutorApplicationPage() {
             background_check_provider:
               app.background_check_provider || prev.background_check_provider,
           }));
+        } else {
+          // The file exists but is no longer applicant-editable (in review past
+          // documents, approved, or withdrawn). A fresh form here would only
+          // produce a duplicate the API rejects, so point to the status page.
+          setApplicationExists(true);
+          setApplicationStatus(app.status);
+          setLocked(true);
         }
       }
     } catch {
@@ -284,11 +331,7 @@ export default function TutorApplicationPage() {
       };
 
       const nested = {
-        step1: {
-          full_name: data.full_name,
-          country: data.country,
-          date_of_birth: data.date_of_birth || undefined,
-        },
+        step1: { full_name: data.full_name, country: data.country, date_of_birth: data.date_of_birth || undefined },
         step2: {
           id_verification_provider: data.id_verification_provider || undefined,
           id_verification_id: data.id_verification_id || undefined,
@@ -301,17 +344,9 @@ export default function TutorApplicationPage() {
           english_score: data.english_score || undefined,
           english_proof_url: data.english_proof_url || undefined,
         },
-        step4: {
-          intro_video_url: data.intro_video_url || undefined,
-          years_experience: data.years_experience,
-        },
-        step5: {
-          specialties: data.specialties,
-          languages: data.languages,
-        },
-        step6: {
-          availability: data.availability || undefined,
-        },
+        step4: { intro_video_url: data.intro_video_url || undefined, years_experience: data.years_experience },
+        step5: { specialties: data.specialties, languages: data.languages },
+        step6: { availability: data.availability || undefined },
         step7: {
           tech_confirmed: data.tech_confirmed,
           code_of_conduct_accepted: data.code_of_conduct_accepted,
@@ -335,9 +370,7 @@ export default function TutorApplicationPage() {
         applicationExists &&
         (applicationStatus === "submitted" || applicationStatus === "documents_review");
       const method = editInPlace ? "PATCH" : "POST";
-      const url = editInPlace
-        ? `${PROXY}/tutor/applications/me`
-        : `${PROXY}/tutor/applications`;
+      const url = editInPlace ? `${PROXY}/tutor/applications/me` : `${PROXY}/tutor/applications`;
 
       const response = await fetch(url, {
         method,
@@ -354,7 +387,8 @@ export default function TutorApplicationPage() {
       setSuccess(true);
       setTimeout(() => {
         // Applicants are students until approved, so /tutor (the tutor
-        // dashboard) would bounce them. Return to the start of the journey.
+        // dashboard) would bounce them. /tutor/requirements now shows where
+        // the file stands and what happens next.
         router.push("/tutor/requirements");
       }, 2500);
     } catch (err) {
@@ -364,30 +398,36 @@ export default function TutorApplicationPage() {
     }
   };
 
-  const nextStep = () => setCurrentStep(currentStep + 1);
-  const prevStep = () => setCurrentStep(currentStep - 1);
+  const nextStep = () => setCurrentStep((s) => Math.min(8, s + 1));
+  const prevStep = () => setCurrentStep((s) => Math.max(1, s - 1));
+  const goToStep = (n: number) => setCurrentStep(n);
 
   const toggleSpecialty = (specialty: string) => {
-    if (data.specialties.includes(specialty)) {
-      setData({ ...data, specialties: data.specialties.filter(s => s !== specialty) });
-    } else {
-      setData({ ...data, specialties: [...data.specialties, specialty] });
-    }
+    setData((d) => ({
+      ...d,
+      specialties: d.specialties.includes(specialty)
+        ? d.specialties.filter((s) => s !== specialty)
+        : [...d.specialties, specialty],
+    }));
   };
 
   const toggleLanguage = (language: string) => {
-    if (data.languages.includes(language)) {
-      setData({ ...data, languages: data.languages.filter(l => l !== language) });
-    } else {
-      setData({ ...data, languages: [...data.languages, language] });
-    }
+    setData((d) => ({
+      ...d,
+      languages: d.languages.includes(language)
+        ? d.languages.filter((l) => l !== language)
+        : [...d.languages, language],
+    }));
   };
+
+  const set = <K extends keyof TutorApplicationData>(key: K, value: TutorApplicationData[K]) =>
+    setData((d) => ({ ...d, [key]: value }));
 
   if (authLoading) {
     return (
-      <div className={styles.container}>
-        <div className={styles.loading}>Loading...</div>
-      </div>
+      <ApplicantFrame>
+        <p className={ui.bandEmpty}>Loading your application…</p>
+      </ApplicantFrame>
     );
   }
 
@@ -397,406 +437,325 @@ export default function TutorApplicationPage() {
 
   if (success) {
     return (
-      <div className={styles.container}>
-        <div className={styles.successCard}>
-          <div className={styles.successIcon}>✓</div>
-          <h2>Application Submitted!</h2>
-          <p>Your tutor application has been submitted successfully. We&apos;ll review it and get back to you soon.</p>
-        </div>
-      </div>
+      <ApplicantFrame signedIn>
+        <section className={ui.bandStatement} role="status">
+          <span className={ui.bandLabel}>Submitted</span>
+          <h1 className={ui.bandTitle}>Your application is in</h1>
+          <p>
+            We've received it. Taking you to your application status now, where you can see which
+            stage it's at and what happens next.
+          </p>
+          <p className={ui.joinRow}>
+            <Link href="/tutor/requirements" className={ui.btnCoral}>
+              See where my file stands
+            </Link>
+          </p>
+        </section>
+      </ApplicantFrame>
     );
   }
 
+  if (locked) {
+    const approved = applicationStatus === "approved";
+    return (
+      <ApplicantFrame signedIn>
+        <section className={ui.bandStatement} role="status">
+          <span className={ui.bandLabel}>Application in review</span>
+          <h1 className={ui.bandTitle}>
+            {approved ? "You're approved" : "Your application is with our team"}
+          </h1>
+          <p>
+            {approved
+              ? "Your tutor account is active. Open your dashboard to start teaching."
+              : "This stage is no longer editable by you - a reviewer is working through your file. You can follow exactly where it stands and what happens next on your application status page."}
+          </p>
+          <p className={ui.joinRow}>
+            <Link href={approved ? "/tutor" : "/tutor/requirements"} className={ui.btnCoral}>
+              {approved ? "Open my dashboard" : "See where my file stands"}
+            </Link>
+          </p>
+        </section>
+      </ApplicantFrame>
+    );
+  }
+
+  const meta = requiredByStep[currentStep - 1];
+
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
-        <div className={styles.header}>
-          <h1>Become a Tutor</h1>
-          <p>Step {currentStep} of 8</p>
+    <ApplicantFrame signedIn>
+      <div className={ui.pageHeading}>
+        <div>
+          <span className={ui.kicker}>Tutor application</span>
+          <h1>Become a tutor</h1>
+          <p>
+            Eight short steps. Nothing is saved until you submit, so keep your documents to hand.
+            The progress list shows exactly what is still outstanding.
+          </p>
         </div>
+      </div>
 
-        <Link href="/tutor/requirements" className={styles.requirementsLink}>
-          <strong>Not started yet?</strong> Review the documents and checks you will
-          need before submitting this application.
-        </Link>
+      {applicationExists && applicationStatus === "rejected" && (
+        <section className={ui.band}>
+          <span className={ui.bandLabel}>Reopened</span>
+          <h2 className={ui.bandTitle}>Update and resubmit</h2>
+          <p className={ui.bandEmpty}>
+            Your previous application wasn't approved. You can revise anything below and submit
+            again; your earlier answers are already filled in.
+          </p>
+        </section>
+      )}
 
-        {error && <div className={styles.error}>{error}</div>}
+      {error && (
+        <section className={ui.band} role="alert">
+          <span className={ui.bandLabel}>Not submitted</span>
+          <p className={ui.bandEmpty}>{error}</p>
+        </section>
+      )}
 
-        <form onSubmit={(e) => e.preventDefault()} className={styles.form}>
-          {currentStep === 1 && (
-            <>
-              <div className={styles.field}>
-                <label htmlFor="full_name">Full Name</label>
-                <input
-                  id="full_name"
-                  type="text"
-                  value={data.full_name}
-                  onChange={(e) => setData({ ...data, full_name: e.target.value })}
-                  required
-                />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="country">Country</label>
-                <input
-                  id="country"
-                  type="text"
-                  value={data.country}
-                  onChange={(e) => setData({ ...data, country: e.target.value })}
-                  required
-                />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="date_of_birth">Date of Birth</label>
-                <input
-                  id="date_of_birth"
-                  type="date"
-                  value={data.date_of_birth}
-                  onChange={(e) => setData({ ...data, date_of_birth: e.target.value })}
-                />
-              </div>
-            </>
-          )}
-
-          {currentStep === 2 && (
-            <>
-              <div className={styles.stepIntro}>
-                <strong>Identity and qualification documents</strong>
-                <span>Provide a Google Drive link or a secure hosted file. Make sure the review team can open it.</span>
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="id_verification_provider">ID verification provider <em>Required</em></label>
-                <select
-                  id="id_verification_provider"
-                  value={data.id_verification_provider}
-                  onChange={(e) => setData({ ...data, id_verification_provider: e.target.value })}
-                >
-                  <option value="">Select provider</option>
-                  <option value="jumio">Jumio</option>
-                  <option value="onfido">Onfido</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="id_verification_id">ID verification number <em>Required</em></label>
-                <input
-                  id="id_verification_id"
-                  type="text"
-                  value={data.id_verification_id}
-                  onChange={(e) => setData({ ...data, id_verification_id: e.target.value })}
-                />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="id_document_url">Government ID link <em>Required</em></label>
-                <input
-                  id="id_document_url"
-                  type="url"
-                  value={data.id_document_url}
-                  onChange={(e) => setData({ ...data, id_document_url: e.target.value })}
-                  placeholder="Google Drive or secure file URL"
-                  required
-                />
-                <small>Set the sharing permission so the review team can open the file.</small>
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="qualification_type">Qualification type <em>Required</em></label>
-                <input
-                  id="qualification_type"
-                  type="text"
-                  value={data.qualification_type}
-                  onChange={(e) => setData({ ...data, qualification_type: e.target.value })}
-                  placeholder="e.g., TEFL, CELTA, etc."
-                />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="qualification_file_url">Qualification file link <em>Required</em></label>
-                <input
-                  id="qualification_file_url"
-                  type="url"
-                  value={data.qualification_file_url}
-                  onChange={(e) => setData({ ...data, qualification_file_url: e.target.value })}
-                  placeholder="https://..."
-                />
-              </div>
-            </>
-          )}
-
-          {currentStep === 3 && (
-            <>
-              <div className={styles.stepIntro}>
-                <strong>English proficiency evidence</strong>
-                <span>Enter the test result and link to the score report or certificate.</span>
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="english_proof_type">English proficiency test <em>Required</em></label>
-                <select
-                  id="english_proof_type"
-                  value={data.english_proof_type}
-                  onChange={(e) => setData({ ...data, english_proof_type: e.target.value })}
-                >
-                  <option value="">Select test type</option>
-                  <option value="IELTS">IELTS</option>
-                  <option value="TOEFL">TOEFL</option>
-                  <option value="TOEIC">TOEIC</option>
-                  <option value="Cambridge">Cambridge English</option>
-                  <option value="Duolingo">Duolingo English Test</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="english_score">English score <em>Required</em></label>
-                <input
-                  id="english_score"
-                  type="text"
-                  value={data.english_score}
-                  onChange={(e) => setData({ ...data, english_score: e.target.value })}
-                  placeholder="e.g., 8.0, 105, etc."
-                />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="english_proof_url">English proof link <em>Required</em></label>
-                <input
-                  id="english_proof_url"
-                  type="url"
-                  value={data.english_proof_url}
-                  onChange={(e) => setData({ ...data, english_proof_url: e.target.value })}
-                  placeholder="Google Drive or secure file URL"
-                  required
-                />
-              </div>
-            </>
-          )}
-
-          {currentStep === 4 && (
-            <>
-              <div className={styles.stepIntro}>
-                <strong>Introduction video</strong>
-                <span>Share a 2-5 minute Google Drive, YouTube, Vimeo, or secure video link.</span>
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="intro_video_url">Intro video link <em>Required</em></label>
-                <input
-                  id="intro_video_url"
-                  type="url"
-                  value={data.intro_video_url}
-                  onChange={(e) => setData({ ...data, intro_video_url: e.target.value })}
-                  placeholder="https://..."
-                />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="years_experience">Years of teaching experience <em>Required</em></label>
-                <input
-                  id="years_experience"
-                  type="number"
-                  min="0"
-                  max="50"
-                  value={data.years_experience}
-                  onChange={(e) => setData({ ...data, years_experience: parseInt(e.target.value) || 0 })}
-                  required
-                />
-              </div>
-            </>
-          )}
-
-          {currentStep === 5 && (
-            <>
-              <div className={styles.field}>
-                <label>Teaching Specialties</label>
-                <div className={styles.checkboxGrid}>
-                  {specialtiesOptions.map((spec) => (
-                    <label key={spec} className={styles.checkboxItem}>
-                      <input
-                        type="checkbox"
-                        checked={data.specialties.includes(spec)}
-                        onChange={() => toggleSpecialty(spec)}
-                      />
-                      <span>{spec}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-              <div className={styles.field}>
-                <label>Languages You Can Teach</label>
-                <div className={styles.checkboxGrid}>
-                  {languagesOptions.map((lang) => (
-                    <label key={lang} className={styles.checkboxItem}>
-                      <input
-                        type="checkbox"
-                        checked={data.languages.includes(lang)}
-                        onChange={() => toggleLanguage(lang)}
-                      />
-                      <span>{lang}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-
-          {currentStep === 6 && (
-            <div className={styles.field}>
-              <label htmlFor="availability">Your Availability</label>
-              <textarea
-                id="availability"
-                value={data.availability}
-                onChange={(e) => setData({ ...data, availability: e.target.value })}
-                placeholder='e.g., Monday-Friday 9am-5pm UTC, Weekend flexible...'
-                rows={5}
-              />
+      <div className={ui.split}>
+        <div className={ui.mainPane}>
+          <section className={ui.band} aria-labelledby="step-heading">
+            <div className={ui.bandHead}>
+              <span className={ui.bandLabel}>Step {currentStep} of 8</span>
+              <span className={ui.bandLabel}>{completeness.can_submit ? "Ready to submit" : `${completeness.incomplete_steps.length} to finish`}</span>
             </div>
-          )}
+            <h2 id="step-heading" className={ui.bandTitle}>
+              {meta.title}
+            </h2>
+            <p className={ui.bandEmpty}>{meta.intro}</p>
 
-          {currentStep === 7 && (
-            <div className={styles.checkboxGroup}>
-              <h3>Terms &amp; Agreements</h3>
-              <label className={styles.checkboxItem}>
-                <input
-                  type="checkbox"
-                  checked={data.tech_confirmed}
-                  onChange={(e) => setData({ ...data, tech_confirmed: e.target.checked })}
-                />
-                <span>I have confirmed my technical setup</span>
-              </label>
-              <label className={styles.checkboxItem}>
-                <input
-                  type="checkbox"
-                  checked={data.code_of_conduct_accepted}
-                  onChange={(e) => setData({ ...data, code_of_conduct_accepted: e.target.checked })}
-                  required
-                />
-                <span>I accept the Code of Conduct</span>
-              </label>
-              <label className={styles.checkboxItem}>
-                <input
-                  type="checkbox"
-                  checked={data.privacy_agreement_accepted}
-                  onChange={(e) => setData({ ...data, privacy_agreement_accepted: e.target.checked })}
-                  required
-                />
-                <span>I accept the Privacy Policy</span>
-              </label>
-              <label className={styles.checkboxItem}>
-                <input
-                  type="checkbox"
-                  checked={data.recording_consent}
-                  onChange={(e) => setData({ ...data, recording_consent: e.target.checked })}
-                  required
-                />
-                <span>I consent to recording of my demo lesson</span>
-              </label>
-            </div>
-          )}
-
-          {currentStep === 8 && (
-            <>
-              <div className={styles.field}>
-                <label>Reference 1</label>
-                <input
-                  type="text"
-                  placeholder="Full name"
-                  value={data.reference_1_name}
-                  onChange={(e) => setData({ ...data, reference_1_name: e.target.value })}
-                />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={data.reference_1_email}
-                  onChange={(e) => setData({ ...data, reference_1_email: e.target.value })}
-                />
+            {currentStep === 1 && (
+              <div className={ui.form}>
+                <label>
+                  Full name
+                  <input className={ui.input} type="text" value={data.full_name} onChange={(e) => set("full_name", e.target.value)} />
+                </label>
+                <label>
+                  Country
+                  <input className={ui.input} type="text" value={data.country} onChange={(e) => set("country", e.target.value)} />
+                </label>
+                <label>
+                  Date of birth
+                  <input className={ui.input} type="date" value={data.date_of_birth} onChange={(e) => set("date_of_birth", e.target.value)} />
+                </label>
               </div>
-              <div className={styles.field}>
-                <label>Reference 2</label>
-                <input
-                  type="text"
-                  placeholder="Full name"
-                  value={data.reference_2_name}
-                  onChange={(e) => setData({ ...data, reference_2_name: e.target.value })}
-                />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={data.reference_2_email}
-                  onChange={(e) => setData({ ...data, reference_2_email: e.target.value })}
-                />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="background_check_provider">Background Check Provider</label>
-                <select
-                  id="background_check_provider"
-                  value={data.background_check_provider}
-                  onChange={(e) => setData({ ...data, background_check_provider: e.target.value })}
-                >
-                  <option value="">Select provider</option>
-                  <option value="checkr">Checkr</option>
-                  <option value="goodhire">GoodHire</option>
-                  <option value="goodly">Goodly</option>
-                </select>
-              </div>
-            </>
-          )}
-
-          <div className={styles.navigation}>
-            {currentStep > 1 && (
-              <button
-                type="button"
-                className={styles.prevBtn}
-                onClick={prevStep}
-                disabled={isSubmitting}
-              >
-                Previous
-              </button>
             )}
-            {currentStep < 8 && (
-              <button
-                type="button"
-                className={styles.nextBtn}
-                onClick={nextStep}
-                disabled={isSubmitting}
-              >
-                Next
-              </button>
+
+            {currentStep === 2 && (
+              <div className={ui.form}>
+                <label>
+                  ID verification provider
+                  <select className={ui.select} value={data.id_verification_provider} onChange={(e) => set("id_verification_provider", e.target.value)}>
+                    <option value="">Select provider</option>
+                    <option value="jumio">Jumio</option>
+                    <option value="onfido">Onfido</option>
+                    <option value="other">Other</option>
+                  </select>
+                </label>
+                <label>
+                  ID verification number
+                  <input className={ui.input} type="text" value={data.id_verification_id} onChange={(e) => set("id_verification_id", e.target.value)} />
+                </label>
+                <label>
+                  Government ID link
+                  <input className={ui.input} type="url" placeholder="https://…" value={data.id_document_url} onChange={(e) => set("id_document_url", e.target.value)} />
+                  <span className={styles.fieldNote}>A Google Drive or secure file link the review team can open.</span>
+                </label>
+                <label>
+                  Qualification type
+                  <input className={ui.input} type="text" placeholder="e.g. TEFL, CELTA" value={data.qualification_type} onChange={(e) => set("qualification_type", e.target.value)} />
+                </label>
+                <label>
+                  Qualification file link
+                  <input className={ui.input} type="url" placeholder="https://…" value={data.qualification_file_url} onChange={(e) => set("qualification_file_url", e.target.value)} />
+                </label>
+              </div>
             )}
-            {currentStep === 8 && (
+
+            {currentStep === 3 && (
+              <div className={ui.form}>
+                <label>
+                  English proficiency test
+                  <select className={ui.select} value={data.english_proof_type} onChange={(e) => set("english_proof_type", e.target.value)}>
+                    <option value="">Select test type</option>
+                    <option value="IELTS">IELTS</option>
+                    <option value="TOEFL">TOEFL</option>
+                    <option value="TOEIC">TOEIC</option>
+                    <option value="Cambridge">Cambridge English</option>
+                    <option value="Duolingo">Duolingo English Test</option>
+                    <option value="other">Other</option>
+                  </select>
+                </label>
+                <label>
+                  English score
+                  <input className={ui.input} type="text" placeholder="e.g. 8.0, 105" value={data.english_score} onChange={(e) => set("english_score", e.target.value)} />
+                </label>
+                <label className={ui.wide}>
+                  English proof link
+                  <input className={ui.input} type="url" placeholder="https://…" value={data.english_proof_url} onChange={(e) => set("english_proof_url", e.target.value)} />
+                </label>
+              </div>
+            )}
+
+            {currentStep === 4 && (
+              <div className={ui.form}>
+                <label className={ui.wide}>
+                  Introduction video link
+                  <input className={ui.input} type="url" placeholder="https://…" value={data.intro_video_url} onChange={(e) => set("intro_video_url", e.target.value)} />
+                </label>
+                <label>
+                  Years of teaching experience
+                  <input className={ui.input} type="number" min="0" max="50" value={data.years_experience} onChange={(e) => set("years_experience", parseInt(e.target.value) || 0)} />
+                </label>
+              </div>
+            )}
+
+            {currentStep === 5 && (
               <>
-                {/* Same rules the API enforces, so the button never offers a
-                    submission the server would reject with 422. */}
-                {completeness && !completeness.can_submit && (
-                  <div className={styles.completenessWarning} role="status">
-                    <strong>Before you can submit:</strong>
-                    <ul>
-                      {completeness.steps
-                        .filter((s) => !s.complete)
-                        .map((s) => (
-                          <li key={s.step}>
-                            Step {s.step} — {s.title}: {s.missing.join(", ")}
-                          </li>
-                        ))}
-                    </ul>
-                  </div>
-                )}
-                {completeness?.can_submit && (
-                  <div className={styles.completenessOk} role="status">
-                    All required information is present. Submitting sends your
-                    application to the review team.
-                  </div>
-                )}
-                <button
-                  type="button"
-                  className={styles.submitBtn}
-                  onClick={handleSubmit}
-                  disabled={
-                    // The local rules mirror the API's submit gate, including
-                    // the four step-7 consents, so the button never offers a
-                    // submission the server would reject with 422.
-                    isSubmitting || !completeness.can_submit
-                  }
-                >
-                  {isSubmitting ? "Submitting..." : "Submit Application"}
-                </button>
+                <span className={ui.subHead}>Teaching specialties</span>
+                <div className={styles.chips}>
+                  {specialtiesOptions.map((spec) => (
+                    <label key={spec} className={`${styles.chip} ${data.specialties.includes(spec) ? styles.chipOn : ""}`}>
+                      <input type="checkbox" checked={data.specialties.includes(spec)} onChange={() => toggleSpecialty(spec)} />
+                      {spec}
+                    </label>
+                  ))}
+                </div>
+                <span className={ui.subHead}>Languages you can teach</span>
+                <div className={styles.chips}>
+                  {languagesOptions.map((lang) => (
+                    <label key={lang} className={`${styles.chip} ${data.languages.includes(lang) ? styles.chipOn : ""}`}>
+                      <input type="checkbox" checked={data.languages.includes(lang)} onChange={() => toggleLanguage(lang)} />
+                      {lang}
+                    </label>
+                  ))}
+                </div>
               </>
             )}
-          </div>
-        </form>
+
+            {currentStep === 6 && (
+              <label>
+                Your availability
+                <textarea className={ui.textarea} rows={5} placeholder="e.g. Monday–Friday 9am–5pm UTC, weekends flexible" value={data.availability} onChange={(e) => set("availability", e.target.value)} />
+              </label>
+            )}
+
+            {currentStep === 7 && (
+              <div className={styles.consents}>
+                {(
+                  [
+                    ["tech_confirmed", "I have confirmed my technical setup."],
+                    ["code_of_conduct_accepted", "I accept the Code of Conduct."],
+                    ["privacy_agreement_accepted", "I accept the Privacy Agreement."],
+                    ["recording_consent", "I consent to my demo lesson being recorded."],
+                  ] as const
+                ).map(([key, label]) => (
+                  <label key={key} className={`${styles.consent} ${data[key] ? styles.consentOn : ""}`}>
+                    <input type="checkbox" checked={data[key]} onChange={(e) => set(key, e.target.checked)} />
+                    {label}
+                  </label>
+                ))}
+              </div>
+            )}
+
+            {currentStep === 8 && (
+              <div className={ui.form}>
+                <label>
+                  Reference 1 name
+                  <input className={ui.input} type="text" value={data.reference_1_name} onChange={(e) => set("reference_1_name", e.target.value)} />
+                </label>
+                <label>
+                  Reference 1 email
+                  <input className={ui.input} type="email" value={data.reference_1_email} onChange={(e) => set("reference_1_email", e.target.value)} />
+                </label>
+                <label>
+                  Reference 2 name (optional)
+                  <input className={ui.input} type="text" value={data.reference_2_name} onChange={(e) => set("reference_2_name", e.target.value)} />
+                </label>
+                <label>
+                  Reference 2 email (optional)
+                  <input className={ui.input} type="email" value={data.reference_2_email} onChange={(e) => set("reference_2_email", e.target.value)} />
+                </label>
+                <label className={ui.wide}>
+                  Background check provider (optional)
+                  <select className={ui.select} value={data.background_check_provider} onChange={(e) => set("background_check_provider", e.target.value)}>
+                    <option value="">Select provider</option>
+                    <option value="checkr">Checkr</option>
+                    <option value="goodhire">GoodHire</option>
+                    <option value="goodly">Goodly</option>
+                  </select>
+                </label>
+              </div>
+            )}
+
+            <div className={styles.stepNav}>
+              {currentStep > 1 ? (
+                <button type="button" className={ui.btn} onClick={prevStep} disabled={isSubmitting}>
+                  Previous
+                </button>
+              ) : (
+                <span />
+              )}
+              {currentStep < 8 ? (
+                <button type="button" className={ui.btnCoral} onClick={nextStep} disabled={isSubmitting}>
+                  Next
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className={ui.btnCoral}
+                  onClick={handleSubmit}
+                  // The local rules mirror the API's submit gate, including the
+                  // four step-7 consents, so the button never offers a
+                  // submission the server would reject with 422.
+                  disabled={isSubmitting || !completeness.can_submit}
+                >
+                  {isSubmitting ? "Submitting…" : "Submit application"}
+                </button>
+              )}
+            </div>
+          </section>
+        </div>
+
+        <aside className={ui.sidePane}>
+          <span className={ui.bandLabel}>Your progress</span>
+          <ol className={styles.steps} aria-label="Application steps">
+            {completeness.steps.map((s) => {
+              const note = s.complete
+                ? "Complete"
+                : s.missing.map((m) => FIELD_LABEL[m] ?? m).join(", ");
+              return (
+                <li
+                  key={s.step}
+                  className={
+                    s.step === currentStep
+                      ? styles.stepCurrent
+                      : s.complete
+                        ? styles.stepDone
+                        : undefined
+                  }
+                >
+                  <button type="button" className={styles.step} onClick={() => goToStep(s.step)} aria-current={s.step === currentStep ? "step" : undefined}>
+                    <span className={styles.stepMark} aria-hidden />
+                    <span>
+                      <span className={styles.stepTitle}>{s.title}</span>
+                      <span className={styles.stepNote}>{note}</span>
+                    </span>
+                    <span className={styles.stepWhen}>
+                      {s.step === currentStep ? "Now" : s.complete ? "Done" : `Step ${s.step}`}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+          <p className={styles.fieldNote}>
+            <Link href="/tutor/requirements" className={ui.textLink}>
+              Review the full requirements first
+            </Link>
+          </p>
+        </aside>
       </div>
-    </div>
+    </ApplicantFrame>
   );
 }
