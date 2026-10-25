@@ -13,6 +13,7 @@ import { MeetingsPanel } from "@/components/admin/MeetingsPanel";
 import { SubscriptionManagement } from "@/components/admin/SubscriptionManagement";
 import { ActivityLog } from "@/components/admin/ActivityLog";
 import ApplicationReview from "@/components/admin/ApplicationReview";
+import ClassMonitor from "@/components/admin/ClassMonitor";
 import ui from "@/components/portal/bands.module.css";
 
 type Section = "dashboard" | "applications" | "tutors" | "students" | "classes" | "meetings" | "subscriptions" | "reports" | "settings";
@@ -54,8 +55,8 @@ const SECTION_COPY: Record<Section, { kicker: string; title: string; lede: strin
   },
   classes: {
     kicker: "Classes",
-    title: "Class management is not connected yet",
-    lede: "Sessions are created by orders and edited by tutors today. There is no admin endpoint for rescheduling or cancelling a class, so this page does not pretend to offer one.",
+    title: "Every lesson, upcoming and archived",
+    lede: "The live lesson book: filter by what happened, search by learner, tutor or title, and book the next lesson for any learner who already has a tutor.",
   },
   meetings: {
     kicker: "Meetings",
@@ -99,6 +100,8 @@ function SectionContent({ section, data, onReload }: { section: Section; data: A
       return <TutorRoster tutors={data.tutors} />;
     case "students":
       return <StudentRoster students={data.students} tutors={data.tutors} onRefresh={onReload} />;
+    case "classes":
+      return <ClassMonitor students={data.students} onReload={onReload} />;
     case "meetings":
       return <MeetingsPanel meetings={data.meetings} />;
     case "subscriptions":
@@ -115,7 +118,7 @@ function SectionContent({ section, data, onReload }: { section: Section; data: A
         </HonestBand>
       );
     default:
-      // classes and settings: the heading already says these are not connected.
+      // settings: the heading already says it is not connected.
       return (
         <HonestBand label="Nothing to show yet">
           <p>The sidebar entry stays so the product shape is visible, but there is no data behind it.</p>

@@ -1,0 +1,66 @@
+/* The lesson book shares the band vocabulary with the review queue; only the
+   status filter row and the schedule form are specific to this page. */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #dfe6ec;
+  border-radius: 999px;
+  background: none;
+  color: #52607a;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.filter:hover { border-color: #0f1c33; color: #0f1c33; }
+.filterOn { border-color: var(--coral); color: var(--coral); box-shadow: inset 0 0 0 1px var(--coral); }
+
+.scheduleForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.4rem;
+  margin-top: 1.1rem;
+}
+.scheduleForm label {
+  display: grid;
+  gap: 0.4rem;
+  color: #8a96a8;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.scheduleAction {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.error {
+  margin-top: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #f0c9c3;
+  border-radius: 8px;
+  background: #fdf1ef;
+  color: #b0483f;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.flash {
+  margin-top: 0.9rem;
+  color: var(--teal);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .scheduleForm { grid-template-columns: 1fr; }
+}

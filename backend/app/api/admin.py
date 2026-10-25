@@ -1,12 +1,12 @@
-from datetime import datetime, timedelta
-from fastapi import APIRouter, Depends, HTTPException, status
+from datetime import datetime, timedelta, timezone
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, or_
-from sqlalchemy.orm import joinedload, selectinload
-from typing import List
+from sqlalchemy.orm import aliased, joinedload, selectinload
+from typing import List, Optional
 
 from app.db.session import get_db
-from app.core.time import to_utc_iso
+from app.core.time import to_utc_iso, utc_now
 from app.models.user import User, UserRole, Class, ClassStatus, ProficiencyLevel, TutorProfile
 from app.models.tutor_application import ApplicationStatus, TutorApplication
 from app.models.package import Package, Order, OrderStatus, PaymentMethod, PlanName
@@ -16,7 +16,10 @@ from app.schemas.admin import (
     StudentAssignmentRequest, 
     StudentAssignmentResponse,
     StudentUnassignResponse,
-    AdminDashboardResponse
+    AdminDashboardResponse,
+    ClassScheduleRequest,
+    AdminClassRow,
+    AdminClassListResponse,
 )
 from app.models.notification import Notification
 from app.services.notifications import notify_admins, notify_user
@@ -197,6 +200,154 @@ async def list_assignments(
             ))
     
     return assignments
+
+
+def _class_row(cls: Class) -> AdminClassRow:
+    return AdminClassRow(
+        id=cls.id,
+        title=cls.title,
+        learner_name=cls.learner.full_name if cls.learner else "Unknown",
+        tutor_name=cls.tutor.full_name if cls.tutor else "Unknown",
+        # The stored instant, rendered as explicit UTC - never the request time.
+        scheduled_at=to_utc_iso(cls.scheduled_at),
+        duration_minutes=cls.duration_minutes,
+        status=cls.status.value,
+        zoom_url=cls.zoom_url,
+        meet_url=cls.meet_url,
+    )
+
+
+@router.get("/classes", response_model=AdminClassListResponse)
+async def list_all_classes(
+    status_filter: Optional[str] = Query(None, alias="status"),
+    search: Optional[str] = None,
+    page: int = 1,
+    page_size: int = 25,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    """The whole lesson book: every class, upcoming and archived.
+
+    Search reaches the three things an admin actually types: a learner's
+    name, a tutor's name or a lesson title."""
+    try:
+        wanted_status = ClassStatus(status_filter) if status_filter else None
+    except ValueError:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown status '{status_filter}'. Expected: "
+                   + ", ".join(s.value for s in ClassStatus),
+        )
+
+    Learner = aliased(User)
+    TutorModel = aliased(User)
+    conditions = []
+    if wanted_status:
+        conditions.append(Class.status == wanted_status)
+    if search:
+        pattern = f"%{search.strip()}%"
+        conditions.append(or_(
+            Class.title.ilike(pattern),
+            Learner.full_name.ilike(pattern),
+            TutorModel.full_name.ilike(pattern),
+        ))
+
+    count_stmt = select(func.count(Class.id))
+    list_stmt = (
+        select(Class)
+        .options(joinedload(Class.learner), joinedload(Class.tutor))
+        .order_by(Class.scheduled_at.desc())
+    )
+    if conditions:
+        # The aliased joins only appear when the filters need names; an
+        # unfiltered page counts and lists classes on their own.
+        count_stmt = count_stmt.join(Learner, Learner.id == Class.learner_id).join(
+            TutorModel, TutorModel.id == Class.tutor_id
+        )
+        list_stmt = list_stmt.join(Learner, Learner.id == Class.learner_id).join(
+            TutorModel, TutorModel.id == Class.tutor_id
+        )
+        count_stmt = count_stmt.where(and_(*conditions))
+        list_stmt = list_stmt.where(and_(*conditions))
+
+    total = (await db.scalar(count_stmt)) or 0
+    result = await db.execute(
+        list_stmt.offset((max(page, 1) - 1) * page_size).limit(page_size)
+    )
+    classes = result.unique().scalars().all()
+
+    total_pages = max(1, -(-total // page_size))
+    return AdminClassListResponse(
+        classes=[_class_row(c) for c in classes],
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=total_pages,
+    )
+
+
+@router.post("/classes", response_model=AdminClassRow, status_code=status.HTTP_201_CREATED)
+async def schedule_class(
+    payload: ClassScheduleRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    """Book the next lesson for a placed learner. The class inherits the
+    learner's assigned tutor - scheduling is the step that turns an
+    assignment into teaching."""
+    title = payload.title.strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="A class needs a title")
+
+    student_result = await db.execute(
+        select(User).where(User.id == payload.learner_id)
+    )
+    student = student_result.scalar_one_or_none()
+    if not student:
+        raise HTTPException(status_code=404, detail="Learner not found")
+    if student.role != UserRole.STUDENT:
+        raise HTTPException(status_code=400, detail="User is not a student")
+    if not student.tutor_id:
+        raise HTTPException(
+            status_code=400,
+            detail="This learner has no tutor yet - assign one before scheduling a class",
+        )
+
+    scheduled_at = payload.scheduled_at
+    if scheduled_at.tzinfo is not None:
+        scheduled_at = scheduled_at.astimezone(timezone.utc).replace(tzinfo=None)
+    if scheduled_at <= utc_now():
+        raise HTTPException(status_code=400, detail="scheduled_at must be in the future")
+
+    tutor_result = await db.execute(select(User).where(User.id == student.tutor_id))
+    tutor = tutor_result.scalar_one_or_none()
+
+    cls = Class(
+        learner_id=student.id,
+        tutor_id=student.tutor_id,
+        title=title,
+        scheduled_at=scheduled_at,
+        duration_minutes=max(15, payload.duration_minutes),
+        status=ClassStatus.SCHEDULED,
+    )
+    db.add(cls)
+
+    when = to_utc_iso(scheduled_at)
+    await notify_user(
+        db, student.id, "class_scheduled", f"New class scheduled: {title}",
+        f"{tutor.full_name if tutor else 'Your tutor'} scheduled \u201c{title}\u201d for {when} UTC.",
+    )
+    if tutor:
+        await notify_user(
+            db, tutor.id, "class_scheduled", f"New class scheduled: {title}",
+            f"A lesson with {student.full_name} was scheduled for {when} UTC.",
+        )
+
+    await db.commit()
+    await db.refresh(cls)
+    # learner/tutor relationships are needed for the row; load them once.
+    await db.refresh(cls, ["learner", "tutor"])
+    return _class_row(cls)
 
 
 @router.get("/dashboard", response_model=AdminDashboardResponse)

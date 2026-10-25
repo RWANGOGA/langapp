@@ -179,3 +179,64 @@ export async function assignStudent(studentId: number, tutorId: number): Promise
 export async function unassignStudent(studentId: number): Promise<void> {
   await apiSendClient<void>("DELETE", `/admin/unassign-student/${studentId}`);
 }
+
+/* — Class monitoring and scheduling —
+   The lesson book: every class the school has ever run, plus the admin's
+   scheduling action. A class always inherits the learner's assigned tutor -
+   the API refuses to schedule a learner who has no tutor yet, which is why
+   the schedule form only offers placed learners. */
+export type ClassStatusValue = "scheduled" | "completed" | "cancelled" | "no_show";
+
+export interface AdminClassRow {
+  id: number;
+  title: string;
+  learner_name: string;
+  tutor_name: string;
+  scheduled_at: string;
+  duration_minutes: number;
+  status: ClassStatusValue;
+  zoom_url: string | null;
+  meet_url: string | null;
+}
+
+export interface AdminClassList {
+  classes: AdminClassRow[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+export const CLASS_STATUS_LABEL: Record<ClassStatusValue, string> = {
+  scheduled: "Scheduled",
+  completed: "Completed",
+  cancelled: "Cancelled",
+  no_show: "No-show",
+};
+
+/** GET /admin/classes - the lesson book, newest first. */
+export async function getAdminClasses(params: {
+  status?: ClassStatusValue;
+  search?: string;
+  page?: number;
+  page_size?: number;
+} = {}): Promise<AdminClassList> {
+  const q = new URLSearchParams();
+  if (params.status) q.set("status", params.status);
+  if (params.search) q.set("search", params.search);
+  q.set("page", String(params.page ?? 1));
+  q.set("page_size", String(params.page_size ?? 25));
+  const data = await apiGetClient<AdminClassList>(`/admin/classes?${q.toString()}`);
+  if (!data) throw new Error("Failed to fetch the lesson book");
+  return data;
+}
+
+/** POST /admin/classes - book the next lesson for a placed learner. */
+export async function scheduleClass(body: {
+  learner_id: number;
+  title: string;
+  scheduled_at: string;
+  duration_minutes?: number;
+}): Promise<AdminClassRow> {
+  return apiSendClient<AdminClassRow>("POST", "/admin/classes", body);
+}

@@ -139,3 +139,34 @@ class StudentUnassignResponse(BaseModel):
     previous_tutor_name: str
     unassigned_at: datetime
     unassigned_by: int
+
+
+class ClassScheduleRequest(BaseModel):
+    """An admin books the next lesson for a learner who already has a tutor.
+    The class inherits that tutor - the request never names one, so a lesson
+    can never land with someone the learner is not placed with."""
+    learner_id: int
+    title: str
+    scheduled_at: datetime
+    duration_minutes: int = 60
+
+
+class AdminClassRow(BaseModel):
+    id: int
+    title: str
+    learner_name: str
+    tutor_name: str
+    # Explicit UTC ISO instant (to_utc_iso), never the request time.
+    scheduled_at: str
+    duration_minutes: int
+    status: str
+    zoom_url: Optional[str] = None
+    meet_url: Optional[str] = None
+
+
+class AdminClassListResponse(BaseModel):
+    classes: List[AdminClassRow]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
