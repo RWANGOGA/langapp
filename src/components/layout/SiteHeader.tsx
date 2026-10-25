@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 import styles from "./SiteHeader.module.css";
 
 const NAV = [
@@ -146,7 +145,6 @@ export default function SiteHeader() {
               </Link>
             </>
           )}
-          <LanguageSwitcher />
         </div>
 
         {/* Mobile menu toggle */}
