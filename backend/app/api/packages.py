@@ -94,6 +94,10 @@ async def create_checkout(
         amount_jpy=package.price_jpy,
         amount_vnd=package.price_vnd,
         amount_usd=package.price_usd,
+        # The region is not decoration: it is the currency the money actually
+        # arrives in, and the ledgers cannot total an order without it.
+        region=region.code,
+        currency=region.currency,
     )
     db.add(order)
     await db.commit()

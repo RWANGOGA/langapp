@@ -66,6 +66,12 @@ class Order(Base):
     amount_jpy: Mapped[int] = mapped_column(Integer, nullable=False)
     amount_vnd: Mapped[int] = mapped_column(Integer, nullable=False)
     amount_usd: Mapped[int] = mapped_column(Integer, nullable=False)
+    # Which region the student paid from, and the one currency that region is
+    # charged in. Both are nullable because orders written before the regions
+    # existed have no honest value to backfill: the ledger reports them as
+    # unrecorded rather than inventing a currency the money never arrived in.
+    region: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    currency: Mapped[str | None] = mapped_column(String(3), nullable=True)
     external_payment_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

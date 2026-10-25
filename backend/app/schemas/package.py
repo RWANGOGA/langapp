@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from typing import List, Optional
 from datetime import datetime
 from app.models.package import PlanName, PaymentMethod, OrderStatus
@@ -72,6 +72,8 @@ class OrderRead(BaseModel):
     amount_jpy: int
     amount_vnd: int
     amount_usd: int
+    region: Optional[str] = None
+    currency: Optional[str] = None
     external_payment_id: Optional[str] = None
     created_at: datetime
     updated_at: datetime
@@ -122,3 +124,25 @@ class PaymentHistoryItem(BaseModel):
     payment_method: PaymentMethod | None = None
     created_at: datetime
     paid_at: datetime | None = None
+
+
+class PaymentConfirmation(BaseModel):
+    """Money that arrived outside a provider, recorded by an administrator.
+
+    The reference is not optional: a payment nobody can trace back to a bank
+    line, a wallet screenshot or a receipt is not a record, it is a guess.
+    """
+
+    reference: str = Field(min_length=2, max_length=100)
+    note: str | None = Field(default=None, max_length=500)
+    paid_at: datetime | None = None
+
+
+class PaymentConfirmationResult(BaseModel):
+    order_id: int
+    status: OrderStatus
+    amount_minor: int
+    currency: str
+    reference: str
+    matched: bool
+    confirmed_at: datetime

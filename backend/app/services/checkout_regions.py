@@ -11,7 +11,7 @@ wired) the payment gateway all read from, so they cannot drift apart.
 from dataclasses import dataclass
 from typing import Optional
 
-from app.models.package import Package, PaymentMethod
+from app.models.package import Order, Package, PaymentMethod
 
 
 @dataclass(frozen=True)
@@ -55,3 +55,26 @@ def serves(code: str, method: PaymentMethod) -> bool:
 def amount_in(region: Region, package: Package) -> int:
     """The single price a student in this region is charged."""
     return getattr(package, region.amount_attr)
+
+
+# How many minor units make one whole unit of a currency. JPY and VND have no
+# decimal subunit at all, so their minor unit is the yen/dong itself; USD is
+# stored whole on the order and reported to the ledger in cents.
+MINOR_UNITS: dict[str, int] = {"JPY": 1, "VND": 1, "USD": 100}
+
+
+def order_charge(order: Order) -> tuple[int, str]:
+    """The single amount an order is charged, and the currency it is charged in.
+
+    An order written before regions existed carries no currency, so it reports
+    what the previous admin analytics treated as revenue: the USD figure.
+    """
+    currency = order.currency or "USD"
+    if currency == "JPY":
+        amount = order.amount_jpy
+    elif currency == "VND":
+        amount = order.amount_vnd
+    else:
+        amount = order.amount_usd
+    return amount * MINOR_UNITS.get(currency, 1), currency
+
