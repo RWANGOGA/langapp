@@ -1,25 +1,30 @@
+"use client";
+
 import PortalShell, { type PortalNavItem } from "@/components/portal/PortalShell";
 import type { TutorDashboard } from "@/lib/tutor-data";
-
-// One navigation surface only: the sidebar.
-const NAV: PortalNavItem[] = [
-  { href: "/tutor", label: "Dashboard", icon: "dashboard" },
-  { href: "/tutor/learners", label: "My learners", icon: "learners" },
-  { href: "/tutor/schedule", label: "Schedule", icon: "schedule" },
-  { href: "/tutor/notes", label: "Lesson notes", icon: "notes" },
-  { href: "/tutor/settings", label: "Settings", icon: "settings" },
-];
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 export default function DashboardShell({ tutor, children }: { tutor: TutorDashboard["tutor"]; children: React.ReactNode }) {
+  const { t } = useLanguage();
+
+  // One navigation surface only: the sidebar.
+  const NAV: PortalNavItem[] = [
+    { href: "/tutor", label: t("nav.dashboard"), icon: "dashboard" },
+    { href: "/tutor/learners", label: t("nav.myLearners"), icon: "learners" },
+    { href: "/tutor/schedule", label: t("nav.schedule"), icon: "schedule" },
+    { href: "/tutor/notes", label: t("nav.lessonNotes"), icon: "notes" },
+    { href: "/tutor/settings", label: t("nav.settings"), icon: "settings" },
+  ];
+
   return (
     <PortalShell
-      portalLabel="Tutor portal"
+      portalLabel={t("portal.tutor")}
       homeHref="/tutor"
-      navAriaLabel="Tutor"
+      navAriaLabel={t("portal.aria.tutor")}
       nav={NAV}
       identity={{ name: tutor.name, meta: tutor.role }}
       unread={tutor.unread}
-      footer={{ href: "/", label: "Back to site" }}
+      footer={{ href: "/", label: t("portal.backToSite") }}
     >
       {children}
     </PortalShell>

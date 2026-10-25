@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import styles from "./portal.module.css";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 /**
  * Portal chrome shared by the learner, tutor and admin surfaces.
@@ -72,8 +73,9 @@ export default function PortalShell({
   children: ReactNode;
 }) {
   const path = usePathname();
+  const { t } = useLanguage();
   const isActive = (href: string) => (href === homeHref ? path === href : path.startsWith(href));
-  const bellLabel = `Notifications, ${unread} unread`;
+  const bellLabel = t("portal.notificationsAria", { unread });
   const bell = (
     <>
       <Bell size={19} aria-hidden />

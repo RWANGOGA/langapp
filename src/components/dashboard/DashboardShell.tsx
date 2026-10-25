@@ -1,30 +1,40 @@
+"use client";
+
 import PortalShell, { type PortalNavItem } from "@/components/portal/PortalShell";
 import type { LearnerDashboard } from "@/lib/dashboard-data";
-
-// One navigation surface only: the sidebar. The header stays for identity,
-// not for a second copy of the same links.
-const NAV: PortalNavItem[] = [
-  { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
-  { href: "/dashboard/tutors", label: "My Tutor", icon: "tutors" },
-  { href: "/dashboard/progress", label: "Progress", icon: "progress" },
-  { href: "/dashboard/notifications", label: "Notifications", icon: "notifications" },
-];
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 export default function DashboardShell({ learner, children }: { learner: LearnerDashboard["learner"]; children: React.ReactNode }) {
+  const { t } = useLanguage();
+
+  // One navigation surface only: the sidebar. The header stays for identity,
+  // not for a second copy of the same links.
+  const NAV: PortalNavItem[] = [
+    { href: "/dashboard", label: t("nav.dashboard"), icon: "dashboard" },
+    { href: "/dashboard/tutors", label: t("nav.myTutor"), icon: "tutors" },
+    { href: "/dashboard/progress", label: t("nav.progress"), icon: "progress" },
+    { href: "/dashboard/notifications", label: t("nav.notifications"), icon: "notifications" },
+  ];
+
   return (
     <PortalShell
-      portalLabel="Learner portal"
+      portalLabel={t("portal.learner")}
       homeHref="/dashboard"
-      navAriaLabel="Learner"
+      navAriaLabel={t("portal.aria.learner")}
       nav={NAV}
       identity={{
         name: learner.name,
-        meta: <>Level <b>{learner.level === "Not set" ? "not set" : learner.level}</b></>,
+        meta: (
+          <>
+            {t("portal.level")}{" "}
+            <b>{learner.level === "Not set" ? t("portal.levelNotSet") : learner.level}</b>
+          </>
+        ),
         avatar: learner.avatar,
       }}
       unread={learner.unread}
       notificationsHref="/dashboard/notifications"
-      footer={{ href: "/", label: "Back to site" }}
+      footer={{ href: "/", label: t("portal.backToSite") }}
     >
       {children}
     </PortalShell>
