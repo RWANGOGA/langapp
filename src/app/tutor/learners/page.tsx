@@ -5,21 +5,24 @@ import Link from "next/link";
 import { ArrowRight, Users } from "lucide-react";
 import TutorPageShell from "@/components/tutor/TutorPageShell";
 import { getTutorLearners, TutorLearnerRow } from "@/lib/tutor-data";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import ui from "@/components/portal/bands.module.css";
 
-const localDate = (iso: string | null) =>
-  iso ? new Date(iso).toLocaleDateString([], { month: "short", day: "numeric" }) : "no lessons yet";
-const localDateTime = (iso: string | null) =>
-  iso
-    ? new Date(iso).toLocaleDateString([], { month: "short", day: "numeric" }) +
-      " · " +
-      new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    : "nothing booked";
 const initials = (n: string) => n.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
 export default function TutorLearnersPage() {
+  const { t } = useLanguage();
   const [learners, setLearners] = useState<TutorLearnerRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const localDate = (iso: string | null) =>
+    iso ? new Date(iso).toLocaleDateString([], { month: "short", day: "numeric" }) : t("tutor.learners.noLessons");
+  const localDateTime = (iso: string | null) =>
+    iso
+      ? new Date(iso).toLocaleDateString([], { month: "short", day: "numeric" }) +
+        " · " +
+        new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+      : t("tutor.learners.nothingBooked");
 
   useEffect(() => {
     getTutorLearners()
@@ -34,43 +37,37 @@ export default function TutorLearnersPage() {
       <div className={ui.pageStack}>
         <header className={ui.pageHeading}>
           <div>
-            <p className={ui.kicker}>My learners</p>
+            <p className={ui.kicker}>{t("tutor.learners.kicker")}</p>
             <h1>
               {count === 0
-                ? "Your learners"
-                : `${count} ${count === 1 ? "learner" : "learners"} in your care`}
+                ? t("tutor.learners.titleZero")
+                : t(count === 1 ? "tutor.learners.titleOne" : "tutor.learners.titleOther", { n: count })}
             </h1>
-            <p>
-              Everyone an administrator has matched with you, with the level they are studying at
-              and the next lesson you have together.
-            </p>
+            <p>{t("tutor.learners.lede")}</p>
           </div>
           <Link className={ui.headerAction} href="/tutor/schedule">
-            Open schedule <ArrowRight size={14} aria-hidden />
+            {t("tutor.common.openSchedule")} <ArrowRight size={14} aria-hidden />
           </Link>
         </header>
 
         {error && (
           <p role="alert" className={ui.statusBad}>
-            Could not load your learners: {error}
+            {t("tutor.learners.loadError", { message: error })}
           </p>
         )}
 
-        {!error && learners === null && <p className={ui.lede}>Loading your roster…</p>}
+        {!error && learners === null && <p className={ui.lede}>{t("tutor.learners.loading")}</p>}
 
         {!error && learners?.length === 0 && (
-          <section className={ui.band} aria-label="No learners">
+          <section className={ui.band} aria-label={t("tutor.learners.emptyAria")}>
             <div className={ui.bandStatement}>
               <p className={ui.bandLabel}>
-                <Users size={13} aria-hidden /> Nobody yet
+                <Users size={13} aria-hidden /> {t("tutor.learners.emptyTitle")}
               </p>
-              <p>
-                Learners appear here as soon as an order is matched to you. Keeping your
-                availability current is what makes a match possible.
-              </p>
+              <p>{t("tutor.learners.emptyBody")}</p>
               <p>
                 <Link className={ui.textLink} href="/tutor/settings">
-                  Set your availability <ArrowRight size={13} aria-hidden />
+                  {t("tutor.learners.setAvailability")} <ArrowRight size={13} aria-hidden />
                 </Link>
               </p>
             </div>
@@ -81,10 +78,10 @@ export default function TutorLearnersPage() {
           <section className={ui.band} aria-labelledby="roster-h">
             <div className={ui.bandHead}>
               <h2 id="roster-h" className={ui.bandLabel}>
-                Roster
+                {t("tutor.learners.roster")}
               </h2>
               <span className={ui.bandLabel}>
-                {count} assigned
+                {t("tutor.learners.assignedN", { n: count })}
               </span>
             </div>
             <ul className={ui.sessions}>
@@ -96,12 +93,11 @@ export default function TutorLearnersPage() {
                   <span className={ui.what}>
                     {l.name}
                     <small>
-                      {l.nativeLanguage ? `${l.nativeLanguage} speaker · ` : ""}
-                      {l.completed} completed · {l.upcoming} upcoming
+                      {l.nativeLanguage ? `${t("tutor.learners.speaker", { language: l.nativeLanguage })} · ` : ""}
+                      {t("tutor.learners.completedUpcoming", { completed: l.completed, upcoming: l.upcoming })}
                     </small>
                     <small>
-                      Next lesson {localDateTime(l.nextSessionAt)} · last lesson{" "}
-                      {localDate(l.lastCompletedAt)}
+                      {t("tutor.learners.nextLesson", { when: localDateTime(l.nextSessionAt) })} · {t("tutor.learners.lastLesson", { when: localDate(l.lastCompletedAt) })}
                     </small>
                   </span>
                   <span className={ui.statusPill}>{l.level}</span>
@@ -114,3 +110,4 @@ export default function TutorLearnersPage() {
     </TutorPageShell>
   );
 }
+

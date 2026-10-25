@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import Calendar from "@/components/shared/Calendar";
 import TutorPageShell from "@/components/tutor/TutorPageShell";
 import { getTutorSchedule, TutorScheduleSession } from "@/lib/tutor-data";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import ui from "@/components/portal/bands.module.css";
 
 const localDay = (iso: string) => new Date(iso).toLocaleDateString("en-CA");
@@ -15,6 +16,7 @@ const localTime = (iso: string) =>
   new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
 export default function TutorSchedulePage() {
+  const { t } = useLanguage();
   const [sessions, setSessions] = useState<TutorScheduleSession[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,15 +43,12 @@ export default function TutorSchedulePage() {
       <div className={ui.pageStack}>
         <header className={ui.pageHeading}>
           <div>
-            <p className={ui.kicker}>Schedule</p>
-            <h1>Your next ninety days</h1>
-            <p>
-              Every booked session, grouped by your local day. Times are shown in your own
-              timezone, so nothing has to be converted by hand.
-            </p>
+            <p className={ui.kicker}>{t("tutor.schedule.kicker")}</p>
+            <h1>{t("tutor.schedule.title")}</h1>
+            <p>{t("tutor.schedule.lede")}</p>
           </div>
           <Link className={ui.headerAction} href="/tutor/settings">
-            Availability <ArrowRight size={14} aria-hidden />
+            {t("tutor.schedule.availability")} <ArrowRight size={14} aria-hidden />
           </Link>
         </header>
 
@@ -58,27 +57,24 @@ export default function TutorSchedulePage() {
             <section className={ui.band} aria-labelledby="booked-h">
               <div className={ui.bandHead}>
                 <h2 id="booked-h" className={ui.bandLabel}>
-                  Booked sessions
+                  {t("tutor.schedule.bookedSessions")}
                 </h2>
                 <span className={ui.bandLabel}>
-                  {count} {count === 1 ? "session" : "sessions"}
+                  {t(count === 1 ? "tutor.schedule.sessionOne" : "tutor.schedule.sessionOther", { n: count })}
                 </span>
               </div>
 
               {error && (
                 <p role="alert" className={ui.statusBad}>
-                  Could not load the schedule: {error}
+                  {t("tutor.schedule.loadError", { message: error })}
                 </p>
               )}
-              {!error && sessions === null && <p className={ui.lede}>Loading your schedule…</p>}
+              {!error && sessions === null && <p className={ui.lede}>{t("tutor.schedule.loading")}</p>}
 
               {!error && sessions?.length === 0 && (
                 <div className={ui.bandStatement}>
-                  <p className={ui.bandLabel}>Nothing booked</p>
-                  <p>
-                    As learners are scheduled with you, each session appears here and on the month
-                    view beside it.
-                  </p>
+                  <p className={ui.bandLabel}>{t("tutor.schedule.emptyTitle")}</p>
+                  <p>{t("tutor.schedule.emptyBody")}</p>
                 </div>
               )}
 
@@ -90,7 +86,7 @@ export default function TutorSchedulePage() {
                       <li key={s.id}>
                         <span className={ui.when}>
                           <b>{localTime(s.startsAt)}</b>
-                          <em>{s.durationMinutes} min</em>
+                          <em>{t("tutor.schedule.minutes", { n: s.durationMinutes })}</em>
                         </span>
                         <span className={ui.what}>
                           {s.title}
@@ -105,9 +101,9 @@ export default function TutorSchedulePage() {
           </div>
 
           <aside className={ui.sidePane}>
-            <section className={ui.band} aria-label="Booked classes">
+            <section className={ui.band} aria-label={t("tutor.schedule.bookedClasses")}>
               <Calendar
-                title="Booked classes"
+                title={t("tutor.schedule.bookedClasses")}
                 events={(sessions ?? []).map((s) => ({ startsAt: s.startsAt }))}
               />
             </section>

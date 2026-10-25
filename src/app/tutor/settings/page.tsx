@@ -10,11 +10,14 @@ import {
   updateTutorProfile,
   TutorProfileSettings,
 } from "@/lib/tutor-data";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import ui from "@/components/portal/bands.module.css";
 
-const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
 export default function TutorSettingsPage() {
+  const { t } = useLanguage();
+  const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map(
+    (_, n) => t(`tutor.settings.day${n}`),
+  );
   const [profile, setProfile] = useState<TutorProfileSettings | null>(null);
   const [headline, setHeadline] = useState("");
   const [bio, setBio] = useState("");
@@ -50,9 +53,9 @@ export default function TutorSettingsPage() {
       const updated = await updateTutorProfile({ headline, bio, country, timezone, availability });
       setProfile(updated);
       setAvailability(updated.availability);
-      setMsg({ ok: true, text: "Profile saved." });
+      setMsg({ ok: true, text: t("tutor.settings.saved") });
     } catch (err) {
-      setMsg({ ok: false, text: err instanceof Error ? err.message : "Save failed" });
+      setMsg({ ok: false, text: err instanceof Error ? err.message : t("tutor.settings.saveFailed") });
     } finally {
       setBusy(false);
     }
@@ -63,7 +66,7 @@ export default function TutorSettingsPage() {
       <TutorPageShell>
         <div className={ui.pageStack}>
           <p role="alert" className={ui.statusBad}>
-            Could not load your settings: {error}
+            {t("tutor.settings.loadError", { message: error })}
           </p>
         </div>
       </TutorPageShell>
@@ -73,7 +76,7 @@ export default function TutorSettingsPage() {
     return (
       <TutorPageShell>
         <div className={ui.pageStack}>
-          <p className={ui.lede}>Loading your profile…</p>
+          <p className={ui.lede}>{t("tutor.settings.loading")}</p>
         </div>
       </TutorPageShell>
     );
@@ -84,37 +87,37 @@ export default function TutorSettingsPage() {
       <div className={ui.pageStack}>
         <header className={ui.pageHeading}>
           <div>
-            <p className={ui.kicker}>Settings</p>
-            <h1>Your teaching profile</h1>
-            <p>What learners read before they book you, and the hours you can teach each week.</p>
+            <p className={ui.kicker}>{t("tutor.settings.kicker")}</p>
+            <h1>{t("tutor.settings.title")}</h1>
+            <p>{t("tutor.settings.lede")}</p>
           </div>
           <Link className={ui.headerAction} href="/tutor/schedule">
-            Open schedule <ArrowRight size={14} aria-hidden />
+            {t("tutor.common.openSchedule")} <ArrowRight size={14} aria-hidden />
           </Link>
         </header>
 
         <section className={ui.band} aria-labelledby="standing-h">
           <h2 id="standing-h" className={ui.bandLabel}>
-            Standing
+            {t("tutor.settings.standing")}
           </h2>
           <dl className={ui.rows}>
             <div>
-              <dt>Rating</dt>
+              <dt>{t("tutor.settings.rating")}</dt>
               <dd>
                 {profile.rating.toFixed(1)}{" "}
-                <span className={ui.rowNote}>from {profile.reviewsCount} reviews</span>
+                <span className={ui.rowNote}>{t("tutor.settings.reviewsFrom", { n: profile.reviewsCount })}</span>
               </dd>
             </div>
             <div>
-              <dt>Approval</dt>
+              <dt>{t("tutor.settings.approval")}</dt>
               <dd>
-                {profile.isApproved ? "Approved tutor" : "Awaiting approval"}{" "}
-                <span className={ui.rowNote}>set by the Nile Language team</span>
+                {profile.isApproved ? t("tutor.settings.approved") : t("tutor.settings.awaiting")}{" "}
+                <span className={ui.rowNote}>{t("tutor.settings.approvalNote")}</span>
               </dd>
             </div>
             <div>
-              <dt>Timezone</dt>
-              <dd>{timezone || "not set"}</dd>
+              <dt>{t("tutor.settings.timezone")}</dt>
+              <dd>{timezone || t("tutor.settings.notSet")}</dd>
             </div>
           </dl>
         </section>
@@ -122,31 +125,31 @@ export default function TutorSettingsPage() {
         <form onSubmit={save}>
           <section className={ui.band} aria-labelledby="profile-h">
             <h2 id="profile-h" className={ui.bandLabel}>
-              Public profile
+              {t("tutor.settings.publicProfile")}
             </h2>
             <div className={ui.form}>
               <label className={ui.wide}>
-                Headline
+                {t("tutor.settings.headline")}
                 <input
                   className={ui.input}
                   value={headline}
                   onChange={(e) => setHeadline(e.target.value)}
                   maxLength={200}
-                  placeholder="e.g. Business English specialist with 8 years of exam prep"
+                  placeholder={t("tutor.settings.headlinePlaceholder")}
                 />
               </label>
               <label className={ui.wide}>
-                Bio
+                {t("tutor.settings.bio")}
                 <textarea
                   className={ui.textarea}
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   rows={4}
-                  placeholder="How you teach, and who you teach best."
+                  placeholder={t("tutor.settings.bioPlaceholder")}
                 />
               </label>
               <label>
-                Country
+                {t("tutor.settings.country")}
                 <input
                   className={ui.input}
                   value={country}
@@ -155,7 +158,7 @@ export default function TutorSettingsPage() {
                 />
               </label>
               <label>
-                Timezone
+                {t("tutor.settings.timezone")}
                 <input
                   className={ui.input}
                   value={timezone}
@@ -170,23 +173,22 @@ export default function TutorSettingsPage() {
           <section className={ui.band} aria-labelledby="avail-h">
             <div className={ui.bandHead}>
               <h2 id="avail-h" className={ui.bandLabel}>
-                Weekly availability
+                {t("tutor.settings.weeklyAvailability")}
               </h2>
               <span className={ui.bandLabel}>
-                {availability.length} {availability.length === 1 ? "window" : "windows"}
+                {t(availability.length === 1 ? "tutor.settings.windowOne" : "tutor.settings.windowOther", { n: availability.length })}
               </span>
             </div>
             {availability.length === 0 && (
               <p className={ui.bandEmpty}>
-                No windows yet. Add the hours you can teach each week so an administrator can match
-                learners to you.
+                {t("tutor.settings.noWindows")}
               </p>
             )}
             <div className={ui.form}>
               {availability.map((slot, i) => (
                 <div key={i} className={`${ui.slot} ${ui.wide}`}>
                   <label>
-                    Day
+                    {t("tutor.settings.day")}
                     <select
                       className={ui.select}
                       value={slot.dayOfWeek}
@@ -200,7 +202,7 @@ export default function TutorSettingsPage() {
                     </select>
                   </label>
                   <label>
-                    From
+                    {t("tutor.settings.from")}
                     <input
                       className={ui.input}
                       type="time"
@@ -209,7 +211,7 @@ export default function TutorSettingsPage() {
                     />
                   </label>
                   <label>
-                    To
+                    {t("tutor.settings.to")}
                     <input
                       className={ui.input}
                       type="time"
@@ -222,7 +224,7 @@ export default function TutorSettingsPage() {
                     className={ui.btn}
                     onClick={() => setAvailability((s) => s.filter((_, n) => n !== i))}
                   >
-                    Remove
+                    {t("tutor.settings.remove")}
                   </button>
                 </div>
               ))}
@@ -237,7 +239,7 @@ export default function TutorSettingsPage() {
                     ])
                   }
                 >
-                  Add window
+                  {t("tutor.settings.addWindow")}
                 </button>
               </div>
             </div>
@@ -245,15 +247,14 @@ export default function TutorSettingsPage() {
 
           <section className={ui.band} aria-labelledby="save-h">
             <h2 id="save-h" className={ui.bandLabel}>
-              Apply changes
+              {t("tutor.settings.applyChanges")}
             </h2>
             <p className={ui.bandEmpty}>
-              Saving updates your public profile and the hours administrators see when they match
-              learners to you.
+              {t("tutor.settings.applyNote")}
             </p>
             <div className={ui.formActions}>
               <button type="submit" className={ui.btnCoral} disabled={busy}>
-                {busy ? "Saving…" : "Save changes"}
+                {busy ? t("tutor.common.saving") : t("tutor.settings.saveChanges")}
               </button>
               {msg && (
                 <p role="status" className={msg.ok ? ui.statusOk : ui.statusBad}>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, NotebookPen } from "lucide-react";
 import TutorPageShell from "@/components/tutor/TutorPageShell";
 import { getTutorNotes, TutorNoteRow } from "@/lib/tutor-data";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import ui from "@/components/portal/bands.module.css";
 
 const fullDate = (iso: string) =>
@@ -13,6 +14,7 @@ const fullDate = (iso: string) =>
   new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
 export default function TutorNotesPage() {
+  const { t } = useLanguage();
   const [notes, setNotes] = useState<TutorNoteRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,44 +31,38 @@ export default function TutorNotesPage() {
       <div className={ui.pageStack}>
         <header className={ui.pageHeading}>
           <div>
-            <p className={ui.kicker}>Lesson notes</p>
-            <h1>The archive</h1>
-            <p>
-              Every lesson you have finished teaching, with the notes and feedback you recorded
-              for the learner. Nothing here can be edited after the fact.
-            </p>
+            <p className={ui.kicker}>{t("tutor.notes.kicker")}</p>
+            <h1>{t("tutor.notes.title")}</h1>
+            <p>{t("tutor.notes.lede")}</p>
           </div>
           <Link className={ui.headerAction} href="/tutor">
-            Back to dashboard <ArrowRight size={14} aria-hidden />
+            {t("tutor.common.backToDash")} <ArrowRight size={14} aria-hidden />
           </Link>
         </header>
 
         <section className={ui.band} aria-labelledby="archive-h">
           <div className={ui.bandHead}>
             <h2 id="archive-h" className={ui.bandLabel}>
-              Completed lessons
+              {t("tutor.notes.completedLessons")}
             </h2>
             <span className={ui.bandLabel}>
-              {count} {count === 1 ? "entry" : "entries"}
+              {t(count === 1 ? "tutor.notes.entryOne" : "tutor.notes.entryOther", { n: count })}
             </span>
           </div>
 
           {error && (
             <p role="alert" className={ui.statusBad}>
-              Could not load your notes: {error}
+              {t("tutor.notes.loadError", { message: error })}
             </p>
           )}
-          {!error && notes === null && <p className={ui.lede}>Loading your archive…</p>}
+          {!error && notes === null && <p className={ui.lede}>{t("tutor.notes.loading")}</p>}
 
           {!error && notes?.length === 0 && (
             <div className={ui.bandStatement}>
               <p className={ui.bandLabel}>
-                <NotebookPen size={13} aria-hidden /> Empty for now
+                <NotebookPen size={13} aria-hidden /> {t("tutor.notes.emptyTitle")}
               </p>
-              <p>
-                The archive begins after your first lesson. Notes you write when marking a session
-                complete are kept here for both you and the learner.
-              </p>
+              <p>{t("tutor.notes.emptyBody")}</p>
             </div>
           )}
 
@@ -80,7 +76,7 @@ export default function TutorNotesPage() {
                   {n.topic && n.topic !== n.title ? ` · ${n.title}` : ""}
                 </p>
                 <p className={ui.noteBody}>
-                  {n.notes || "No feedback was written for this lesson."}
+                  {n.notes || t("tutor.notes.noFeedback")}
                 </p>
               </article>
             ))}
