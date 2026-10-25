@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy import DateTime, Enum as SQLEnum, ForeignKey, Integer, JSON, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.session import Base
+from app.db.session import Base, stored_enum_values
 
 
 class SubscriptionStatus(str, enum.Enum):
@@ -41,7 +41,12 @@ class Subscription(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     order_id: Mapped[int] = mapped_column(Integer, ForeignKey("orders.id"), nullable=False)
     tier: Mapped[str] = mapped_column(String(30), nullable=False)
-    status: Mapped[SubscriptionStatus] = mapped_column(SQLEnum(SubscriptionStatus), default=SubscriptionStatus.ACTIVE, nullable=False, index=True)
+    status: Mapped[SubscriptionStatus] = mapped_column(
+        SQLEnum(SubscriptionStatus, values_callable=stored_enum_values),
+        default=SubscriptionStatus.ACTIVE,
+        nullable=False,
+        index=True,
+    )
     started_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     current_period_end: Mapped[datetime] = mapped_column(DateTime, nullable=False, index=True)
     next_renewal_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True, index=True)

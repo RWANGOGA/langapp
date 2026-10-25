@@ -11,6 +11,17 @@ class Base(DeclarativeBase):
     pass
 
 
+def stored_enum_values(enum_cls) -> list[str]:
+    """Bind Python enum *values* instead of names for a SQLEnum column.
+
+    Some Postgres types in this schema were created from the enum values
+    ("completed", "mobile_money", "active") while SQLAlchemy defaults to binding
+    the names ("COMPLETED"). On those columns the default raises
+    InvalidTextRepresentationError on every insert and filter.
+    """
+    return [member.value for member in enum_cls]
+
+
 async def get_db() -> AsyncSession:
     async with async_session_maker() as session:
         try:

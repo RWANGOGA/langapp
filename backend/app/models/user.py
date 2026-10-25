@@ -52,16 +52,18 @@ class User(Base):
         cascade="all, delete-orphan",
         foreign_keys="TutorApplication.user_id"
     )
-    # Learner -> assigned tutor
+    # Learner -> assigned tutor. In a self-referential pair the marker that
+    # tells SQLAlchemy which end is "one" goes on the many-to-one side; on the
+    # collection side it inverts the join and every lookup comes back empty.
     assigned_tutor: Mapped["User | None"] = relationship(
         back_populates="learners",
-        foreign_keys="User.tutor_id"
+        foreign_keys="User.tutor_id",
+        remote_side="User.id",
     )
     # Tutor -> assigned learners
     learners: Mapped[list["User"]] = relationship(
         back_populates="assigned_tutor",
         foreign_keys="User.tutor_id",
-        remote_side="User.id"
     )
     # Learner's classes/sessions
     classes: Mapped[list["Class"]] = relationship(

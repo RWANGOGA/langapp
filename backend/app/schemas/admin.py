@@ -42,7 +42,7 @@ class Tutor(BaseModel):
     name: str
     email: str
     status: TutorStatus
-    language: str | None = None
+    country: str | None = None
     rating: float
     assignments: int
     qualification_type: str | None = None
@@ -90,18 +90,15 @@ class Activity(BaseModel):
     id: str
     initial: str
     text: str
-    time: str
+    # Explicit UTC instant of the underlying record; the UI renders it in the
+    # viewer's timezone. None when the row predates timestamp tracking.
+    at: Optional[str] = None
 
 
 class StatusCount(BaseModel):
     label: str
     color: str
     count: Optional[int] = None
-
-
-class BarGroup(BaseModel):
-    label: str
-    bars: List[dict]
 
 
 class AdminDashboardResponse(BaseModel):
@@ -116,7 +113,6 @@ class AdminDashboardResponse(BaseModel):
     leaders: List[Leader]
     activity: List[Activity]
     statuses: List[StatusCount]
-    bars: List[BarGroup]
 
 
 class StudentAssignmentRequest(BaseModel):

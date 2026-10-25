@@ -1,8 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getAdminDashboard, getPaymentActivity, getPaymentAnalytics, type AdminDashboard, type PaymentActivity, type PaymentAnalytics } from "@/lib/admin-data";
+import { ArrowRight, CalendarDays, GraduationCap, LayoutDashboard, UserPlus, Users } from "lucide-react";
+import {
+  getAdminDashboard,
+  getPaymentActivity,
+  getPaymentAnalytics,
+  type AdminDashboard,
+  type PaymentActivity,
+  type PaymentAnalytics,
+} from "@/lib/admin-data";
 import AdminShell from "@/components/admin/AdminShell";
 import TutorRoster from "@/components/admin/TutorRoster";
 import StudentRoster from "@/components/admin/StudentRoster";
@@ -10,12 +19,22 @@ import AssignmentMatrix from "@/components/admin/AssignmentMatrix";
 import { MeetingsPanel } from "@/components/admin/MeetingsPanel";
 import { SubscriptionManagement } from "@/components/admin/SubscriptionManagement";
 import { ActivityLog } from "@/components/admin/ActivityLog";
+import PaymentOversight from "@/components/admin/PaymentOversight";
 import { useAuth } from "@/lib/auth";
-import styles from "@/components/admin/admin.module.css";
+import ui from "@/components/portal/bands.module.css";
+
+// Four headline numbers, each with the icon that names it. Keyed by label so a
+// reordered payload cannot put the learner icon beside the session count.
+const KPI_ICONS = {
+  "Total Tutors": Users,
+  "Active Students": GraduationCap,
+  "Scheduled Sessions": CalendarDays,
+  "Awaiting a tutor": UserPlus,
+} as Record<string, typeof Users>;
 
 export default function AdminPage() {
   const router = useRouter();
-  const { isAuthenticated, isLoading, isAdmin } = useAuth();
+  const { user, isAuthenticated, isLoading, isAdmin } = useAuth();
   const [data, setData] = useState<AdminDashboard | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [paymentActivity, setPaymentActivity] = useState<PaymentActivity[]>([]);
@@ -28,69 +47,114 @@ export default function AdminPage() {
         return;
       }
       if (!isAdmin) {
-        router.push("/auth/login");
+        router.push("/dashboard");
         return;
       }
-      
-      // Fetch data after auth check
-      Promise.all([getAdminDashboard(), getPaymentActivity(), getPaymentAnalytics()])
-        .then(([d, activity, analytics]) => { setData(d); setPaymentActivity(activity); setPaymentAnalytics(analytics); })
+
+      Promise.allSettled([getAdminDashboard(), getPaymentActivity(), getPaymentAnalytics()])
+        .then(([dashboard, activity, analytics]) => {
+          if (dashboard.status === "rejected") {
+            throw dashboard.reason;
+          }
+          setData(dashboard.value);
+          // The ledger is a separate resource: if it is down, the rosters and
+          // the matrix still have something true to say, so only the payment
+          // band reports the gap.
+          if (activity.status === "fulfilled") setPaymentActivity(activity.value);
+          if (analytics.status === "fulfilled") setPaymentAnalytics(analytics.value);
+        })
         .catch((err) => {
           console.error("Admin dashboard fetch error:", err);
-          setError(err instanceof Error ? err.message : "Failed to load admin dashboard data. Please try again.");
+          setError(err instanceof Error ? err.message : "Failed to load admin dashboard data.");
         });
     }
   }, [isAuthenticated, isAdmin, isLoading, router]);
 
+  // Payments move while the page is open; the rest of the operation does not
+  // change second to second, so only the money side polls.
   useEffect(() => {
     if (!isAuthenticated || !isAdmin) return;
-    const refresh = () => Promise.all([getPaymentActivity(), getPaymentAnalytics()]).then(([activity, analytics]) => {
-      setPaymentActivity(activity);
-      setPaymentAnalytics(analytics);
-    }).catch(() => undefined);
+    const refresh = () =>
+      Promise.allSettled([getPaymentActivity(), getPaymentAnalytics()])
+        .then(([activity, analytics]) => {
+          if (activity.status === "fulfilled") setPaymentActivity(activity.value);
+          if (analytics.status === "fulfilled") setPaymentAnalytics(analytics.value);
+        });
     const interval = window.setInterval(refresh, 30000);
     return () => window.clearInterval(interval);
   }, [isAuthenticated, isAdmin]);
 
   if (isLoading || !isAuthenticated || !isAdmin) {
     return (
-      <div className={styles.loading}>
-        <div>Loading...</div>
-      </div>
+      <AdminShell adminName={user?.full_name} unread={0}>
+        <div className={ui.pageStack}>
+          <p className={ui.lede}>Checking your access…</p>
+        </div>
+      </AdminShell>
     );
   }
 
   if (error || !data) {
     return (
-      <div className={styles.error}>
-        <h2>Error Loading Dashboard</h2>
-        <p>{error || "Failed to load admin dashboard"}</p>
-        <button onClick={() => window.location.reload()} className="btn-primary">Retry</button>
-      </div>
+      <AdminShell adminName={user?.full_name} unread={0}>
+        <div className={ui.pageStack}>
+          <p role="alert" className={ui.statusBad}>
+            {error || "The admin overview could not be loaded."}
+          </p>
+          <p>
+            <button type="button" className={ui.btn} onClick={() => window.location.reload()}>
+              Try again
+            </button>
+          </p>
+        </div>
+      </AdminShell>
     );
   }
 
   return (
-    <AdminShell kpis={data.kpis} unread={data.unread}>
-      <div className={styles.adminGrid}>
-        <div className={styles.adminLeft}>
-          <TutorRoster tutors={data.tutors} />
-          <StudentRoster students={data.students} />
-        </div>
-        <div className={styles.adminRight}>
-          <AssignmentMatrix rows={data.matrix} studentNames={data.student_names} />
-        </div>
-      </div>
+    <AdminShell adminName={user?.full_name} unread={data.unread}>
+      <div className={ui.pageStack}>
+        <header className={ui.pageHeading}>
+          <div>
+            <p className={ui.kicker}>Admin overview</p>
+            <h1>Everything the school is running</h1>
+            <p>
+              Tutors, learners, sessions and payments in one place. Every figure below is read from
+              the live database, and anything not yet connected says so instead of pretending.
+            </p>
+          </div>
+          <Link className={ui.headerAction} href="/admin/tutors">
+            Tutor roster <ArrowRight size={14} aria-hidden />
+          </Link>
+        </header>
 
-      <div className={styles.adminBottom}>
-        <MeetingsPanel meetings={data.meetings} />
-        <SubscriptionManagement plans={data.plans} leaders={data.leaders} statuses={data.statuses} bars={data.bars} />
-        <ActivityLog items={data.activity} />
+        <ul className={ui.statsFour}>
+          {data.kpis.map((kpi) => {
+            const Icon = KPI_ICONS[kpi.label] ?? LayoutDashboard;
+            return (
+              <li key={kpi.label}>
+                <Icon size={16} aria-hidden />
+                <span><small>{kpi.label}</small><b>{kpi.value}</b></span>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className={ui.split}>
+          <div className={ui.mainPane}>
+            <TutorRoster tutors={data.tutors} />
+            <StudentRoster students={data.students} />
+            <SubscriptionManagement plans={data.plans} leaders={data.leaders} statuses={data.statuses} />
+          </div>
+          <aside className={ui.sidePane}>
+            <MeetingsPanel meetings={data.meetings} />
+            <ActivityLog items={data.activity} />
+          </aside>
+        </div>
+
+        <AssignmentMatrix rows={data.matrix} studentNames={data.student_names} />
+        <PaymentOversight analytics={paymentAnalytics} events={paymentActivity} />
       </div>
-      <section className={styles.paymentOversight} aria-labelledby="payment-oversight-title">
-        <div className={styles.adminCard}><div className={styles.cardHeader}><h3 id="payment-oversight-title">Payment oversight</h3><span className={styles.livePill}>Live data</span></div><div className={styles.adminMetricGrid}><div><small>Gross revenue</small><b>${paymentAnalytics?.gross_revenue_usd ?? 0}</b></div><div><small>Successful payments</small><b>{paymentAnalytics?.successful_payments ?? 0}</b></div><div><small>Active subscriptions</small><b>{paymentAnalytics?.active_subscriptions ?? 0}</b></div><div><small>Matching pending</small><b>{paymentAnalytics?.matching_pending ?? 0}</b></div></div></div>
-        <div className={styles.adminCard}><div className={styles.cardHeader}><h3>Payment activity</h3><span className={styles.activityRefresh}>Refresh on load</span></div><ul className={styles.paymentActivityList}>{paymentActivity.slice(0, 8).map((event) => <li key={event.id}><span><b>{event.event_type}</b><small>{event.summary}</small></span><time>{new Date(event.created_at).toLocaleString()}</time></li>)}{paymentActivity.length === 0 && <li>No payment events recorded yet.</li>}</ul></div>
-      </section>
     </AdminShell>
   );
 }

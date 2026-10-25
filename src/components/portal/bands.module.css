@@ -29,6 +29,20 @@
 
 .lede { color: #52607a; line-height: 1.6; }
 
+/* Text for screen readers only - matrix cells are markers, so the state has to
+   be spelled out somewhere. */
+.vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .headerAction {
   display: inline-flex;
   align-items: center;
@@ -60,6 +74,9 @@
 .stats small { color: #8a96a8; font-size: 0.64rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
 .stats b { color: #0f1c33; font-size: 1.3rem; font-weight: 800; letter-spacing: -0.015em; font-variant-numeric: tabular-nums; line-height: 1.2; }
 .stats svg { color: var(--coral); flex: none; margin-top: 0.35rem; }
+/* Four cells for the admin overview, where the operation has four headline
+   numbers rather than a tutor's three. */
+.statsFour { composes: stats; grid-template-columns: repeat(4, 1fr); }
 
 /* — Two-pane composition — */
 .split { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 0 2.6rem; }
@@ -103,6 +120,8 @@
 }
 .bandEmpty { margin-top: 0.7rem; color: #52607a; line-height: 1.6; max-width: 52ch; }
 .bandEmpty p + a { margin-top: 0.8rem; }
+/* A label that opens a second movement inside one band. */
+.subHead { composes: bandLabel; display: block; margin-top: 1.7rem; }
 
 /* A statement: centred, framed by hairlines - used when a portal has
    nothing to show and the honest answer is a sentence, not an empty widget. */
@@ -153,6 +172,30 @@
 .what small { display: block; margin-top: 0.2rem; color: #52607a; font-weight: 400; font-size: 0.8rem; }
 .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.35rem 0.9rem; }
 
+/* — Roster tools: search and sort — */
+.rosterTools { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1rem; }
+.search {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex: 1;
+  max-width: 320px;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid #dfe6ec;
+  border-radius: 6px;
+  color: #8a96a8;
+}
+.search input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #0f1c33;
+  font: inherit;
+  font-size: 0.84rem;
+}
+.search:focus-within { border-color: var(--coral); }
+
 /* — Day groups inside a long schedule — */
 .dayGroup { margin-top: 1.7rem; }
 .dayLabel {
@@ -177,6 +220,47 @@
 
 /* — Availability rows: day, from, to, remove — */
 .slot { display: grid; grid-template-columns: 1.4fr 1fr 1fr auto; gap: 1rem; align-items: end; }
+
+/* — Assignment matrix: a hairline grid with the tutor column pinned, so a
+   roster of fifty learners scrolls sideways instead of being truncated — */
+.matrixScroll { margin-top: 1.2rem; overflow-x: auto; }
+.matrix { width: 100%; border-collapse: collapse; }
+.matrix caption {
+  padding-bottom: 0.8rem;
+  color: #52607a;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  text-align: left;
+}
+.matrix th, .matrix td { padding: 0.5rem 0.45rem; border-bottom: 1px solid #eef2f6; text-align: center; }
+.matrix thead th {
+  border-bottom: 1px solid #dfe6ec;
+  color: #8a96a8;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.matrix thead th:first-child, .matrix tbody th { text-align: left; }
+.matrix tbody th {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 132px;
+  max-width: 160px;
+  border-right: 1px solid #dfe6ec;
+  background: #fff;
+  color: #0f1c33;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.matrixOn { display: inline-block; width: 9px; height: 9px; background: var(--coral); }
+.matrixOff { display: inline-block; width: 9px; height: 1px; background: #cfd8e1; }
+.matrixLegend { display: flex; flex-wrap: wrap; gap: 1.4rem; margin-top: 0.9rem; color: #52607a; font-size: 0.72rem; }
+.matrixLegend span { display: inline-flex; align-items: center; gap: 0.45rem; }
 
 /* — Text links and status — */
 .textLink {

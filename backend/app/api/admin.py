@@ -1,11 +1,12 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, or_
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import joinedload, selectinload
 from typing import List
 
 from app.db.session import get_db
+from app.core.time import to_utc_iso
 from app.models.user import User, UserRole, Class, ClassStatus, ProficiencyLevel, TutorProfile
 from app.models.package import Package, Order, OrderStatus, PaymentMethod, PlanName
 from app.api.auth import require_admin
@@ -20,6 +21,14 @@ from app.models.notification import Notification
 from app.services.notifications import notify_admins, notify_user
 
 router = APIRouter()
+
+
+def leader_name(full_name: str) -> str:
+    """Shorten a full name to "Amara O." for the leaders list."""
+    parts = full_name.split()
+    if not parts:
+        return full_name
+    return f"{parts[0]} {parts[-1][0]}."
 
 
 @router.post("/assign-student", response_model=StudentAssignmentResponse)
@@ -188,79 +197,78 @@ async def get_admin_dashboard(
     current_user: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    unread_result = await db.execute(
-        select(func.count(Notification.id)).where(
-            Notification.recipient_id == current_user.id,
-            Notification.is_read.is_(False),
-        )
-    )
-    # KPIs - Total Tutors
-    tutors_count_result = await db.execute(
-        select(func.count(User.id)).where(User.role == UserRole.TUTOR)
-    )
-    total_tutors = tutors_count_result.scalar() or 0
+    now = datetime.utcnow()
+    upcoming = and_(Class.status == ClassStatus.SCHEDULED, Class.scheduled_at >= now)
 
-    # Active Students (students with at least one scheduled class)
-    active_students_result = await db.execute(
-        select(func.count(func.distinct(Class.learner_id)))
-        .where(
-            and_(
-                Class.status == "scheduled",
-                Class.scheduled_at >= datetime.utcnow(),
+    # Every headline number in one statement. A round trip to the database costs
+    # a third of a second from here, so the panel asks once instead of seven
+    # times: unread notifications, the four KPIs, and the two meeting providers.
+    stats = (
+        await db.execute(
+            select(
+                select(func.count(Notification.id))
+                .where(Notification.recipient_id == current_user.id, Notification.is_read.is_(False))
+                .scalar_subquery()
+                .label("unread"),
+                select(func.count(User.id))
+                .where(User.role == UserRole.TUTOR)
+                .scalar_subquery()
+                .label("total_tutors"),
+                # Active Students: students with at least one scheduled class.
+                select(func.count(func.distinct(Class.learner_id)))
+                .where(upcoming)
+                .scalar_subquery()
+                .label("active_students"),
+                select(func.count(Class.id))
+                .where(upcoming)
+                .scalar_subquery()
+                .label("scheduled_sessions"),
+                # Learners with no tutor yet - the one number an administrator
+                # acts on daily.
+                select(func.count(User.id))
+                .where(User.role == UserRole.STUDENT, User.tutor_id.is_(None), User.is_active)
+                .scalar_subquery()
+                .label("awaiting_tutor"),
+                select(func.count(Class.id))
+                .where(upcoming, Class.zoom_url.isnot(None))
+                .scalar_subquery()
+                .label("zoom_sessions"),
+                select(func.count(Class.id))
+                .where(upcoming, Class.meet_url.isnot(None))
+                .scalar_subquery()
+                .label("meet_sessions"),
             )
         )
-    )
-    active_students = active_students_result.scalar() or 0
+    ).one()
 
-    # Scheduled Sessions (upcoming)
-    scheduled_sessions_result = await db.execute(
-        select(func.count(Class.id)).where(
-            and_(
-                Class.status == ClassStatus.SCHEDULED,
-                Class.scheduled_at >= datetime.utcnow(),
-            )
-        )
-    )
-    scheduled_sessions = scheduled_sessions_result.scalar() or 0
-
-    # System Health - calculate from actual metrics
-    total_users = await db.execute(select(func.count(User.id)).where(User.is_active))
-    total_users_count = total_users.scalar() or 0
-    error_rate = 0.0
-    if total_users_count > 0:
-        # Calculate health based on active users and system metrics
-        active_percentage = min(100, (active_students / max(1, total_users_count)) * 100)
-        system_health = f"{int(active_percentage)}%"
-    else:
-        system_health = "100%"
-
-    # Tutors with their details
+    # Tutors with their details. Joined rather than fetched per relationship:
+    # each extra query is another third of a second on the wire.
     tutors_result = await db.execute(
         select(User)
         .where(User.role == UserRole.TUTOR)
         .options(
-            selectinload(User.tutor_profile).selectinload(TutorProfile.availability),
-            selectinload(User.tutor_profile),
-            selectinload(User.tutor_application),
+            joinedload(User.tutor_profile).selectinload(TutorProfile.availability),
+            joinedload(User.tutor_application),
         )
         .limit(20)
     )
     tutors = tutors_result.scalars().all()
 
-    # Get tutor statuses based on their profile approval and assignments
+    # Get tutor statuses based on their profile approval and assignments.
+    # One grouped count feeds both the roster and the leaders list: asking per
+    # tutor cost a round trip each, and this endpoint opens on every visit.
+    assignment_counts_result = await db.execute(
+        select(User.id, User.full_name, func.count(Class.id))
+        .join(Class, Class.tutor_id == User.id)
+        .where(User.role == UserRole.TUTOR, upcoming)
+        .group_by(User.id, User.full_name)
+    )
+    assignment_rows = assignment_counts_result.all()
+    assignments_by_tutor = {tutor_id: count for tutor_id, _, count in assignment_rows}
+
     tutors_data = []
     for t in tutors:
-        # Get assignment count (active scheduled classes)
-        assignment_result = await db.execute(
-            select(func.count(Class.id)).where(
-                and_(
-                    Class.tutor_id == t.id,
-                    Class.status == "scheduled",
-                    Class.scheduled_at >= datetime.utcnow(),
-                )
-            )
-        )
-        assignment_count = assignment_result.scalar() or 0
+        assignment_count = assignments_by_tutor.get(t.id, 0)
 
         # Determine status
         if not t.tutor_profile or not t.tutor_profile.is_approved:
@@ -275,8 +283,9 @@ async def get_admin_dashboard(
             "name": t.full_name,
             "email": t.email,
             "status": status,
-            # country is nullable, and the profile itself may be missing.
-            "language": (t.tutor_profile.country if t.tutor_profile else None) or "English",
+            # The profile stores the tutor's country, not the languages they
+            # teach; claiming "English" when the profile is empty invented a fact.
+            "country": t.tutor_profile.country if t.tutor_profile else None,
             "rating": t.tutor_profile.rating if t.tutor_profile else 0.0,
             "assignments": assignment_count,
             "qualification_type": t.tutor_application.qualification_type if t.tutor_application else None,
@@ -289,8 +298,8 @@ async def get_admin_dashboard(
 
     students_result = await db.execute(
         select(User)
-        .where(User.role == UserRole.STUDENT)
-        .options(selectinload(User.assigned_tutor))
+        .where(User.role == UserRole.STUDENT, User.is_active)
+        .options(joinedload(User.assigned_tutor))
         .order_by(User.created_at.desc())
         .limit(50)
     )
@@ -318,28 +327,9 @@ async def get_admin_dashboard(
             "cells": cells,
         })
 
-    # Meetings - check provider connections from actual class data
-    # Get unique meeting providers from scheduled classes
-    providers_result = await db.execute(
-        select(Class.zoom_url, Class.meet_url)
-        .where(
-            and_(
-                Class.status == "scheduled",
-                Class.scheduled_at >= datetime.utcnow(),
-            )
-        )
-    )
-    providers_data = providers_result.all()
-    
-    # Count providers
-    zoom_count = 0
-    meet_count = 0
-    for zoom_url, meet_url in providers_data:
-        if zoom_url:
-            zoom_count += 1
-        if meet_url:
-            meet_count += 1
-    
+    # Meetings - providers come from the scheduled classes counted above.
+    zoom_count, meet_count = stats.zoom_sessions, stats.meet_sessions
+
     meetings = []
     if zoom_count > 0:
         meetings.append({"provider": "Zoom", "sessions": [], "connected": True})
@@ -356,13 +346,10 @@ async def get_admin_dashboard(
     upcoming_sessions_result = await db.execute(
         select(Class)
         .where(
-            and_(
-                Class.status == "scheduled",
-                Class.scheduled_at >= datetime.utcnow(),
-                Class.scheduled_at <= datetime.utcnow() + timedelta(hours=24),
-            )
+            upcoming,
+            Class.scheduled_at <= now + timedelta(hours=24),
         )
-        .options(selectinload(Class.learner), selectinload(Class.tutor))
+        .options(joinedload(Class.learner), joinedload(Class.tutor))
         .order_by(Class.scheduled_at)
         .limit(10)
     )
@@ -389,43 +376,30 @@ async def get_admin_dashboard(
 
     # Plans distribution from orders
     plans_result = await db.execute(
-        select(Package.id, func.count(Order.id))
+        select(Package.name, func.count(Order.id))
         .select_from(Package)
         .outerjoin(Order, Order.package_id == Package.id)
-        .group_by(Package.id)
+        .group_by(Package.id, Package.name)
     )
     plans_data = plans_result.all()
 
     # Calculate total orders for percentage
     total_orders = sum(count for _, count in plans_data) or 1
-    plans = []
-    for plan_id, count in plans_data:
-        package_result = await db.execute(select(Package).where(Package.id == plan_id))
-        package = package_result.scalar_one_or_none()
-        if package:
-            plans.append({
-                "name": package.name,
-                "share": round((count / total_orders) * 100),
-                "color": "var(--navy)" if package.name == "Starter" else "var(--teal)" if package.name == "Intensive" else "#f47a52",
-            })
+    plans = [
+        {
+            "name": name,
+            "share": round((count / total_orders) * 100),
+            "color": "var(--navy)" if name == "Starter" else "var(--teal)" if name == "Intensive" else "#f47a52",
+        }
+        for name, count in plans_data
+    ]
 
-    # Top leaders (tutors with most assignments)
-    leaders_result = await db.execute(
-        select(User.full_name, func.count(Class.id).label("assignment_count"))
-        .join(Class, Class.tutor_id == User.id)
-        .where(
-            and_(
-                User.role == UserRole.TUTOR,
-                Class.status == "scheduled",
-                Class.scheduled_at >= datetime.utcnow(),
-            )
-        )
-        .group_by(User.id, User.full_name)
-        .order_by(func.count(Class.id).desc())
-        .limit(5)
-    )
-    leaders = [{"name": name.split()[0] + " " + name.split()[-1][0] + ".", "value": count} 
-               for name, count in leaders_result.all()]
+    # Top leaders reuse the same aggregate: the busiest tutor on the roster is
+    # by definition the one with the most upcoming sessions.
+    leaders = [
+        {"name": leader_name(full_name), "value": count}
+        for _, full_name, count in sorted(assignment_rows, key=lambda row: row[2], reverse=True)[:5]
+    ]
 
     # Activity log (recent completed classes, new orders, new tutors)
     activity = []
@@ -433,8 +407,8 @@ async def get_admin_dashboard(
     # Recent completed classes
     completed_classes = await db.execute(
         select(Class)
-        .where(Class.status == "completed")
-        .options(selectinload(Class.learner), selectinload(Class.tutor))
+        .where(Class.status == ClassStatus.COMPLETED)
+        .options(joinedload(Class.learner), joinedload(Class.tutor))
         .order_by(Class.updated_at.desc())
         .limit(5)
     )
@@ -444,13 +418,14 @@ async def get_admin_dashboard(
             "id": f"act_{c.id}",
             "initial": "T",
             "text": f"{tutor_name} session completed",
-            "time": "Just now",
+            # When the lesson was closed out, not when this payload was built.
+            "at": to_utc_iso(c.updated_at) if c.updated_at else None,
         })
 
     # Recent orders
     recent_orders = await db.execute(
         select(Order)
-        .options(selectinload(Order.package), selectinload(Order.user))
+        .options(joinedload(Order.user))
         .order_by(Order.created_at.desc())
         .limit(5)
     )
@@ -460,7 +435,7 @@ async def get_admin_dashboard(
             "id": f"act_order_{o.id}",
             "initial": "S",
             "text": f"{user_name} payment confirmed",
-            "time": "Just now",
+            "at": to_utc_iso(o.created_at) if o.created_at else None,
         })
 
     # Status counts for subscription management - from actual order statuses
@@ -495,37 +470,13 @@ async def get_admin_dashboard(
             {"label": "Pending", "count": 0, "color": "var(--coral)"},
         ]
 
-    # Bar groups for subscription chart - from actual package data
-    # Get package order counts by time period or tier
-    bars = []
-    for plan_id, count in plans_data:
-        package_result = await db.execute(select(Package).where(Package.id == plan_id))
-        package = package_result.scalar_one_or_none()
-        if package:
-            # Calculate monthly distribution (simplified - using order creation dates)
-            bars.append({
-                "label": package.name,
-                "bars": [
-                    {"value": count, "color": "var(--navy)"},
-                    {"value": max(0, count - 10), "color": "var(--teal)"},
-                ],
-            })
-    
-    # If no packages, provide defaults
-    if not bars:
-        bars = [
-            {"label": "Basic", "bars": [{"value": 0, "color": "var(--navy)"}, {"value": 0, "color": "var(--teal)"}]},
-            {"label": "Pro", "bars": [{"value": 0, "color": "var(--navy)"}, {"value": 0, "color": "var(--teal)"}]},
-            {"label": "Premium", "bars": [{"value": 0, "color": "var(--navy)"}, {"value": 0, "color": "var(--teal)"}]},
-        ]
-
     return {
-        "unread": unread_result.scalar() or 0,
+        "unread": stats.unread,
         "kpis": [
-            {"label": "Total Tutors", "value": str(total_tutors)},
-            {"label": "Active Students", "value": str(active_students)},
-            {"label": "Scheduled Sessions", "value": str(scheduled_sessions)},
-            {"label": "System Health", "value": system_health},
+            {"label": "Total Tutors", "value": str(stats.total_tutors)},
+            {"label": "Active Students", "value": str(stats.active_students)},
+            {"label": "Scheduled Sessions", "value": str(stats.scheduled_sessions)},
+            {"label": "Awaiting a tutor", "value": str(stats.awaiting_tutor)},
         ],
         "tutors": tutors_data,
         "students": students_data,
@@ -539,94 +490,4 @@ async def get_admin_dashboard(
         "leaders": leaders,
         "activity": activity[:10],
         "statuses": statuses,
-        "bars": bars,
     }
-
-
-@router.get("/admin/payment/analytics")
-async def get_payment_analytics(
-    current_user: User = Depends(require_admin),
-    db: AsyncSession = Depends(get_db),
-):
-    """Get payment analytics for the admin dashboard."""
-    # Use string values for enum columns (stored as lowercase in DB)
-    completed_status = "completed"
-    matching_pending_status = "matching_pending"
-
-    # Successful payments (completed orders)
-    completed_result = await db.execute(
-        select(func.count(Order.id)).where(Order.status == completed_status)
-    )
-    successful_payments = completed_result.scalar() or 0
-
-    # Matching pending orders
-    matching_pending_result = await db.execute(
-        select(func.count(Order.id)).where(Order.status == matching_pending_status)
-    )
-    matching_pending = matching_pending_result.scalar() or 0
-
-    # Gross revenue in USD
-    revenue_result = await db.execute(
-        select(func.sum(Order.amount_usd)).where(Order.status == completed_status)
-    )
-    gross_revenue_usd = float(revenue_result.scalar() or 0)
-
-    # Active subscriptions (completed orders with recurring packages)
-    active_subs_result = await db.execute(
-        select(func.count(Order.id))
-        .join(Package, Order.package_id == Package.id)
-        .where(Order.status == completed_status)
-        .where(Package.months > 1)
-    )
-    active_subscriptions = active_subs_result.scalar() or 0
-
-    return {
-        "successful_payments": successful_payments,
-        "matching_pending": matching_pending,
-        "gross_revenue_usd": gross_revenue_usd,
-        "active_subscriptions": active_subscriptions,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-    }
-
-
-@router.get("/admin/payment/activity")
-async def get_payment_activity(
-    current_user: User = Depends(require_admin),
-    db: AsyncSession = Depends(get_db),
-    limit: int = 50,
-):
-    """Get recent payment activity for the admin dashboard."""
-    result = await db.execute(
-        select(Order, User, Package)
-        .join(User, Order.user_id == User.id)
-        .join(Package, Order.package_id == Package.id)
-        .order_by(Order.created_at.desc())
-        .limit(limit)
-    )
-    rows = result.all()
-
-    activity = []
-    for order, user, package in rows:
-        # Use string values for status (stored as lowercase in DB)
-        status_value = order.status
-        event_map = {
-            "completed": "payment_completed",
-            "pending": "payment_pending",
-            "processing": "payment_processing",
-            "matching_pending": "matching_pending",
-            "failed": "payment_failed",
-            "refunded": "payment_refunded",
-        }
-        event_type = event_map.get(status_value, "status_changed")
-
-        activity.append({
-            "id": order.id,
-            "event_type": event_type,
-            "summary": f"Order {order.id} - {package.name} for {user.full_name or user.email}",
-            "new_state": status_value,
-            "amount": order.amount_usd,
-            "currency": "USD",
-            "created_at": order.created_at.isoformat() if order.created_at else None,
-        })
-
-    return activity

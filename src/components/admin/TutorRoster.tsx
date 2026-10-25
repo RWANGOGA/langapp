@@ -1,17 +1,28 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, MoreHorizontal, Search, Star } from "lucide-react";
-import { Badge } from "@/components/ui/Badge";
-import { Card } from "@/components/ui/Card";
+import { ArrowDown, ArrowUp, Search } from "lucide-react";
 import type { Tutor, TutorStatus } from "@/lib/admin-data";
-import styles from "./admin.module.css";
+import ui from "@/components/portal/bands.module.css";
 
-const STATUS_VARIANT: Record<TutorStatus, "teal" | "navy" | "coral"> = {
-  Active: "teal",
-  Assigned: "navy",
-  Onboarding: "coral",
+const initials = (name: string) =>
+  name.split(" ").filter(Boolean).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+
+// Onboarding is open work, Assigned is a tutor mid-term, Active is an approved
+// tutor with nothing on the calendar yet.
+const TONE: Record<TutorStatus, string> = {
+  Active: ui.statusOk,
+  Assigned: "",
+  Onboarding: ui.statusBad,
 };
+
+/** What the application recorded, or an honest admission that it recorded nothing. */
+function credentials(tutor: Tutor) {
+  const proof = [tutor.qualification_type, tutor.english_proof_type, tutor.english_score]
+    .filter(Boolean)
+    .join(" · ");
+  return proof || "credentials not on file";
+}
 
 export default function TutorRoster({ tutors }: { tutors: Tutor[] }) {
   const [query, setQuery] = useState("");
@@ -25,45 +36,53 @@ export default function TutorRoster({ tutors }: { tutors: Tutor[] }) {
   }, [tutors, query, asc]);
 
   return (
-    <Card className={styles.adminCard}>
-      <div className={styles.cardHeader}>
-        <h3>Tutor Roster</h3>
-        <button type="button" className={styles.cardMenu} aria-label="Roster options"><MoreHorizontal size={20} /></button>
+    <section className={ui.band} aria-labelledby="tutor-roster-h">
+      <div className={ui.bandHead}>
+        <h2 id="tutor-roster-h" className={ui.bandLabel}>Tutor roster</h2>
+        <span className={ui.bandLabel}>{tutors.length} {tutors.length === 1 ? "tutor" : "tutors"}</span>
       </div>
-      <label className={styles.searchWrap}>
-        <Search size={16} aria-hidden />
-        <input className={styles.searchInput} type="search" placeholder="Search&hellip;" value={query} onChange={(e) => setQuery(e.target.value)} />
-      </label>
-      <div className={styles.tableContainer}>
-        <table className={styles.adminTable}>
-          <thead>
-            <tr>
-              <th aria-sort={asc ? "ascending" : "descending"}>
-                <button type="button" className={styles.sortBtn} onClick={() => setAsc(!asc)}>
-                  Tutor Name {asc ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
-                </button>
-              </th>
-              <th>Email</th><th>Status</th><th>Language</th><th>Evidence</th><th>Fee</th><th>Rating</th><th>Current Assignments</th><th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((t) => (
-              <tr key={t.id}>
-                <td>{t.name}</td>
-                <td>{t.email}</td>
-                <td><Badge variant={STATUS_VARIANT[t.status]} className={styles.statusBadge}>{t.status}</Badge></td>
-                <td>{t.language}</td>
-                <td>{t.qualification_type || t.english_proof_type ? `${t.qualification_type || "Qualification"}${t.english_score ? ` · ${t.english_score}` : ""}` : "Pending review"}</td>
-                <td>{t.onboarding_fee_usd > 0 ? `$${t.onboarding_fee_usd}` : "No fee"}</td>
-                <td><Star size={13} fill="#f5b301" stroke="#f5b301" /> {t.rating.toFixed(1)} <Star size={13} fill="#e3e7eb" stroke="#c5ccd3" /></td>
-                <td>{t.assignments}</td>
-                <td><button type="button" className={styles.cardMenu} aria-label={`Actions for ${t.name}`}><MoreHorizontal size={18} /></button></td>
-              </tr>
-            ))}
-            {rows.length === 0 && <tr><td colSpan={9}>No tutors match {query}.</td></tr>}
-          </tbody>
-        </table>
+
+      <div className={ui.rosterTools}>
+        <label className={ui.search}>
+          <Search size={14} aria-hidden />
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search name or email"
+            aria-label="Search tutors"
+          />
+        </label>
+        <button type="button" className={ui.textLink} onClick={() => setAsc(!asc)}>
+          Name {asc ? <ArrowUp size={12} aria-hidden /> : <ArrowDown size={12} aria-hidden />}
+        </button>
       </div>
-    </Card>
+
+      {rows.length > 0 ? (
+        <ul className={ui.sessions}>
+          {rows.map((tutor) => (
+            <li key={tutor.id}>
+              <span className={ui.avatarSquare} aria-hidden>{initials(tutor.name)}</span>
+              <span className={ui.what}>
+                {tutor.name}
+                <small>{tutor.email}</small>
+                <small>
+                  {credentials(tutor)} · {tutor.assignments} upcoming{" "}
+                  {tutor.assignments === 1 ? "session" : "sessions"}
+                  {tutor.country ? ` · based in ${tutor.country}` : ""}
+                  {tutor.rating > 0 ? ` · rated ${tutor.rating.toFixed(1)}` : ""}
+                </small>
+              </span>
+              <span className={`${ui.statusPill} ${TONE[tutor.status]}`}>{tutor.status}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className={ui.bandStatement}>
+          <p className={ui.bandLabel}>No match</p>
+          <p>No tutor matches &ldquo;{query}&rdquo;. Clear the search to see all {tutors.length}.</p>
+        </div>
+      )}
+    </section>
   );
 }

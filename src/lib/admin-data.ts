@@ -8,15 +8,14 @@ export type Provider = "Google Meet" | "Zoom" | "MS Teams";
 export type PlanName = "Basic" | "Pro" | "Premium";
 
 export interface Kpi { label: string; value: string }
-export interface Tutor { id: string; name: string; email: string; status: TutorStatus; language: string; rating: number; assignments: number; qualification_type?: string | null; english_proof_type?: string | null; english_score?: string | null; intro_video_url?: string | null; availability?: string | null; onboarding_fee_usd: number }
+export interface Tutor { id: string; name: string; email: string; status: TutorStatus; country: string | null; rating: number; assignments: number; qualification_type?: string | null; english_proof_type?: string | null; english_score?: string | null; intro_video_url?: string | null; availability?: string | null; onboarding_fee_usd: number }
 export interface StudentSummary { id: number; name: string; email: string; level: string; tutor_name: string | null; status: string }
 export interface MatrixRow { tutor: string; cells: CellStatus[] }
 export interface Meeting { provider: string; sessions: string[]; connected: boolean }
 export interface Plan { name: string; share: number; color: string }
 export interface Leader { name: string; value: number }
-export interface Activity { id: string; initial: string; text: string; time: string }
+export interface Activity { id: string; initial: string; text: string; at: string | null }
 export interface StatusCount { label: string; count?: number; color: string }
-export interface BarGroup { label: string; bars: { value: number; color: string }[] }
 
 export interface AdminDashboard {
   unread: number;
@@ -30,7 +29,6 @@ export interface AdminDashboard {
   leaders: Leader[]; 
   activity: Activity[];
   statuses: StatusCount[]; 
-  bars: BarGroup[];
 }
 export interface PaymentActivity { id: number; event_type: string; summary: string; new_state: string | null; amount: number | null; currency: string | null; created_at: string }
 export interface PaymentAnalytics { successful_payments: number; matching_pending: number; gross_revenue_usd: number; active_subscriptions: number; generated_at: string }

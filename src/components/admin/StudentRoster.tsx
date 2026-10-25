@@ -1,20 +1,45 @@
-import { Card } from "@/components/ui/Card";
 import type { StudentSummary } from "@/lib/admin-data";
-import styles from "./admin.module.css";
+import ui from "@/components/portal/bands.module.css";
+
+const initials = (name: string) =>
+  name.split(" ").filter(Boolean).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
 export default function StudentRoster({ students }: { students: StudentSummary[] }) {
+  const awaiting = students.filter((student) => !student.tutor_name).length;
+
   return (
-    <Card className={styles.adminCard}>
-      <div className={styles.cardHeader}><h3>Student Roster</h3><span className={styles.cardMeta}>{students.length} learners</span></div>
-      <div className={styles.tableContainer}>
-        <table className={styles.adminTable}>
-          <thead><tr><th>Student</th><th>Email</th><th>Level</th><th>Tutor</th><th>Status</th></tr></thead>
-          <tbody>
-            {students.map((student) => <tr key={student.id}><td>{student.name}</td><td>{student.email}</td><td>{student.level}</td><td>{student.tutor_name || "Not assigned"}</td><td>{student.status}</td></tr>)}
-            {students.length === 0 && <tr><td colSpan={5}>No learners registered yet.</td></tr>}
-          </tbody>
-        </table>
+    <section className={ui.band} aria-labelledby="student-roster-h">
+      <div className={ui.bandHead}>
+        <h2 id="student-roster-h" className={ui.bandLabel}>Learners</h2>
+        <span className={ui.bandLabel}>
+          {students.length} on the roster{awaiting > 0 ? ` · ${awaiting} awaiting a tutor` : ""}
+        </span>
       </div>
-    </Card>
+
+      {students.length > 0 ? (
+        <ul className={ui.sessions}>
+          {students.map((student) => (
+            <li key={student.id}>
+              <span className={ui.avatarSquare} aria-hidden>{initials(student.name)}</span>
+              <span className={ui.what}>
+                {student.name}
+                <small>{student.email}</small>
+                <small>{student.tutor_name ? `Tutor · ${student.tutor_name}` : "No tutor assigned yet"}</small>
+              </span>
+              {student.tutor_name ? (
+                <span className={ui.statusPill}>{student.level}</span>
+              ) : (
+                <span className={`${ui.statusPill} ${ui.statusBad}`}>Awaiting tutor</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className={ui.bandStatement}>
+          <p className={ui.bandLabel}>Roster empty</p>
+          <p>No learner has registered yet. Accounts appear here the moment someone signs up.</p>
+        </div>
+      )}
+    </section>
   );
 }

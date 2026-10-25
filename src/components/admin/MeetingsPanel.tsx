@@ -1,42 +1,44 @@
-import { Link2 } from "lucide-react";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
 import type { Meeting } from "@/lib/admin-data";
-import styles from "./admin.module.css";
-
-const LOGO: Record<string, [string, string]> = {
-  "Google Meet": ["#00832d", "G"],
-  "Zoom": ["#2d8cff", "Z"],
-  "MS Teams": ["#5059c9", "T"],
-  "Google": ["#4285F4", "G"],
-  "Microsoft": ["#0078D4", "M"],
-};
-
-function getLogo(provider: string) {
-  const key = Object.keys(LOGO).find(k => provider.toLowerCase().includes(k.toLowerCase())) || "Zoom";
-  return LOGO[key];
-}
+import ui from "@/components/portal/bands.module.css";
 
 export function MeetingsPanel({ meetings }: { meetings: Meeting[] }) {
   return (
-    <Card className={styles.adminCard}>
-      <div className={styles.cardHeader}>
-        <h3>Video Meeting Integration Panel</h3>
-        <select className={styles.selectSm} aria-label="View"><option>Link Management</option><option>Credentials</option></select>
+    <section className={ui.band} aria-labelledby="meetings-h">
+      <div className={ui.bandHead}>
+        <h2 id="meetings-h" className={ui.bandLabel}>Meetings</h2>
+        <span className={ui.bandLabel}>next 24 hours</span>
       </div>
-      <div className={styles.intHead}><span>Platform</span><span>Upcoming Session</span><span>Integration Status</span><span /></div>
-      {meetings.map((m) => {
-        const [color, letter] = getLogo(m.provider);
-        return (
-          <div key={m.provider} className={styles.intRow}>
-            <strong className={styles.provider}><i style={{ background: color }}>{letter}</i>{m.provider}</strong>
-            <span className={styles.sessions}>{m.sessions.map((s) => <span key={s}>{s}</span>)}</span>
-            <span className={`${styles.integ} ${m.connected ? styles.integOn : ""}`}>{m.connected ? "Connected" : "Integration"} <Link2 size={14} aria-hidden /></span>
-            {/* TODO: POST /api/meetings/link (Meet / Zoom / Teams Graph) */}
-            <Button variant="navy" size="sm" className={styles.createLinkBtn}>Create Link</Button>
-          </div>
-        );
-      })}
-    </Card>
+
+      {meetings.length > 0 ? (
+        <ul className={ui.sessions}>
+          {meetings.map((meeting) => (
+            <li key={meeting.provider}>
+              <span className={ui.avatarSquare} aria-hidden>
+                {meeting.provider.slice(0, 2).toUpperCase()}
+              </span>
+              <span className={ui.what}>
+                {meeting.provider}
+                <small>
+                  {meeting.sessions.length > 0
+                    ? meeting.sessions.join(" · ")
+                    : "No session booked in the next 24 hours"}
+                </small>
+              </span>
+              <span className={`${ui.statusPill} ${meeting.connected ? ui.statusOk : ""}`}>
+                {meeting.connected ? "In use" : "Not in use"}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className={ui.bandEmpty}>No video provider has been used for a session yet.</p>
+      )}
+
+      {/* The old panel offered a "Create Link" button wired to nothing. Links
+          are set by the tutor per session, so the panel says so instead. */}
+      <p className={ui.packageNote}>
+        Provider accounts are not connected yet. Tutors paste a meeting link onto each session.
+      </p>
+    </section>
   );
 }

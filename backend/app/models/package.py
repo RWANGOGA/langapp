@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import String, Integer, DateTime, Enum as SQLEnum, ForeignKey, Text, Numeric, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.db.session import Base
+from app.db.session import Base, stored_enum_values
 
 
 class PlanName(str, enum.Enum):
@@ -57,8 +57,12 @@ class Order(Base):
     subject: Mapped[str | None] = mapped_column(String(80), nullable=True)
     session_type: Mapped[str | None] = mapped_column(String(40), nullable=True)
     duration_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    status: Mapped[OrderStatus] = mapped_column(SQLEnum(OrderStatus), default=OrderStatus.PENDING)
-    payment_method: Mapped[PaymentMethod] = mapped_column(SQLEnum(PaymentMethod), nullable=True)
+    status: Mapped[OrderStatus] = mapped_column(
+        SQLEnum(OrderStatus, values_callable=stored_enum_values), default=OrderStatus.PENDING
+    )
+    payment_method: Mapped[PaymentMethod] = mapped_column(
+        SQLEnum(PaymentMethod, values_callable=stored_enum_values), nullable=True
+    )
     amount_jpy: Mapped[int] = mapped_column(Integer, nullable=False)
     amount_vnd: Mapped[int] = mapped_column(Integer, nullable=False)
     amount_usd: Mapped[int] = mapped_column(Integer, nullable=False)

@@ -1,22 +1,30 @@
-import { ChevronUp } from "lucide-react";
-import { Card } from "@/components/ui/Card";
 import type { Activity } from "@/lib/admin-data";
-import styles from "./admin.module.css";
+import { relativeTime } from "@/lib/utils";
+import ui from "@/components/portal/bands.module.css";
 
 export function ActivityLog({ items }: { items: Activity[] }) {
   return (
-    <Card className={`${styles.adminCard} ${styles.activityLogCard}`}>
-      <details open className={styles.details}>
-        <summary className={styles.cardHeader}><h3>Real-time Activity Log & Notifications</h3><ChevronUp size={18} className={styles.chev} aria-hidden /></summary>
-        <ul aria-live="polite">
-          {items.map((a) => (
-            <li key={a.id} className={styles.activityItem}>
-              <span className={`${styles.activityAvatar} ${a.initial === "S" ? styles.navyAvatar : ""}`} aria-hidden>{a.initial}</span>
-              <span className={styles.activityText}>{a.text}<small className={styles.activityTime}>{a.time}</small></span>
+    <section className={ui.band} aria-labelledby="activity-h">
+      <div className={ui.bandHead}>
+        <h2 id="activity-h" className={ui.bandLabel}>Recent activity</h2>
+        <span className={ui.bandLabel}>latest {items.length}</span>
+      </div>
+
+      {items.length > 0 ? (
+        <ul className={ui.sessions} aria-live="polite">
+          {items.map((item) => (
+            <li key={item.id}>
+              <span className={ui.avatarSquare} aria-hidden>{item.initial}</span>
+              <span className={ui.what}>{item.text}</span>
+              <span className={ui.when}><em>{relativeTime(item.at)}</em></span>
             </li>
           ))}
         </ul>
-      </details>
-    </Card>
+      ) : (
+        <p className={ui.bandEmpty}>
+          Nothing has been logged yet. Completed lessons and confirmed payments appear here.
+        </p>
+      )}
+    </section>
   );
 }

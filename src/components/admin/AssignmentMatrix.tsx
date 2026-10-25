@@ -1,65 +1,70 @@
-import { Eye, Pencil, Trash2, SlidersHorizontal } from "lucide-react";
-import { Card } from "@/components/ui/Card";
-import type { CellStatus, MatrixRow } from "@/lib/admin-data";
-import styles from "./admin.module.css";
+import type { MatrixRow } from "@/lib/admin-data";
+import ui from "@/components/portal/bands.module.css";
 
-const CELL_LABEL: Record<CellStatus, string> = {
-  pending: "Pending",
-  confirmed: "Confirmed",
-  completed: "Completed",
-  alert: "Alert",
-  assigned: "Assigned",
-  plus: "+",
-  empty: "",
-};
+const initials = (name: string) =>
+  name.split(" ").filter(Boolean).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
-export default function AssignmentMatrix({ rows, studentNames }: { rows: MatrixRow[]; studentNames: string[] }) {
+export default function AssignmentMatrix({
+  rows,
+  studentNames,
+}: {
+  rows: MatrixRow[];
+  studentNames: string[];
+}) {
+  const hasData = rows.length > 0 && studentNames.length > 0;
+
   return (
-    <Card className={styles.adminCard}>
-      <div className={styles.cardHeader}>
-        <h3>Student-Tutor Assignment Matrix</h3>
-        <div className={styles.headerTools}>
-          <select className={styles.selectSm} aria-label="Filters"><option>Filters</option><option>Pending</option><option>Alert</option></select>
-          <button type="button" className={styles.assignmentToolsBtn}><SlidersHorizontal size={14} strokeWidth={2} /> Assignment Tools</button>
-        </div>
+    <section className={ui.band} aria-labelledby="matrix-h">
+      <div className={ui.bandHead}>
+        <h2 id="matrix-h" className={ui.bandLabel}>Assignment matrix</h2>
+        <span className={ui.bandLabel}>{rows.length} tutors × {studentNames.length} learners</span>
       </div>
 
-      <div className={styles.matrixContainer}>
-        <div className={styles.matrixHeader}>
-          <span className={styles.matrixCell}>Tutor</span>
-          {studentNames.map((s) => (
-            <span key={s} className={`${styles.matrixCell} ${styles.matrixStudent}`}>{s}</span>
-          ))}
-          <span className={`${styles.matrixCell} ${styles.matrixAction}`}>Action</span>
+      {hasData ? (
+        <div className={ui.matrixScroll}>
+          <table className={ui.matrix}>
+            <caption>
+              Who teaches whom. A filled marker means that learner is matched to that tutor; a
+              rule means no match exists. Learner columns carry initials — hover one to read the
+              full name.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Tutor</th>
+                {studentNames.map((name, index) => (
+                  <th key={`${name}-${index}`} scope="col" title={name}>{initials(name)}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.tutor}>
+                  <th scope="row" title={row.tutor}>{row.tutor}</th>
+                  {row.cells.map((cell, index) => (
+                    <td key={index}>
+                      <span className={cell === "assigned" ? ui.matrixOn : ui.matrixOff} aria-hidden />
+                      <span className={ui.vh}>{cell === "assigned" ? "Matched" : "Not matched"}</span>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+      ) : (
+        <div className={ui.bandStatement}>
+          <p className={ui.bandLabel}>Nothing to chart</p>
+          <p>
+            The matrix fills in once at least one tutor and one learner exist and an administrator
+            has matched them.
+          </p>
+        </div>
+      )}
 
-        {rows.map((row) => (
-          <div key={row.tutor} className={styles.matrixRow}>
-            <span className={`${styles.matrixCell} ${styles.matrixTutor}`}>{row.tutor}</span>
-            {row.cells.map((cell, i) => (
-              <span key={i} className={`${styles.matrixCell} ${styles.matrixStatus}`}>
-                {cell !== "empty" && (
-                  <span className={`${styles.statusBadge} ${styles[cell]}`}>{CELL_LABEL[cell]}</span>
-                )}
-              </span>
-            ))}
-            <span className={`${styles.matrixCell} ${styles.matrixAction}`}>
-              <span className={styles.actionIcons}>
-                <button type="button" aria-label={`View ${row.tutor}`}><Eye size={15} /></button>
-                <button type="button" aria-label={`Edit ${row.tutor}`}><Pencil size={15} /></button>
-                <button type="button" aria-label={`Delete ${row.tutor}`}><Trash2 size={15} /></button>
-              </span>
-            </span>
-          </div>
-        ))}
+      <div className={ui.matrixLegend}>
+        <span><i className={ui.matrixOn} aria-hidden /> Matched</span>
+        <span><i className={ui.matrixOff} aria-hidden /> Not matched</span>
       </div>
-
-      <ul className={styles.matrixLegend}>
-        <li className={styles.legendItem}><span className={styles.legendDotPending} />Pending</li>
-        <li className={styles.legendItem}><span className={styles.legendDotConfirmed} />Confirmed</li>
-        <li className={styles.legendItem}><span className={styles.legendDotCompleted} />Completed</li>
-        <li className={styles.legendItem}><span className={styles.legendDotAlert} />Alert</li>
-      </ul>
-    </Card>
+    </section>
   );
 }
