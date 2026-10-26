@@ -32,6 +32,12 @@
   --text-muted: #6B7280;
   --text-light: #9CA3AF;
 
+  /* — Editorial micro-type: portal labels were a watermark at #8a96a8.
+     These read as printed captions while staying quieter than body ink. — */
+  --label: #33415c;
+  --label-soft: #4a5a74;
+  --body-ink: #3d4a61;
+
   /* — Semantic Colors — */
   --success: #10B981;
   --success-bg: #ECFDF5;

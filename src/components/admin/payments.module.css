@@ -14,7 +14,7 @@
   border: 1px solid #dfe6ec;
   border-radius: 999px;
   background: none;
-  color: #52607a;
+  color: var(--body-ink);
   font: inherit;
   font-size: 0.82rem;
   cursor: pointer;
@@ -31,7 +31,7 @@
   gap: 0.75rem 1rem;
   margin-top: 1rem;
 }
-.searchBox { flex: 0 1 220px; max-width: 220px; }
+.searchBox { flex: 0 1 220px; max-width: 220px; min-width: 0; }
 
 /* The band's own list settles on three columns (amount, subject, pill); the
    ledger adds a fourth for its actions, so it re-declares the ruling and the
@@ -46,6 +46,9 @@
   border-top: 1px solid #dfe6ec;
 }
 .ledger li:last-child { border-bottom: 1px solid #dfe6ec; }
+/* The pill is a grid item, so it would stretch across a phone column; the cell
+   keeps it the width of its label at every breakpoint. */
+.pillCell { display: flex; justify-content: flex-end; }
 .rowActions {
   display: flex;
   flex-wrap: wrap;
@@ -83,7 +86,7 @@
 .recordForm label {
   display: grid;
   gap: 0.35rem;
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -114,7 +117,7 @@
   line-height: 1.5;
 }
 .eventWhen {
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -123,7 +126,7 @@
 }
 .tally {
   display: block;
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.78rem;
 }
 
@@ -147,6 +150,10 @@
 @media (max-width: 720px) {
   .recordForm { grid-template-columns: 1fr; }
   .events li { grid-template-columns: 1fr; gap: 0.2rem; }
-  .ledger li { grid-template-columns: 1fr; }
+  .ledger li { grid-template-columns: 1fr; gap: 0.5rem; }
+  /* A phone cannot afford a 220px field beside chips; it takes its own line so
+     the placeholder reads in full. */
+  .searchBox { flex: 1 1 100%; max-width: none; }
   .rowActions { justify-content: flex-start; }
+  .pillCell { justify-content: flex-start; }
 }

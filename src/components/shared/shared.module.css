@@ -5,7 +5,7 @@
 /* — Countdown: three tabular blocks, units as micro-labels — */
 .countdown { display: grid; gap: 0.45rem; }
 .countLabel {
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.64rem;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -13,12 +13,12 @@
 }
 .countTime { display: flex; align-items: baseline; gap: 1.1rem; color: #0f1c33; font-variant-numeric: tabular-nums; }
 .countTime b { display: flex; align-items: baseline; gap: 0.28rem; font-size: clamp(1.35rem, 2.4vw, 1.75rem); font-weight: 800; letter-spacing: -0.01em; line-height: 1; }
-.countTime i { color: #8a96a8; font-size: 0.6rem; font-weight: 800; font-style: normal; letter-spacing: 0.1em; text-transform: uppercase; }
+.countTime i { color: var(--label); font-size: 0.6rem; font-weight: 800; font-style: normal; letter-spacing: 0.1em; text-transform: uppercase; }
 
 /* — Calendar: month grid as a ruled table — */
 .calHead { padding-bottom: 0.9rem; border-bottom: 1px solid #dfe6ec; }
 .calTitle {
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.16em;
@@ -33,7 +33,7 @@
   width: 26px;
   height: 26px;
   padding: 0;
-  color: #52607a;
+  color: var(--body-ink);
   background: #fff;
   border: 1px solid #dfe6ec;
   border-radius: 0;
@@ -43,7 +43,7 @@
 .calGrid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; border-top: 1px solid #eef2f5; }
 .calDow {
   padding: 0.45rem 0;
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.1em;

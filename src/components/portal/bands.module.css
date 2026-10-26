@@ -26,7 +26,7 @@
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
-.pageHeading p { margin-top: 0.4rem; color: #52607a; line-height: 1.6; max-width: 62ch; }
+.pageHeading p { margin-top: 0.4rem; color: var(--body-ink); font-size: 1rem; font-weight: 500; line-height: 1.6; max-width: 62ch; }
 
 .kicker {
   color: var(--coral);
@@ -36,7 +36,7 @@
   text-transform: uppercase;
 }
 
-.lede { color: #52607a; line-height: 1.6; }
+.lede { color: var(--body-ink); font-weight: 500; line-height: 1.6; }
 
 /* Text for screen readers only - matrix cells are markers, so the state has to
    be spelled out somewhere. */
@@ -80,7 +80,7 @@
 .stats > li { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0.95rem 0 1.05rem; }
 .stats > li + li { padding-left: 1.4rem; border-left: 1px solid #dfe6ec; }
 .stats span { display: grid; gap: 0.15rem; }
-.stats small { color: #8a96a8; font-size: 0.64rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+.stats small { color: var(--label); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
 .stats b { color: #0f1c33; font-size: 1.3rem; font-weight: 800; letter-spacing: -0.015em; font-variant-numeric: tabular-nums; line-height: 1.2; }
 .stats svg { color: var(--coral); flex: none; margin-top: 0.35rem; }
 /* Four cells for the admin overview, where the operation has four headline
@@ -110,14 +110,14 @@
 }
 .who { display: grid; gap: 0.1rem; }
 .who strong { color: #0f1c33; font-size: 0.92rem; font-weight: 700; }
-.who small { color: #8a96a8; font-size: 0.74rem; }
+.who small { color: var(--label); font-size: 0.74rem; }
 .joinRow { display: flex; flex-wrap: wrap; align-items: center; gap: 0.9rem; margin-top: 1.3rem; }
-.packageNote { display: flex; align-items: center; gap: 0.4rem; margin-top: 1.3rem; padding-top: 0.9rem; border-top: 1px solid #dfe6ec; color: #8a96a8; font-size: 0.78rem; }
+.packageNote { display: flex; align-items: center; gap: 0.4rem; margin-top: 1.3rem; padding-top: 0.9rem; border-top: 1px solid #dfe6ec; color: var(--label); font-size: 0.78rem; }
 
 /* — Bands: ink rule, micro-label, content — */
 .band { padding: 1.15rem 0 1.7rem; border-top: 2px solid #0f1c33; }
 .band + .band { margin-top: 2rem; }
-.bandLabel { color: #8a96a8; font-size: 0.66rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; }
+.bandLabel { color: var(--label); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; }
 .bandHead { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
 .bandTitle {
   margin-top: 0.3rem;
@@ -127,7 +127,7 @@
   letter-spacing: -0.02em;
   line-height: 1.15;
 }
-.bandEmpty { margin-top: 0.7rem; color: #52607a; line-height: 1.6; max-width: 52ch; }
+.bandEmpty { margin-top: 0.7rem; color: var(--body-ink); line-height: 1.6; max-width: 52ch; }
 .bandEmpty p + a { margin-top: 0.8rem; }
 /* A label that opens a second movement inside one band. */
 .subHead { composes: bandLabel; display: block; margin-top: 1.7rem; }
@@ -150,7 +150,7 @@
   background: #dfe6ec;
   margin: 0 0.7rem;
 }
-.bandStatement p { margin-top: 0.7rem; color: #52607a; line-height: 1.65; }
+.bandStatement p { margin-top: 0.7rem; color: var(--body-ink); line-height: 1.65; }
 
 /* — Process rail: the stages a file moves through, marked by where it stands.
    Squares, not circles - the same geometry as the matrix markers, so a stage
@@ -169,8 +169,8 @@
 .railCurrent .railMark { background: var(--coral); }
 .railTitle { color: #0f1c33; font-size: 0.95rem; font-weight: 800; letter-spacing: -0.01em; }
 .railCurrent .railTitle { color: var(--coral); }
-.railDesc { margin-top: 0.2rem; color: #52607a; font-size: 0.82rem; line-height: 1.55; max-width: 62ch; }
-.railWhen { color: #8a96a8; font-size: 0.6rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
+.railDesc { margin-top: 0.2rem; color: var(--body-ink); font-size: 0.82rem; line-height: 1.55; max-width: 62ch; }
+.railWhen { color: var(--label); font-size: 0.6rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
 
 /* — Conditions to satisfy: one sentence per hairline row — */
 .ticks { list-style: none; border-top: 1px solid #dfe6ec; }
@@ -190,9 +190,9 @@
 /* — Rows: hairline-separated label/value pairs — */
 .rows { border-top: 1px solid #dfe6ec; }
 .rows > div { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 1.5rem; padding: 0.9rem 0; border-bottom: 1px solid #dfe6ec; }
-.rows dt { color: #8a96a8; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+.rows dt { color: var(--label); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.13em; text-transform: uppercase; }
 .rows dd { color: #0f1c33; font-weight: 600; font-variant-numeric: tabular-nums; }
-.rowNote { color: #52607a; font-weight: 400; line-height: 1.6; }
+.rowNote { color: var(--body-ink); font-weight: 400; line-height: 1.6; }
 /* A note that belongs under a value rather than beside it - used where the
    value is a sentence and the note is a list of constraints. */
 .rowNoteUnder { composes: rowNote; display: block; margin-top: 0.25rem; }
@@ -201,12 +201,12 @@
 .figureRow { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.8rem; align-items: center; margin-top: 1.1rem; }
 .figureRowAligned { grid-template-columns: 200px minmax(0, 1fr); }
 .figure { color: #0f1c33; font-size: clamp(2.1rem, 4vw, 2.7rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
-.figure span { color: #8a96a8; font-size: 0.9rem; font-weight: 700; margin-left: 0.15rem; }
+.figure span { color: var(--label); font-size: 0.9rem; font-weight: 700; margin-left: 0.15rem; }
 .figureBody { min-width: 0; }
 .bar { height: 6px; background: #eef2f6; overflow: hidden; }
 .bar i { display: block; height: 100%; background: var(--teal); }
 .bar i::after { content: ""; display: block; height: 100%; width: 0; }
-.figureMeta { display: flex; justify-content: space-between; gap: 1rem; margin-top: 0.55rem; color: #52607a; font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+.figureMeta { display: flex; justify-content: space-between; gap: 1rem; margin-top: 0.55rem; color: var(--body-ink); font-size: 0.82rem; font-variant-numeric: tabular-nums; }
 
 /* — Session rows: date stub, subject, actions — */
 .sessions { list-style: none; margin-top: 0.9rem; }
@@ -214,9 +214,9 @@
 .sessions li:last-child { border-bottom: 1px solid #dfe6ec; }
 .when { display: grid; gap: 0.1rem; font-variant-numeric: tabular-nums; }
 .when b { color: #0f1c33; font-size: 1.02rem; font-weight: 800; line-height: 1.2; }
-.when em { color: #8a96a8; font-size: 0.6rem; font-weight: 800; font-style: normal; letter-spacing: 0.1em; text-transform: uppercase; }
+.when em { color: var(--label); font-size: 0.6rem; font-weight: 800; font-style: normal; letter-spacing: 0.1em; text-transform: uppercase; }
 .what { color: #0f1c33; font-weight: 600; }
-.what small { display: block; margin-top: 0.2rem; color: #52607a; font-weight: 400; font-size: 0.8rem; }
+.what small { display: block; margin-top: 0.2rem; color: var(--body-ink); font-weight: 400; font-size: 0.8rem; }
 .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.35rem 0.9rem; }
 
 /* — Roster tools: search and sort — */
@@ -230,7 +230,7 @@
   padding: 0.45rem 0.65rem;
   border: 1px solid #dfe6ec;
   border-radius: 6px;
-  color: #8a96a8;
+  color: var(--label);
 }
 .search input {
   width: 100%;
@@ -262,7 +262,7 @@
 .noteItem { padding-top: 1.5rem; }
 .noteItem + .noteItem { margin-top: 1.5rem; border-top: 1px solid #dfe6ec; }
 .noteTitle { margin-top: 0.35rem; color: #0f1c33; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; line-height: 1.3; }
-.noteMeta { margin-top: 0.15rem; color: #8a96a8; font-size: 0.8rem; }
+.noteMeta { margin-top: 0.15rem; color: var(--label); font-size: 0.8rem; }
 .noteBody { margin-top: 0.6rem; color: #33415c; line-height: 1.65; max-width: 68ch; }
 
 /* — Availability rows: day, from, to, remove — */
@@ -274,7 +274,7 @@
 .matrix { width: 100%; border-collapse: collapse; }
 .matrix caption {
   padding-bottom: 0.8rem;
-  color: #52607a;
+  color: var(--body-ink);
   font-size: 0.82rem;
   line-height: 1.55;
   text-align: left;
@@ -282,7 +282,7 @@
 .matrix th, .matrix td { padding: 0.5rem 0.45rem; border-bottom: 1px solid #eef2f6; text-align: center; }
 .matrix thead th {
   border-bottom: 1px solid #dfe6ec;
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -306,7 +306,7 @@
 }
 .matrixOn { display: inline-block; width: 9px; height: 9px; background: var(--coral); }
 .matrixOff { display: inline-block; width: 9px; height: 1px; background: #cfd8e1; }
-.matrixLegend { display: flex; flex-wrap: wrap; gap: 1.4rem; margin-top: 0.9rem; color: #52607a; font-size: 0.72rem; }
+.matrixLegend { display: flex; flex-wrap: wrap; gap: 1.4rem; margin-top: 0.9rem; color: var(--body-ink); font-size: 0.72rem; }
 .matrixLegend span { display: inline-flex; align-items: center; gap: 0.45rem; }
 
 /* — Text links and status — */
@@ -328,13 +328,13 @@
 .textLink:hover { text-decoration: underline; text-underline-offset: 3px; }
 .textLink:disabled { color: #b3bdc9; cursor: default; text-decoration: none; }
 
-.statusPill { display: inline-block; padding: 0.2rem 0.45rem; border: 1px solid currentColor; color: #52607a; font-size: 0.58rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.statusPill { display: inline-block; padding: 0.2rem 0.45rem; border: 1px solid currentColor; color: var(--body-ink); font-size: 0.58rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
 .statusOk { color: var(--teal-dark); }
 .statusBad { color: #a8501f; }
 
 /* — Forms — */
 .form { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.4rem; margin-top: 1.1rem; }
-.form label { display: grid; gap: 0.4rem; color: #8a96a8; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+.form label { display: grid; gap: 0.4rem; color: var(--label); font-size: 0.62rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
 .form .wide { grid-column: 1 / -1; }
 .input, .select, .textarea {
   width: 100%;

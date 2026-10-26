@@ -18,7 +18,7 @@
   border: 1px solid #dfe6ec;
   border-radius: 999px;
   background: none;
-  color: #52607a;
+  color: var(--body-ink);
   font: inherit;
   font-size: 0.82rem;
   cursor: pointer;
@@ -56,8 +56,8 @@
 }
 .head:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
 .name { color: #0f1c33; font-size: 1rem; font-weight: 800; letter-spacing: -0.01em; }
-.meta { margin-top: 0.15rem; color: #8a96a8; font-size: 0.78rem; }
-.chevron { color: #8a96a8; transition: transform 0.15s ease; }
+.meta { margin-top: 0.15rem; color: var(--label); font-size: 0.78rem; }
+.chevron { color: var(--label); transition: transform 0.15s ease; }
 .chevronOpen { transform: rotate(180deg); }
 
 /* — Expanded evidence + decision surface — */
@@ -76,14 +76,14 @@
   padding: 0.55rem 0;
   border-bottom: 1px solid #eef2f6;
 }
-.evidenceLabel { color: #8a96a8; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.evidenceLabel { color: var(--label); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
 .evidenceValue { color: #0f1c33; font-size: 0.88rem; text-align: right; }
 .evidenceLink { color: var(--teal); font-size: 0.85rem; text-decoration: none; border-bottom: 1px solid currentColor; }
 .evidenceLink:hover { color: var(--coral); }
 .missing { color: #b0483f; }
 
 .note { margin-bottom: 1rem; }
-.noteLabel { display: block; margin-bottom: 0.4rem; color: #52607a; font-size: 0.82rem; }
+.noteLabel { display: block; margin-bottom: 0.4rem; color: var(--body-ink); font-size: 0.82rem; }
 
 .actions {
   display: flex;
@@ -94,7 +94,7 @@
   border-top: 1px solid #dfe6ec;
 }
 .scoreBox { display: flex; align-items: center; gap: 0.4rem; margin-right: auto; }
-.scoreBox label { color: #8a96a8; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.scoreBox label { color: var(--label); font-size: 0.74rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
 .scoreBox input { width: 4.5rem; padding: 0.4rem 0.5rem; border: 1px solid #dfe6ec; border-radius: 6px; font: inherit; font-size: 0.88rem; }
 
 .error {

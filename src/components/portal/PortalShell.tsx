@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
-  ArrowUpRight, Banknote, Bell, BookOpen, CalendarDays, CreditCard, FileBarChart,
-  LayoutDashboard, NotebookPen, Settings, TrendingUp, UserPlus, Users, Video,
+  ArrowUpRight, Banknote, Bell, BookOpen, CalendarDays, ChevronRight, CreditCard,
+  FileBarChart, LayoutDashboard, Menu, NotebookPen, Settings, TrendingUp, UserPlus,
+  Users, Video, X,
 } from "lucide-react";
 import styles from "./portal.module.css";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -76,8 +77,25 @@ export default function PortalShell({
 }) {
   const path = usePathname();
   const { t } = useLanguage();
+  const [menuOpen, setMenuOpen] = useState(false);
   const isActive = (href: string) => (href === homeHref ? path === href : path.startsWith(href));
   const bellLabel = t("portal.notificationsAria", { unread });
+
+  // A phone has no room for a ruled sidebar, so navigation moves into a panel
+  // that closes itself the moment a page is chosen or the panel loses focus.
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [path]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
   const bell = (
     <>
       <Bell size={19} aria-hidden />
@@ -89,6 +107,16 @@ export default function PortalShell({
     <div className={styles.page}>
       <div className={styles.window}>
         <header className={styles.topbar}>
+          <button
+            type="button"
+            className={styles.menuButton}
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-expanded={menuOpen}
+            aria-controls="portal-nav-panel"
+            aria-label={menuOpen ? t("portal.closeMenu") : t("portal.openMenu")}
+          >
+            {menuOpen ? <X size={20} aria-hidden /> : <Menu size={20} aria-hidden />}
+          </button>
           <Link href={homeHref} className={styles.brand}>
             <svg width="34" height="34" viewBox="0 0 38 38" fill="none" strokeWidth="2.4" aria-hidden>
               <circle cx="17" cy="19" r="13" stroke="#3fb8ad" />
@@ -98,7 +126,9 @@ export default function PortalShell({
             <span>Nile<br />Language</span>
           </Link>
           <p className={styles.portalLabel}>{portalLabel}</p>
-          <LanguageSwitcher variant="light" />
+          <div className={styles.langSlot}>
+            <LanguageSwitcher variant="light" />
+          </div>
           <div className={styles.userBox}>
             {identity.avatar ? (
               <img src={identity.avatar} alt="" width={34} height={34} className={styles.avatar} />
@@ -116,6 +146,41 @@ export default function PortalShell({
             )}
           </div>
         </header>
+
+        {menuOpen && (
+          <div className={styles.menuPanel} id="portal-nav-panel">
+            <p className={styles.menuWho}>
+              <span>{identity.name}</span>
+              {identity.meta && <small>{identity.meta}</small>}
+            </p>
+            <nav className={styles.menuNav} aria-label={navAriaLabel}>
+              {nav.map(({ href, label, icon: iconName }) => {
+                const Icon = ICONS[iconName];
+                const active = isActive(href);
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    aria-current={active ? "page" : undefined}
+                    className={`${styles.menuLink} ${active ? styles.menuLinkOn : ""}`}
+                  >
+                    <Icon size={18} strokeWidth={1.8} aria-hidden />
+                    {label}
+                    <ChevronRight size={15} aria-hidden />
+                  </Link>
+                );
+              })}
+            </nav>
+            <div className={styles.menuFoot}>
+              <LanguageSwitcher variant="light" />
+              {footer && (
+                <Link className={styles.menuFootLink} href={footer.href}>
+                  {footer.label} <ArrowUpRight size={13} aria-hidden />
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className={styles.body}>
           <div className={styles.sidebar}>

@@ -42,7 +42,7 @@
   margin-left: auto;
   padding-right: 1.2rem;
   border-right: 1px solid #dfe6ec;
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.64rem;
   font-weight: 800;
   letter-spacing: 0.18em;
@@ -51,7 +51,7 @@
 
 .userBox { display: flex; align-items: center; gap: 0.7rem; }
 .userBox strong { display: block; font-size: 0.88rem; letter-spacing: -0.01em; }
-.userBox small { color: #52607a; font-size: 0.72rem; font-variant-numeric: tabular-nums; }
+.userBox small { color: var(--body-ink); font-size: 0.72rem; font-variant-numeric: tabular-nums; }
 .userBox small b { color: #0f1c33; }
 
 .avatar {
@@ -82,11 +82,87 @@
   padding: 0.2rem;
   background: none;
   border: 0;
-  color: #52607a;
+  color: var(--body-ink);
   cursor: pointer;
 }
 
 .bell:hover { color: #0f1c33; }
+
+/* — Phone navigation panel — */
+/* The sidebar is a ruled column on a desk and a hidden panel on a phone, where
+   the top bar carries one control that opens the same list as full-width rows. */
+.menuButton {
+  display: none;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid #0f1c33;
+  border-radius: 3px;
+  background: #fff;
+  color: #0f1c33;
+  cursor: pointer;
+}
+.menuButton:hover { background: #f2f5f8; }
+.menuButton:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+
+.menuPanel {
+  display: none;
+  border-bottom: 2px solid #0f1c33;
+  background: #fff;
+}
+.menuWho {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.9rem 20px;
+  border-bottom: 1px solid #dfe6ec;
+}
+.menuWho span { color: #0f1c33; font-size: 0.9rem; font-weight: 800; letter-spacing: -0.01em; }
+.menuWho small { color: var(--label); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+
+.menuNav { display: flex; flex-direction: column; }
+.menuLink {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 20px;
+  border-bottom: 1px solid #dfe6ec;
+  border-left: 3px solid transparent;
+  color: #33415c;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.menuLink svg { color: #6b7891; }
+.menuLink svg:last-child { color: #b6c0cd; }
+.menuLinkOn { color: #0f1c33; border-left-color: var(--coral); background: #f6f8fa; }
+.menuLinkOn svg { color: var(--coral); }
+.menuLink:focus-visible { outline: 2px solid var(--coral); outline-offset: -2px; }
+
+.menuFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+  padding: 0.9rem 20px;
+}
+.menuFootLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--label);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.menuFootLink:hover { color: #0f1c33; }
 
 .badge {
   position: absolute;
@@ -125,7 +201,7 @@
   align-items: center;
   gap: 0.65rem;
   padding: 0.62rem 24px 0.62rem 23px;
-  color: #52607a;
+  color: var(--body-ink);
   text-decoration: none;
   font-size: 0.7rem;
   font-weight: 800;
@@ -146,7 +222,7 @@
   margin: auto 24px 0;
   padding-top: 1.1rem;
   border-top: 1px solid #dfe6ec;
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.64rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -165,19 +241,22 @@
   .portalLabel { display: none; }
 }
 
+/* A phone keeps the same list, opened from the top bar. The ruled sidebar is
+   replaced rather than squeezed: a horizontal strip of ten admin links simply
+   ran off the right edge, where nobody scrolls to find it. */
 @media (max-width: 720px) {
   .body { grid-template-columns: 1fr; }
-  .sidebar { flex-direction: row; align-items: center; gap: 0; overflow-x: auto; padding: 0; border-right: 0; border-bottom: 1px solid #dfe6ec; }
-  .sideNav { flex-direction: row; }
-  .sideLink { white-space: nowrap; border-left: 0; border-bottom: 2px solid transparent; gap: 0.45rem; padding: 0.72rem 0.55rem; font-size: 0.64rem; letter-spacing: 0.08em; }
-  .sideLink.active { border-bottom-color: var(--coral); background: #fff; }
-  .sideFoot { display: none; }
-  .topbar { padding: 0.75rem 16px; }
-  .userBox small { display: none; }
+  .sidebar { display: none; }
+  .menuButton { display: grid; }
+  .menuPanel { display: block; }
+  .langSlot { display: none; }
+  .topbar { gap: 0.65rem; padding: 0.7rem 16px; }
+  .userBox { margin-left: auto; gap: 0.5rem; }
+  .userBox div { display: none; }
+  .bell { margin-left: 0; }
 }
 
-/* Four tabs must fit a phone without side-scrolling, so drop the icons. */
-@media (max-width: 520px) {
-  .sideLink svg { display: none; }
-  .sideLink { padding: 0.72rem 0.4rem; letter-spacing: 0.04em; }
+/* Below the narrowest phones the wordmark would push the bell off the bar. */
+@media (max-width: 400px) {
+  .brand span { display: none; }
 }

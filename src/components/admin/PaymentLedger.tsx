@@ -267,8 +267,10 @@ export default function PaymentLedger() {
                     </button>
                   )}
                 </span>
-                <span className={`${ui.statusPill} ${paid ? ui.statusOk : row.status === "refunded" || row.status === "failed" ? ui.statusBad : ""}`}>
-                  {t(`admin.pay.stage.${row.status}`)}
+                <span className={styles.pillCell}>
+                  <span className={`${ui.statusPill} ${paid ? ui.statusOk : row.status === "refunded" || row.status === "failed" ? ui.statusBad : ""}`}>
+                    {t(`admin.pay.stage.${row.status}`)}
+                  </span>
                 </span>
 
                 {recording === row.order_id && (

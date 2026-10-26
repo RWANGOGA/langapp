@@ -21,7 +21,7 @@
   line-height: 1.1;
 }
 
-.dashboardWelcome p:not(.kicker) { margin-top: 0.45rem; color: #52607a; line-height: 1.6; }
+.dashboardWelcome p:not(.kicker) { margin-top: 0.45rem; color: var(--body-ink); line-height: 1.6; }
 
 .kicker {
   color: var(--coral);
@@ -32,7 +32,7 @@
 }
 
 .microLabel {
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.66rem;
   font-weight: 800;
   letter-spacing: 0.16em;
@@ -78,7 +78,7 @@
 .dashboardStats > div + div { padding-left: 1.4rem; border-left: 1px solid #dfe6ec; }
 
 .dashboardStats span:last-child { display: grid; gap: 0.15rem; }
-.dashboardStats small { color: #8a96a8; font-size: 0.64rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+.dashboardStats small { color: var(--label); font-size: 0.64rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
 .dashboardStats b { color: #0f1c33; font-size: 1.3rem; font-weight: 800; letter-spacing: -0.015em; font-variant-numeric: tabular-nums; line-height: 1.2; }
 .dashboardStatIcon { display: grid; place-items: center; color: var(--coral); }
 
@@ -94,7 +94,7 @@
 .paymentSummary :global(.subscription-action) {
   margin-top: 0.9rem;
   padding: 0.45rem 0.8rem;
-  color: #52607a;
+  color: var(--body-ink);
   background: #fff;
   border: 1px solid #dfe6ec;
   border-radius: 8px;
@@ -128,10 +128,10 @@
 .paymentDetails > div { display: flex; align-items: center; gap: 0.55rem; padding: 0.8rem 0; color: #b3bdc9; }
 .paymentDetails > div + div { padding-left: 1.4rem; border-left: 1px solid #dfe6ec; }
 .paymentDetails span { display: grid; gap: 0.15rem; }
-.paymentDetails small { color: #8a96a8; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+.paymentDetails small { color: var(--label); font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
 .paymentDetails b { color: #0f1c33; font-size: 0.9rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 
-.paymentNotice { margin-top: 0.9rem; color: #52607a; font-size: 0.86rem; line-height: 1.6; }
+.paymentNotice { margin-top: 0.9rem; color: var(--body-ink); font-size: 0.86rem; line-height: 1.6; }
 
 .paymentAction {
   display: inline-block;
@@ -159,7 +159,7 @@
 .sidePane .band:first-child { padding-top: 1.15rem; }
 
 .bandLabel {
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.66rem;
   font-weight: 800;
   letter-spacing: 0.16em;
@@ -177,7 +177,7 @@
   line-height: 1.15;
 }
 
-.bandEmpty { margin-top: 0.7rem; color: #52607a; font-size: 0.9rem; line-height: 1.65; }
+.bandEmpty { margin-top: 0.7rem; color: var(--body-ink); font-size: 0.9rem; line-height: 1.65; }
 .bandEmpty p + * { margin-top: 0.8rem; }
 
 .textLink {
@@ -212,7 +212,7 @@
 .miniTutor img { width: 40px; height: 40px; border-radius: 3px; object-fit: cover; border: 1px solid #dfe6ec; }
 .miniTutor span { display: grid; gap: 0.1rem; }
 .miniTutor strong { letter-spacing: -0.01em; }
-.miniTutor small { color: #8a96a8; font-size: 0.74rem; }
+.miniTutor small { color: var(--label); font-size: 0.74rem; }
 
 .joinRow { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.2rem; }
 
@@ -239,7 +239,7 @@
   padding-top: 0.95rem;
   border-top: 1px solid #dfe6ec;
   width: 100%;
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -263,7 +263,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-.figure span { color: #8a96a8; font-size: 1.1rem; font-weight: 700; letter-spacing: 0; }
+.figure span { color: var(--label); font-size: 1.1rem; font-weight: 700; letter-spacing: 0; }
 
 .figureBody { flex: 1; min-width: 0; display: grid; gap: 0.55rem; }
 
@@ -283,7 +283,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.4rem 1rem;
-  color: #52607a;
+  color: var(--body-ink);
   font-size: 0.82rem;
   font-variant-numeric: tabular-nums;
 }
@@ -293,7 +293,7 @@
 .tutorWho img { width: 56px; height: 56px; border-radius: 3px; object-fit: cover; border: 1px solid #dfe6ec; }
 .tutorWho span { display: grid; gap: 0.12rem; }
 .tutorWho strong { font-size: 1rem; font-weight: 800; letter-spacing: -0.01em; }
-.tutorWho small { color: #8a96a8; font-size: 0.78rem; }
+.tutorWho small { color: var(--label); font-size: 0.78rem; }
 
 .band .textLink { margin-top: 0.9rem; }
 
@@ -318,13 +318,13 @@
   line-height: 1.15;
   font-variant-numeric: tabular-nums;
 }
-.classWhen em { color: #8a96a8; font-size: 0.62rem; font-weight: 800; font-style: normal; letter-spacing: 0.1em; text-transform: uppercase; font-variant-numeric: tabular-nums; }
+.classWhen em { color: var(--label); font-size: 0.62rem; font-weight: 800; font-style: normal; letter-spacing: 0.1em; text-transform: uppercase; font-variant-numeric: tabular-nums; }
 
 .classWhat { color: #33415c; font-size: 0.9rem; line-height: 1.5; }
 
 .upList li.listEmpty {
   display: block;
-  color: #52607a;
+  color: var(--body-ink);
   font-size: 0.88rem;
   line-height: 1.6;
   font-weight: 400;
@@ -400,7 +400,7 @@
   line-height: 1.1;
 }
 
-.pageHeading p { margin-top: 0.4rem; color: #52607a; line-height: 1.6; max-width: 62ch; }
+.pageHeading p { margin-top: 0.4rem; color: var(--body-ink); line-height: 1.6; max-width: 62ch; }
 
 /* — Tutor detail page — */
 .tutorHead { display: flex; align-items: center; gap: 1.2rem; padding-top: 1.4rem; border-top: 2px solid #0f1c33; }
@@ -412,14 +412,14 @@
   padding: 0.18rem 0.45rem;
   border: 1px solid #dfe6ec;
   border-radius: 0;
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.58rem;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-.muted { display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.3rem; color: #52607a; font-size: 0.86rem; }
+.muted { display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.3rem; color: var(--body-ink); font-size: 0.86rem; }
 
 /* — Definition rows: label column + statement column — */
 .rows { border-top: 1px solid #dfe6ec; }
@@ -433,7 +433,7 @@
 }
 
 .rows dt {
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.64rem;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -442,9 +442,9 @@
 }
 
 .rows dd { color: #0f1c33; font-size: 0.92rem; line-height: 1.6; font-variant-numeric: tabular-nums; }
-.rowNote { color: #52607a; }
+.rowNote { color: var(--body-ink); }
 
-.rowsNote { color: #8a96a8; font-size: 0.8rem; line-height: 1.6; }
+.rowsNote { color: var(--label); font-size: 0.8rem; line-height: 1.6; }
 .rowsNote a { color: #0f1c33; text-decoration: underline; text-underline-offset: 3px; }
 
 /* — Panel (progress page) — */
@@ -464,8 +464,8 @@
 
 .notificationSummary > div + div { padding-left: 1.4rem; border-left: 1px solid #dfe6ec; }
 
-.notificationSummary span { display: grid; gap: 0.15rem; color: #52607a; font-size: 0.82rem; }
-.notificationSummary small { color: #8a96a8; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+.notificationSummary span { display: grid; gap: 0.15rem; color: var(--body-ink); font-size: 0.82rem; }
+.notificationSummary small { color: var(--label); font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
 .notificationSummary b { color: #0f1c33; font-size: 1rem; font-weight: 800; font-variant-numeric: tabular-nums; }
 
 .summaryIcon { display: grid; place-items: center; }
@@ -484,12 +484,12 @@
 .notificationItem svg { color: #b3bdc9; margin-top: 0.15rem; }
 .notificationItem.unread svg { color: var(--coral); }
 .notificationItem h2 { font-size: 0.98rem; font-weight: 800; letter-spacing: -0.01em; }
-.notificationItem p { margin-top: 0.2rem; color: #52607a; line-height: 1.6; font-size: 0.9rem; }
+.notificationItem p { margin-top: 0.2rem; color: var(--body-ink); line-height: 1.6; font-size: 0.9rem; }
 
 .notificationItem time {
   display: block;
   margin-top: 0.4rem;
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -520,7 +520,7 @@
   justify-items: start;
   padding: 2.2rem 0 2.6rem;
   border-top: 2px solid #0f1c33;
-  color: #52607a;
+  color: var(--body-ink);
 }
 
 .emptyState h2 { color: #0f1c33; font-size: 1.35rem; font-weight: 800; letter-spacing: -0.015em; }

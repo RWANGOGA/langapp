@@ -109,7 +109,11 @@ export default function SiteHeader() {
 
         {/* Actions */}
         <div className={styles.actions}>
-          <LanguageSwitcher variant="dark" />
+          {/* On a phone the language switcher moves into the drawer: it is the
+              widest control here and the least urgent one. */}
+          <span className={styles.langSlot}>
+            <LanguageSwitcher variant="dark" />
+          </span>
           {isLoading ? (
             <span className={styles.loading}>{t("actions.loading")}</span>
           ) : isAuthenticated ? (

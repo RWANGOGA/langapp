@@ -14,7 +14,7 @@
   border: 1px solid #dfe6ec;
   border-radius: 999px;
   background: none;
-  color: #52607a;
+  color: var(--body-ink);
   font: inherit;
   font-size: 0.82rem;
   cursor: pointer;
@@ -31,7 +31,7 @@
 .scheduleForm label {
   display: grid;
   gap: 0.4rem;
-  color: #8a96a8;
+  color: var(--label);
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.12em;

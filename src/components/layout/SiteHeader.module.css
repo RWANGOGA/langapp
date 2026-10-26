@@ -98,6 +98,10 @@
   gap: 14px;
   flex-shrink: 0;
 }
+.langSlot {
+  display: flex;
+  align-items: center;
+}
 
 .avatar {
   width: 34px;
@@ -277,6 +281,9 @@
   }
   .actions {
     gap: 8px;
+  }
+  .langSlot {
+    display: none;
   }
   /* Auth CTAs stay visible on mobile - compacted, not hidden. They are the
      primary action of the site; burying them in the drawer lost sign-ins. */

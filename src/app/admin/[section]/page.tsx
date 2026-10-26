@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { getAdminDashboard, type AdminDashboard } from "@/lib/admin-data";
+import { apiGetClient } from "@/lib/api-client";
 import AdminShell from "@/components/admin/AdminShell";
 import TutorRoster from "@/components/admin/TutorRoster";
 import StudentRoster from "@/components/admin/StudentRoster";
@@ -94,10 +95,11 @@ export default function AdminSectionPage() {
   const [data, setData] = useState<AdminDashboard | null>(null);
   const [error, setError] = useState<string | null>(null);
   const section = SECTIONS.has(params.section as Section) ? (params.section as Section) : "dashboard";
-  // The ledger loads its own page from /admin/payments, so it must not be held
-  // behind the dashboard aggregate — that payload takes seconds from the
-  // production database and carries nothing the ledger needs.
-  const needsDashboard = section !== "payments";
+  // These sections fetch their own data and read nothing from the dashboard
+  // aggregate, which takes seconds from the production database. Only the bell
+  // number is borrowed, and that is one small read of its own.
+  const needsDashboard = !["payments", "applications", "settings"].includes(section);
+  const [badge, setBadge] = useState(0);
   const copy = {
     kicker: t(`admin.section.${section}.kicker`),
     title: t(`admin.section.${section}.title`),
@@ -111,6 +113,13 @@ export default function AdminSectionPage() {
       .then(setData)
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (isLoading || !isAuthenticated || !isAdmin || needsDashboard) return;
+    apiGetClient<{ unread: number }>("/notifications")
+      .then((page) => setBadge(page?.unread ?? 0))
+      .catch(() => {});
+  }, [isAuthenticated, isAdmin, isLoading, needsDashboard]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -161,7 +170,7 @@ export default function AdminSectionPage() {
   }
 
   return (
-    <AdminShell adminName={user?.full_name} unread={data?.unread ?? 0}>
+    <AdminShell adminName={user?.full_name} unread={needsDashboard ? (data?.unread ?? 0) : badge}>
       <div className={ui.pageStack}>
         <header className={ui.pageHeading}>
           <div>
