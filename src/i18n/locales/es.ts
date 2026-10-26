@@ -359,6 +359,28 @@ const es: Record<string, string> = {
   "tutors.noMatch.title": "Ningún tutor coincide con esos filtros.",
   "tutors.noMatch.body": "Amplía el objetivo o el idioma — o borra la búsqueda.",
 
+  // Tutor profile page
+  "tutors.profile.back": "Todos los tutores",
+  "tutors.profile.basedIn": "Reside en {country}",
+  "tutors.profile.about": "Acerca de",
+  "tutors.profile.noBio":
+    "Este tutor aún no ha escrito una presentación — aparecerá en su perfil cuando la añada desde el portal de tutores.",
+  "tutors.profile.focus": "Áreas de enfoque: {areas}",
+  "tutors.profile.evidence": "Acreditaciones verificadas",
+  "tutors.profile.evidence.qualification":
+    "Certificación docente {type} — documento revisado y verificado por nuestro equipo",
+  "tutors.profile.evidence.proficiency":
+    "Nivel de inglés {type} · puntuación {score} — resultado verificado por nuestro equipo",
+  "tutors.profile.evidence.proficiencyUnscored":
+    "Nivel de inglés {type} — resultado verificado por nuestro equipo",
+  "tutors.profile.evidence.identity": "Comprobaciones de identidad y antecedentes completadas",
+  "tutors.profile.evidence.references":
+    "Se contactó a las referencias y se observó una clase demostrativa antes de la aprobación",
+  "tutors.profile.video": "Ver el vídeo de presentación",
+  "tutors.profile.availability": "Disponibilidad semanal",
+  "tutors.profile.noAvailability":
+    "Las franjas de disponibilidad aparecen cuando el tutor las publica desde su portal.",
+
   // Portal navigation + shared shell chrome
   "nav.dashboard": "Panel",
   "nav.overview": "Resumen",

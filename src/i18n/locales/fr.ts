@@ -358,6 +358,28 @@ const fr: Record<string, string> = {
   "tutors.noMatch.title": "Aucun tuteur ne correspond à ces filtres.",
   "tutors.noMatch.body": "Élargissez l'objectif ou la langue — ou effacez la recherche.",
 
+  // Tutor profile page
+  "tutors.profile.back": "Tous les tuteurs",
+  "tutors.profile.basedIn": "Localisation : {country}",
+  "tutors.profile.about": "À propos",
+  "tutors.profile.noBio":
+    "Ce tuteur n'a pas encore rédigé de présentation — elle apparaîtra sur son profil dès qu'il l'aura ajoutée depuis le portail des tuteurs.",
+  "tutors.profile.focus": "Domaines travaillés : {areas}",
+  "tutors.profile.evidence": "Justificatifs vérifiés",
+  "tutors.profile.evidence.qualification":
+    "Diplôme d'enseignement {type} — document examiné et vérifié par notre équipe",
+  "tutors.profile.evidence.proficiency":
+    "Niveau d'anglais {type} · score {score} — résultat vérifié par notre équipe",
+  "tutors.profile.evidence.proficiencyUnscored":
+    "Niveau d'anglais {type} — résultat vérifié par notre équipe",
+  "tutors.profile.evidence.identity": "Contrôles d'identité et de parcours effectués",
+  "tutors.profile.evidence.references":
+    "Références contactées et cours de démonstration observé avant l'agrément",
+  "tutors.profile.video": "Voir la vidéo de présentation",
+  "tutors.profile.availability": "Disponibilités hebdomadaires",
+  "tutors.profile.noAvailability":
+    "Les créneaux apparaissent dès que le tuteur les publie depuis son portail.",
+
   // Portal navigation + shared shell chrome
   "nav.dashboard": "Tableau de bord",
   "nav.overview": "Vue d'ensemble",

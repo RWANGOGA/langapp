@@ -13,7 +13,9 @@ import styles from "./BackLink.module.css";
  * `framed` wraps it in a page-width bar for the global mount in the root
  * layout; portal frames already supply their own padding, so they mount it
  * unframed. Mounted globally it must not duplicate the portal's own control,
- * hence `hiddenOn`.
+ * hence `hiddenOn` - which also takes a `/*` suffix for sections whose detail
+ * pages carry their own back link (`/tutors/*` hides the bar on a profile but
+ * leaves it on the directory, which has none).
  */
 export default function BackLink({
   fallback = "/",
@@ -22,7 +24,8 @@ export default function BackLink({
 }: {
   /** Route to use when there is no browser history to step back into. */
   fallback?: string;
-  /** Path prefixes where the control should not render at all. */
+  /** Path prefixes where the control should not render at all. A trailing `/*`
+   *  means the children only, not the section's own page. */
   hiddenOn?: string[];
   /** Wrap in a page-width bar (global mount) instead of inline. */
   framed?: boolean;
@@ -33,7 +36,11 @@ export default function BackLink({
 
   // The landing page is home: there is nowhere to go back to.
   if (path === "/") return null;
-  const suppressed = hiddenOn.some((p) => path === p || path.startsWith(p + "/"));
+  const suppressed = hiddenOn.some((p) =>
+    p.endsWith("/*")
+      ? path.startsWith(p.slice(0, -1))
+      : path === p || path.startsWith(p + "/"),
+  );
   if (suppressed) return null;
 
   const goBack = () => {

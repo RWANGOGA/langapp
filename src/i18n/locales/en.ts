@@ -387,6 +387,30 @@ const en = {
   "tutors.noMatch.title": "No tutor matches those filters.",
   "tutors.noMatch.body": "Widen the goal or language — or clear the search.",
 
+  // Tutor profile page — the detail view behind "View profile". Phrases shared
+  // with the directory (rating, years, speaks, trial CTA) reuse the keys above
+  // so the two pages cannot drift into describing the same person differently.
+  "tutors.profile.back": "All tutors",
+  "tutors.profile.basedIn": "Based in {country}",
+  "tutors.profile.about": "About",
+  "tutors.profile.noBio":
+    "This tutor has not written an introduction yet — it lands on their profile once they add one from the tutor portal.",
+  "tutors.profile.focus": "Focus areas: {areas}",
+  "tutors.profile.evidence": "Verified evidence",
+  "tutors.profile.evidence.qualification":
+    "{type} teaching qualification — document reviewed and verified by our team",
+  "tutors.profile.evidence.proficiency":
+    "{type} proficiency · score {score} — result verified by our team",
+  "tutors.profile.evidence.proficiencyUnscored":
+    "{type} proficiency — result verified by our team",
+  "tutors.profile.evidence.identity": "Identity and background checks completed",
+  "tutors.profile.evidence.references":
+    "References contacted and a demo lesson observed before approval",
+  "tutors.profile.video": "Watch the introduction video",
+  "tutors.profile.availability": "Weekly availability",
+  "tutors.profile.noAvailability":
+    "Availability windows appear once the tutor publishes them from their portal.",
+
   // Portal navigation + shared shell chrome
   "nav.dashboard": "Dashboard",
   "nav.overview": "Overview",

@@ -355,6 +355,27 @@ const ja: Record<string, string> = {
   "tutors.noMatch.title": "その条件に合うチューターはいません。",
   "tutors.noMatch.body": "目標や言語を広げる——または検索をクリアしてください。",
 
+  // Tutor profile page
+  "tutors.profile.back": "すべてのチューター",
+  "tutors.profile.basedIn": "{country} に在住",
+  "tutors.profile.about": "概要",
+  "tutors.profile.noBio":
+    "このチューターはまだ自己紹介を書いていません。ポータルから追加すると、プロフィールに表示されます。",
+  "tutors.profile.focus": "対応分野：{areas}",
+  "tutors.profile.evidence": "確認済みの実績",
+  "tutors.profile.evidence.qualification":
+    "{type} の指導資格——書類を確認し、当チームが検証済み",
+  "tutors.profile.evidence.proficiency":
+    "{type} の英語力·スコア {score}——結果を当チームが検証済み",
+  "tutors.profile.evidence.proficiencyUnscored":
+    "{type} の英語力——結果を当チームが検証済み",
+  "tutors.profile.evidence.identity": "身元と経歴の確認を完了しています",
+  "tutors.profile.evidence.references": "推薦先に連絡し、承認前に模擬レッスンを実際に見ています",
+  "tutors.profile.video": "紹介ビデオを見る",
+  "tutors.profile.availability": "毎週の対応可能時間",
+  "tutors.profile.noAvailability":
+    "チューターがポータルから公開すると、ここに空き時間が表示されます。",
+
   // Portal navigation + shared shell chrome
   "nav.dashboard": "ダッシュボード",
   "nav.overview": "概要",

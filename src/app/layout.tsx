@@ -27,7 +27,7 @@ export default function RootLayout({
             <SiteHeader />
             {/* Public pages get the global back control; the portals and the
                 applicant frame render their own so it is never doubled. */}
-            <BackLink framed hiddenOn={["/dashboard", "/tutor", "/admin"]} />
+            <BackLink framed hiddenOn={["/dashboard", "/tutor", "/admin", "/tutors/*"]} />
             {children}
             <SiteFooter />
           </AuthProvider>

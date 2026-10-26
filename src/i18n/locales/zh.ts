@@ -355,6 +355,27 @@ const zh: Record<string, string> = {
   "tutors.noMatch.title": "没有符合这些筛选条件的导师。",
   "tutors.noMatch.body": "放宽目标或语言——或清除搜索。",
 
+  // Tutor profile page
+  "tutors.profile.back": "全部导师",
+  "tutors.profile.basedIn": "位于{country}",
+  "tutors.profile.about": "关于",
+  "tutors.profile.noBio":
+    "这位导师还没有撰写自我介绍——他们在导师后台添加之后，介绍会显示在这里。",
+  "tutors.profile.focus": "专注方向：{areas}",
+  "tutors.profile.evidence": "已核实的资质",
+  "tutors.profile.evidence.qualification":
+    "{type} 教学资质——材料已由我们的团队审核并核实",
+  "tutors.profile.evidence.proficiency":
+    "{type} 英语水平·成绩 {score}——成绩已由我们的团队核实",
+  "tutors.profile.evidence.proficiencyUnscored":
+    "{type} 英语水平——成绩已由我们的团队核实",
+  "tutors.profile.evidence.identity": "身份与背景核查已完成",
+  "tutors.profile.evidence.references": "已联系推荐人，并在批准前旁听了示范课",
+  "tutors.profile.video": "观看介绍视频",
+  "tutors.profile.availability": "每周可约时间",
+  "tutors.profile.noAvailability":
+    "导师在后台公布可约时间后，具体时段会显示在这里。",
+
   // Portal navigation + shared shell chrome
   "nav.dashboard": "仪表板",
   "nav.overview": "概览",
