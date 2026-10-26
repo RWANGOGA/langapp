@@ -1,0 +1,152 @@
+/* The payment ledger keeps the band vocabulary of every other admin page; only
+   the filter row, the record form and the drill-down are specific to it. */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #dfe6ec;
+  border-radius: 999px;
+  background: none;
+  color: #52607a;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.filter:hover { border-color: #0f1c33; color: #0f1c33; }
+.filterOn { border-color: var(--coral); color: var(--coral); box-shadow: inset 0 0 0 1px var(--coral); }
+
+/* Eleven chips plus a search field do not fit one line at this width; wrapping
+   keeps the search box whole instead of clipping it off the right edge. */
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-top: 1rem;
+}
+.searchBox { flex: 0 1 220px; max-width: 220px; }
+
+/* The band's own list settles on three columns (amount, subject, pill); the
+   ledger adds a fourth for its actions, so it re-declares the ruling and the
+   grid instead of fighting the shared rule's specificity. */
+.ledger { list-style: none; margin-top: 0.9rem; }
+.ledger li {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 10rem) minmax(0, 1fr) auto auto;
+  gap: 1.2rem;
+  align-items: start;
+  padding: 0.85rem 0;
+  border-top: 1px solid #dfe6ec;
+}
+.ledger li:last-child { border-bottom: 1px solid #dfe6ec; }
+.rowActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.35rem 0.9rem;
+  white-space: nowrap;
+}
+.linkButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--coral);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+.linkButton:hover { text-decoration: underline; }
+.chevronOpen { transform: rotate(180deg); }
+
+.recordForm {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.9rem 1.2rem;
+  align-items: end;
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #e6ecf2;
+}
+.recordForm label {
+  display: grid;
+  gap: 0.35rem;
+  color: #8a96a8;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.recordAction { display: flex; justify-content: flex-end; }
+
+.detail {
+  grid-column: 1 / -1;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e6ecf2;
+}
+
+.events {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+.events li {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  gap: 0.9rem;
+  font-size: 0.86rem;
+  color: #23304a;
+  line-height: 1.5;
+}
+.eventWhen {
+  color: #8a96a8;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-top: 0.15rem;
+}
+.tally {
+  display: block;
+  color: #8a96a8;
+  font-size: 0.78rem;
+}
+
+.error {
+  margin-top: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #f0c9c3;
+  border-radius: 8px;
+  background: #fdf1ef;
+  color: #b0483f;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.flash {
+  margin-top: 0.9rem;
+  color: var(--teal);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .recordForm { grid-template-columns: 1fr; }
+  .events li { grid-template-columns: 1fr; gap: 0.2rem; }
+  .ledger li { grid-template-columns: 1fr; }
+  .rowActions { justify-content: flex-start; }
+}

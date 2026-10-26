@@ -16,6 +16,7 @@ from sqlalchemy.pool import StaticPool
 from app.main import app
 from app.db.session import Base, get_db
 from app.api.auth import get_current_user
+from app.models.package import Order, OrderStatus, Package, PaymentMethod
 from app.models.user import User, UserRole, Class, ClassStatus, ProficiencyLevel
 
 
@@ -137,3 +138,71 @@ async def other_client(db_session, other_tutor_user):
     async with make_client(db_session, other_tutor_user) as ac:
         yield ac
     app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture
+async def admin_user(db_session):
+    admin = User(
+        email="admin.test@example.com",
+        hashed_password="x",
+        full_name="Test Admin",
+        role=UserRole.ADMIN,
+        is_active=True,
+    )
+    db_session.add(admin)
+    await db_session.commit()
+    await db_session.refresh(admin)
+    return admin
+
+
+@pytest_asyncio.fixture
+async def admin_client(db_session, admin_user):
+    async with make_client(db_session, admin_user) as ac:
+        yield ac
+    app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture
+async def starter_package(db_session):
+    package = Package(
+        id="starter",
+        name="Starter (1-Month)",
+        months=1,
+        price_jpy=8000,
+        price_vnd=1400000,
+        price_usd=59,
+        features=[],
+    )
+    db_session.add(package)
+    await db_session.commit()
+    return package
+
+
+@pytest_asyncio.fixture
+async def make_order(db_session, learner_user, starter_package):
+    """Build an order in the shape checkout writes it, overridable per test."""
+
+    async def _make(**overrides):
+        fields = dict(
+            package_id="starter",
+            user_id=learner_user.id,
+            subject="General English",
+            session_type="conversation",
+            duration_minutes=60,
+            status=OrderStatus.PENDING,
+            payment_method=PaymentMethod.LINE_PAY,
+            amount_jpy=8000,
+            amount_vnd=1400000,
+            amount_usd=59,
+            region="jp",
+            currency="JPY",
+        )
+        fields.update(overrides)
+        order = Order(**fields)
+        db_session.add(order)
+        await db_session.commit()
+        await db_session.refresh(order)
+        return order
+
+    return _make
+

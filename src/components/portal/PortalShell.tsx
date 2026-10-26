@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import {
-  ArrowUpRight, Bell, BookOpen, CalendarDays, CreditCard, FileBarChart,
+  ArrowUpRight, Banknote, Bell, BookOpen, CalendarDays, CreditCard, FileBarChart,
   LayoutDashboard, NotebookPen, Settings, TrendingUp, UserPlus, Users, Video,
 } from "lucide-react";
 import styles from "./portal.module.css";
@@ -30,6 +30,7 @@ const ICONS = {
   schedule: CalendarDays,
   classes: BookOpen,
   meetings: Video,
+  payments: Banknote,
   notes: NotebookPen,
   subscriptions: CreditCard,
   reports: FileBarChart,

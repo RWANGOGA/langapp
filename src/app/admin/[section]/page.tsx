@@ -15,10 +15,11 @@ import { SubscriptionManagement } from "@/components/admin/SubscriptionManagemen
 import { ActivityLog } from "@/components/admin/ActivityLog";
 import ApplicationReview from "@/components/admin/ApplicationReview";
 import ClassMonitor from "@/components/admin/ClassMonitor";
+import PaymentLedger from "@/components/admin/PaymentLedger";
 import AccountSettings from "@/components/admin/AccountSettings";
 import ui from "@/components/portal/bands.module.css";
 
-type Section = "dashboard" | "applications" | "tutors" | "students" | "classes" | "meetings" | "subscriptions" | "reports" | "settings";
+type Section = "dashboard" | "applications" | "tutors" | "students" | "classes" | "meetings" | "payments" | "subscriptions" | "reports" | "settings";
 
 const SECTIONS = new Set<Section>([
   "dashboard",
@@ -27,6 +28,7 @@ const SECTIONS = new Set<Section>([
   "students",
   "classes",
   "meetings",
+  "payments",
   "subscriptions",
   "reports",
   "settings",
@@ -56,6 +58,8 @@ function SectionContent({ section, data, onReload, t }: { section: Section; data
       return <ClassMonitor students={data.students} onReload={onReload} />;
     case "meetings":
       return <MeetingsPanel meetings={data.meetings} />;
+    // "payments" is rendered above, outside this switch, because the ledger
+    // stands on its own fetch and never waits for the dashboard payload.
     case "subscriptions":
       return <SubscriptionManagement plans={data.plans} leaders={data.leaders} statuses={data.statuses} />;
     case "reports":
@@ -90,6 +94,10 @@ export default function AdminSectionPage() {
   const [data, setData] = useState<AdminDashboard | null>(null);
   const [error, setError] = useState<string | null>(null);
   const section = SECTIONS.has(params.section as Section) ? (params.section as Section) : "dashboard";
+  // The ledger loads its own page from /admin/payments, so it must not be held
+  // behind the dashboard aggregate — that payload takes seconds from the
+  // production database and carries nothing the ledger needs.
+  const needsDashboard = section !== "payments";
   const copy = {
     kicker: t(`admin.section.${section}.kicker`),
     title: t(`admin.section.${section}.title`),
@@ -110,11 +118,12 @@ export default function AdminSectionPage() {
       router.push(isAuthenticated ? "/dashboard" : `/auth/login?callbackUrl=${encodeURIComponent("/admin")}`);
       return;
     }
+    if (!needsDashboard) return;
 
     getAdminDashboard()
       .then(setData)
       .catch((err) => setError(err instanceof Error ? err.message : t("admin.state.errorSection")));
-  }, [isAuthenticated, isAdmin, isLoading, router]);
+  }, [isAuthenticated, isAdmin, isLoading, needsDashboard, router]);
 
   if (isLoading || !isAuthenticated || !isAdmin) {
     return (
@@ -141,7 +150,7 @@ export default function AdminSectionPage() {
     );
   }
 
-  if (!data) {
+  if (needsDashboard && !data) {
     return (
       <AdminShell adminName={user?.full_name} unread={0}>
         <div className={ui.pageStack}>
@@ -152,7 +161,7 @@ export default function AdminSectionPage() {
   }
 
   return (
-    <AdminShell adminName={user?.full_name} unread={data.unread}>
+    <AdminShell adminName={user?.full_name} unread={data?.unread ?? 0}>
       <div className={ui.pageStack}>
         <header className={ui.pageHeading}>
           <div>
@@ -161,7 +170,11 @@ export default function AdminSectionPage() {
             <p>{copy.lede}</p>
           </div>
         </header>
-        <SectionContent section={section} data={data} onReload={reload} t={t} />
+        {needsDashboard ? (
+          <SectionContent section={section} data={data as AdminDashboard} onReload={reload} t={t} />
+        ) : (
+          <PaymentLedger />
+        )}
       </div>
     </AdminShell>
   );

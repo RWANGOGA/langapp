@@ -51,6 +51,126 @@ export async function getPaymentAnalytics(): Promise<PaymentAnalytics> {
   return (await apiGetClient<PaymentAnalytics>("/admin/payment/analytics")) ?? { successful_payments: 0, matching_pending: 0, gross_revenue_usd: 0, active_subscriptions: 0, generated_at: "" };
 }
 
+/* — The payment ledger —
+   No payment provider is wired, so an administrator records each payment by
+   hand with the reference it actually arrived under. Every amount travels with
+   its currency: the school charges in yen, dong and dollars, and one total
+   across the three would be a number in no currency at all. */
+export type LedgerStatus = "pending" | "processing" | "completed" | "matching_pending" | "failed" | "refunded";
+
+export const PAID_STATUSES: LedgerStatus[] = ["completed", "matching_pending"];
+
+export interface LedgerRow {
+  order_id: number;
+  student_id: number | null;
+  student_name: string | null;
+  student_email: string | null;
+  package_id: string;
+  package_name: string;
+  status: LedgerStatus;
+  region: string | null;
+  currency: string;
+  amount_minor: number;
+  payment_method: string | null;
+  reference: string | null;
+  created_at: string;
+  paid_at: string | null;
+}
+
+export interface CurrencyTotal { currency: string; amount_minor: number; count: number }
+
+export interface LedgerSummary {
+  awaiting_payment: number;
+  awaiting_match: number;
+  paid: number;
+  collected: CurrencyTotal[];
+}
+
+export interface LedgerPage {
+  orders: LedgerRow[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+  summary: LedgerSummary;
+}
+
+export interface LedgerEvent {
+  id: number;
+  event_type: string;
+  actor_type: string;
+  previous_state: string | null;
+  new_state: string | null;
+  amount_minor: number | null;
+  currency: string | null;
+  summary: string;
+  reference: string | null;
+  note: string | null;
+  created_at: string;
+}
+
+export interface LedgerSubscription {
+  tier: string;
+  status: string;
+  started_at: string;
+  current_period_end: string;
+  cancelled_at: string | null;
+}
+
+export interface LedgerOrder extends LedgerRow {
+  subject: string | null;
+  session_type: string | null;
+  duration_minutes: number | null;
+  package_months: number;
+  tutor_name: string | null;
+  events: LedgerEvent[];
+  subscription: LedgerSubscription | null;
+}
+
+export interface ConfirmationResult {
+  order_id: number;
+  status: LedgerStatus;
+  amount_minor: number;
+  currency: string;
+  reference: string;
+  matched: boolean;
+  confirmed_at: string;
+}
+
+/** GET /admin/payments - one page of orders, newest first. */
+export async function getPaymentLedger(params: {
+  status?: LedgerStatus;
+  currency?: string;
+  search?: string;
+  page?: number;
+  page_size?: number;
+} = {}): Promise<LedgerPage> {
+  const q = new URLSearchParams();
+  if (params.status) q.set("status", params.status);
+  if (params.currency) q.set("currency", params.currency);
+  if (params.search) q.set("search", params.search);
+  q.set("page", String(params.page ?? 1));
+  q.set("page_size", String(params.page_size ?? 25));
+  const data = await apiGetClient<LedgerPage>(`/admin/payments?${q.toString()}`);
+  if (!data) throw new Error("Failed to fetch the payment ledger");
+  return data;
+}
+
+/** GET /admin/payments/{id} - everything that happened to one order. */
+export async function getLedgerOrder(orderId: number): Promise<LedgerOrder> {
+  const data = await apiGetClient<LedgerOrder>(`/admin/payments/${orderId}`);
+  if (!data) throw new Error("Failed to fetch the order");
+  return data;
+}
+
+/** POST /admin/payments/{id}/confirm - record money that arrived. */
+export async function confirmPayment(
+  orderId: number,
+  body: { reference: string; note?: string; paid_at?: string },
+): Promise<ConfirmationResult> {
+  return apiSendClient<ConfirmationResult>("POST", `/admin/payments/${orderId}/confirm`, body);
+}
+
 /* — Tutor application review queue —
    The applicant's file, read the way staff read it (TutorApplicationRead: the
    applicant view plus admin_notes and reviewed_by). The reviewer acts through

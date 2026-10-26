@@ -17,42 +17,22 @@ import pytest
 import pytest_asyncio
 from sqlalchemy import select
 
-from app.models.package import Order, OrderStatus, Package, PaymentMethod
+from app.models.package import Order, OrderStatus
 from app.models.payment_tracking import PaymentEvent, Subscription, SubscriptionStatus
-from app.models.user import TutorProfile, User, UserRole
-from app.main import app
+from app.models.user import TutorProfile
 
 from tests.sqlite_fixtures import (  # noqa: F401
     db_session,
     tutor_user,
     learner_user,
     learner_client,
-    make_client,
+    admin_user,
+    admin_client,
+    starter_package,
+    make_order,
 )
 
 CONFIRM = "/api/v1/admin/payments/{order_id}/confirm"
-
-
-@pytest_asyncio.fixture
-async def admin_user(db_session):
-    admin = User(
-        email="admin.test@example.com",
-        hashed_password="x",
-        full_name="Test Admin",
-        role=UserRole.ADMIN,
-        is_active=True,
-    )
-    db_session.add(admin)
-    await db_session.commit()
-    await db_session.refresh(admin)
-    return admin
-
-
-@pytest_asyncio.fixture
-async def admin_client(db_session, admin_user):
-    async with make_client(db_session, admin_user) as ac:
-        yield ac
-    app.dependency_overrides.clear()
 
 
 @pytest_asyncio.fixture
@@ -63,41 +43,8 @@ async def approved_tutor(db_session, tutor_user):
 
 
 @pytest_asyncio.fixture
-async def starter_package(db_session):
-    package = Package(
-        id="starter",
-        name="Starter (1-Month)",
-        months=1,
-        price_jpy=8000,
-        price_vnd=1400000,
-        price_usd=59,
-        features=[],
-    )
-    db_session.add(package)
-    await db_session.commit()
-    return package
-
-
-@pytest_asyncio.fixture
-async def pending_order(db_session, learner_user, starter_package):
-    order = Order(
-        package_id="starter",
-        user_id=learner_user.id,
-        subject="General English",
-        session_type="conversation",
-        duration_minutes=60,
-        status=OrderStatus.PENDING,
-        payment_method=PaymentMethod.LINE_PAY,
-        amount_jpy=8000,
-        amount_vnd=1400000,
-        amount_usd=59,
-        region="jp",
-        currency="JPY",
-    )
-    db_session.add(order)
-    await db_session.commit()
-    await db_session.refresh(order)
-    return order
+async def pending_order(make_order):
+    return await make_order()
 
 
 async def confirm(client, order, reference="BT-4471", note=None):

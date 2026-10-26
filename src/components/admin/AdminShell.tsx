@@ -25,6 +25,7 @@ export default function AdminShell({
     { href: "/admin/students", label: t("nav.students"), icon: "students" },
     { href: "/admin/classes", label: t("nav.classes"), icon: "classes" },
     { href: "/admin/meetings", label: t("nav.meetings"), icon: "meetings" },
+    { href: "/admin/payments", label: t("nav.payments"), icon: "payments" },
     { href: "/admin/subscriptions", label: t("nav.subscriptions"), icon: "subscriptions" },
     { href: "/admin/reports", label: t("nav.reports"), icon: "reports" },
     { href: "/admin/settings", label: t("nav.settings"), icon: "settings" },

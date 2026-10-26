@@ -20,6 +20,18 @@ export function formatMoney(amount: number, currency: string): string {
 }
 
 /**
+ * Payment figures arrive from the API in minor units, because a cent is the
+ * only way to store dollars without losing the change. Yen and dong have no
+ * decimal subunit at all, so their minor unit is the unit itself - dividing
+ * them by 100 would shrink a Japanese payment to a hundredth of itself.
+ */
+const MINOR_UNITS: Record<string, number> = { JPY: 1, VND: 1, USD: 100 };
+
+export function formatMinor(amountMinor: number, currency: string): string {
+  return formatMoney(amountMinor / (MINOR_UNITS[currency] ?? 1), currency);
+}
+
+/**
  * The API stores naive UTC instants, so "2026-10-01T09:00:00" is 09:00 UTC.
  * Parsed as written, a browser in another zone reads it as *local* time and
  * every derived label lands hours out by the reader's offset - which is

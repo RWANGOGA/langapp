@@ -63,18 +63,24 @@ def amount_in(region: Region, package: Package) -> int:
 MINOR_UNITS: dict[str, int] = {"JPY": 1, "VND": 1, "USD": 100}
 
 
-def order_charge(order: Order) -> tuple[int, str]:
-    """The single amount an order is charged, and the currency it is charged in.
+def charge_of(
+    currency: Optional[str], amount_jpy: int, amount_vnd: int, amount_usd: int
+) -> tuple[int, str]:
+    """The single amount charged, in minor units, and the currency it is in.
 
     An order written before regions existed carries no currency, so it reports
     what the previous admin analytics treated as revenue: the USD figure.
     """
-    currency = order.currency or "USD"
+    currency = currency or "USD"
     if currency == "JPY":
-        amount = order.amount_jpy
+        amount = amount_jpy
     elif currency == "VND":
-        amount = order.amount_vnd
+        amount = amount_vnd
     else:
-        amount = order.amount_usd
+        amount = amount_usd
     return amount * MINOR_UNITS.get(currency, 1), currency
+
+
+def order_charge(order: Order) -> tuple[int, str]:
+    return charge_of(order.currency, order.amount_jpy, order.amount_vnd, order.amount_usd)
 
