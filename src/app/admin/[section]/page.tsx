@@ -179,10 +179,10 @@ export default function AdminSectionPage() {
             <p>{copy.lede}</p>
           </div>
         </header>
-        {needsDashboard ? (
-          <SectionContent section={section} data={data as AdminDashboard} onReload={reload} t={t} />
-        ) : (
+        {section === "payments" ? (
           <PaymentLedger />
+        ) : (
+          <SectionContent section={section} data={data as AdminDashboard} onReload={reload} t={t} />
         )}
       </div>
     </AdminShell>
