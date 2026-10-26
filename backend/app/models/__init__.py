@@ -8,6 +8,7 @@ from app.models.user import (
 from app.models.tutor_application import TutorApplication, ApplicationStatus, VerificationStatus
 from app.models.notification import Notification
 from app.models.payment_tracking import PaymentEvent, Subscription, SubscriptionStatus
+from app.models.contact_message import ContactMessage
 
 __all__ = [
     "Package",
@@ -28,4 +29,5 @@ __all__ = [
     "ApplicationStatus",
     "VerificationStatus",
     "Notification",
+    "ContactMessage",
 ]
