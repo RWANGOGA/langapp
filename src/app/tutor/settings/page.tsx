@@ -11,6 +11,7 @@ import {
   TutorProfileSettings,
 } from "@/lib/tutor-data";
 import { useLanguage } from "@/i18n/LanguageProvider";
+import { useBrowserZone, zoneGroups, zoneOffsetLabel } from "@/lib/timezones";
 import ui from "@/components/portal/bands.module.css";
 
 export default function TutorSettingsPage() {
@@ -22,11 +23,31 @@ export default function TutorSettingsPage() {
   const [headline, setHeadline] = useState("");
   const [bio, setBio] = useState("");
   const [country, setCountry] = useState("");
-  const [timezone, setTimezone] = useState("");
   const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // The browser's zone, known only once the page is live in a browser: on the
+  // server it would be the datacentre's, and two different answers in one field
+  // is a hydration lie.
+  const browserZone = useBrowserZone();
+  // null until the tutor actually touches the field, so a profile that arrives
+  // after the first render still fills it rather than a stale guess being saved
+  // back over the zone on file.
+  const [pickedZone, setPickedZone] = useState<string | null>(null);
+
+  // "No zone saved yet" is never a silent UTC: the field shows the browser's
+  // answer as a starting point, and saving makes that shown value real rather
+  // than inventing one behind the tutor's back.
+  const zone = pickedZone ?? profile?.timezone ?? (browserZone || "UTC");
+  // A pick always comes out of the list itself, so it needs no pinning; any
+  // other value is pinned so the select can show what it holds - a value
+  // missing from the options gets rewritten to the first option on the next
+  // save, quietly changing a setting nobody meant to change.
+  const groups = zoneGroups(
+    pickedZone === null ? profile?.timezone || browserZone : "",
+    profile?.timezone ? "auth.tz.group.saved" : "auth.tz.group.detected",
+  );
 
   useEffect(() => {
     getTutorProfile()
@@ -35,7 +56,6 @@ export default function TutorSettingsPage() {
         setHeadline(p.headline ?? "");
         setBio(p.bio ?? "");
         setCountry(p.country ?? "");
-        setTimezone(p.timezone ?? "UTC");
         setAvailability(p.availability);
       })
       .catch((e) => setError(e.message));
@@ -50,8 +70,9 @@ export default function TutorSettingsPage() {
     setBusy(true);
     setMsg(null);
     try {
-      const updated = await updateTutorProfile({ headline, bio, country, timezone, availability });
+      const updated = await updateTutorProfile({ headline, bio, country, timezone: zone, availability });
       setProfile(updated);
+      setPickedZone(null);
       setAvailability(updated.availability);
       setMsg({ ok: true, text: t("tutor.settings.saved") });
     } catch (err) {
@@ -117,7 +138,7 @@ export default function TutorSettingsPage() {
             </div>
             <div>
               <dt>{t("tutor.settings.timezone")}</dt>
-              <dd>{timezone || t("tutor.settings.notSet")}</dd>
+              <dd>{profile.timezone || t("tutor.settings.notSet")}</dd>
             </div>
           </dl>
         </section>
@@ -159,13 +180,25 @@ export default function TutorSettingsPage() {
               </label>
               <label>
                 {t("tutor.settings.timezone")}
-                <input
-                  className={ui.input}
-                  value={timezone}
-                  onChange={(e) => setTimezone(e.target.value)}
-                  maxLength={50}
-                  placeholder="Africa/Nairobi"
-                />
+                <select
+                  className={ui.select}
+                  value={zone}
+                  onChange={(e) => setPickedZone(e.target.value)}
+                >
+                  {groups.map((group) => (
+                    <optgroup key={group.key} label={t(group.key)}>
+                      {group.zones.map((name) => {
+                        const offset = zoneOffsetLabel(name);
+                        return (
+                          <option key={name} value={name}>
+                            {offset ? `${name} · ${offset}` : name}
+                          </option>
+                        );
+                      })}
+                    </optgroup>
+                  ))}
+                </select>
+                <span className={ui.rowNote}>{t("tutor.settings.timezoneHint")}</span>
               </label>
             </div>
           </section>
@@ -235,7 +268,7 @@ export default function TutorSettingsPage() {
                   onClick={() =>
                     setAvailability((s) => [
                       ...s,
-                      { dayOfWeek: 1, startTime: "09:00", endTime: "10:00", timezone },
+                      { dayOfWeek: 1, startTime: "09:00", endTime: "10:00", timezone: zone },
                     ])
                   }
                 >

@@ -4,34 +4,36 @@ import { useState } from "react";
 import { apiSendClient } from "@/lib/api-client";
 import { useAuth, type User } from "@/lib/auth";
 import { useLanguage } from "@/i18n/LanguageProvider";
+import { useBrowserZone, zoneGroups, zoneOffsetLabel } from "@/lib/timezones";
 import ui from "@/components/portal/bands.module.css";
 import styles from "./settings.module.css";
-
-// A curated set of IANA zones the school actually serves, plus the browser's
-// own zone. The API validates against the full IANA list regardless.
-const ZONES = [
-  "Africa/Kampala", "Africa/Lagos", "Africa/Nairobi", "Asia/Jakarta",
-  "Asia/Manila", "Asia/Shanghai", "Asia/Tokyo", "Europe/London",
-  "Europe/Madrid", "Europe/Rome", "America/New_York", "America/Los_Angeles", "UTC",
-];
-
-function detectedZone(): string {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-  } catch {
-    return "UTC";
-  }
-}
 
 export default function AccountSettings() {
   const { user, refreshUser } = useAuth();
   const { t } = useLanguage();
-  const zones = Array.from(new Set([detectedZone(), ...ZONES]));
+  // Read after mount: on the server this would be the datacentre's zone, and
+  // two different answers in one field is a hydration lie.
+  const browserZone = useBrowserZone();
+  // null until the admin actually touches the field. An account can arrive
+  // after the first render, and a guess kept in state would then be saved over
+  // the zone the account already had.
+  const [pickedZone, setPickedZone] = useState<string | null>(null);
+
+  // What the select shows, in order of who decides: the admin's pick, the
+  // account's own zone, and only then the browser's guess.
+  const zone = pickedZone ?? user?.timezone ?? (browserZone || "UTC");
+  // A pick always comes out of the list itself, so it needs no pinning; any
+  // other value is pinned so the select can show what it holds - a value
+  // missing from the options gets rewritten to the first option on the next
+  // save, quietly changing a setting nobody meant to change.
+  const groups = zoneGroups(
+    pickedZone === null ? user?.timezone || browserZone : "",
+    user?.timezone ? "auth.tz.group.saved" : "auth.tz.group.detected",
+  );
 
   const [profile, setProfile] = useState({
     full_name: user?.full_name ?? "",
     native_language: user?.native_language ?? "",
-    timezone: user?.timezone || detectedZone(),
   });
   const [passwords, setPasswords] = useState({ current: "", next: "", confirm: "" });
   const [busy, setBusy] = useState<"profile" | "password" | null>(null);
@@ -47,9 +49,10 @@ export default function AccountSettings() {
       await apiSendClient<User>("PATCH", "/auth/me", {
         full_name: profile.full_name,
         native_language: profile.native_language || null,
-        timezone: profile.timezone || null,
+        timezone: zone,
       });
       await refreshUser();
+      setPickedZone(null);
       setFlash(t("admin.settings.saved"));
     } catch (err) {
       setError(err instanceof Error ? err.message : t("admin.settings.saveError"));
@@ -120,11 +123,20 @@ export default function AccountSettings() {
             {t("admin.settings.timezone")}
             <select
               className={ui.select}
-              value={profile.timezone}
-              onChange={(e) => setProfile({ ...profile, timezone: e.target.value })}
+              value={zone}
+              onChange={(e) => setPickedZone(e.target.value)}
             >
-              {zones.map((zone) => (
-                <option key={zone} value={zone}>{zone}</option>
+              {groups.map((group) => (
+                <optgroup key={group.key} label={t(group.key)}>
+                  {group.zones.map((name) => {
+                    const offset = zoneOffsetLabel(name);
+                    return (
+                      <option key={name} value={name}>
+                        {offset ? `${name} · ${offset}` : name}
+                      </option>
+                    );
+                  })}
+                </optgroup>
               ))}
             </select>
           </label>

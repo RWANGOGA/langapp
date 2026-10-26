@@ -9,7 +9,7 @@ from sqlalchemy import select, and_, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.time import utc_now, to_utc_iso
+from app.core.time import utc_now, to_utc_iso, normalize_zone
 from app.db.session import get_db
 from app.models.user import User, UserRole, TutorProfile, TutorAvailability, Class, ClassStatus
 from app.api.auth import get_current_user
@@ -232,6 +232,17 @@ async def patch_tutor_profile(
     profile = await _profile_or_404(tutor, db)
     data = payload.model_dump(exclude_unset=True)
 
+    # Every zone in this request is checked before a single row moves. Half a
+    # write is the worst outcome here: the tutor's saved week would be gone and
+    # the replacement refused, leaving them teaching from a schedule that no
+    # longer exists. A name the tz database does not know cannot be converted
+    # to UTC, which is exactly what the matching engine will do with it.
+    try:
+        tutor_zone = normalize_zone(data["timezone"]) if "timezone" in data else None
+        slot_zones = [normalize_zone(slot["timezone"]) for slot in data.get("availability") or []]
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
     if "headline" in data:
         profile.headline = data["headline"]
     if "bio" in data:
@@ -239,7 +250,7 @@ async def patch_tutor_profile(
     if "country" in data:
         profile.country = data["country"]
     if "timezone" in data:
-        tutor.timezone = data["timezone"]
+        tutor.timezone = tutor_zone
     if "native_language" in data:
         tutor.native_language = data["native_language"]
 
@@ -247,13 +258,13 @@ async def patch_tutor_profile(
         # The whole week is replaced, never merged: a partial-save UI must
         # not leave ghost windows behind.
         await db.execute(delete(TutorAvailability).where(TutorAvailability.profile_id == profile.id))
-        for slot in data["availability"] or []:
+        for slot, zone in zip(data["availability"] or [], slot_zones):
             db.add(TutorAvailability(
                 profile_id=profile.id,
                 day_of_week=slot["day_of_week"],
                 start_time=slot["start_time"],
                 end_time=slot["end_time"],
-                timezone=slot["timezone"],
+                timezone=zone,
             ))
 
     await db.commit()

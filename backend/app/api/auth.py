@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from typing import Optional
-from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -10,6 +9,7 @@ from passlib.hash import sha256_crypt
 
 from app.db.session import get_db
 from app.core.config import settings
+from app.core.time import normalize_zone
 from app.models.user import User, UserRole, TutorProfile
 from app.schemas.auth import (
     UserCreate, UserLogin, UserRead, Token, TokenPayload, 
@@ -131,13 +131,20 @@ async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
     # a tutor application (see app/api/tutor_application.py review_application).
     # Self-declaring TUTOR here previously bypassed verification entirely and,
     # because only students may apply, also locked the user out of that path.
+    # The zone is held to the same rule as PATCH /auth/me: sign-up is where most
+    # accounts set one, and a name that does not exist is worse than none.
+    try:
+        zone = normalize_zone(user_in.timezone)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
     user = User(
         email=user_in.email,
         full_name=user_in.full_name,
         hashed_password=get_password_hash(user_in.password),
         role=UserRole.STUDENT,
         native_language=user_in.native_language,
-        timezone=user_in.timezone,
+        timezone=zone,
     )
     db.add(user)
     await db.commit()
@@ -272,18 +279,12 @@ async def update_me(
         current_user.native_language = payload.native_language.strip() or None
 
     if payload.timezone is not None:
-        zone = payload.timezone.strip()
-        if zone:
-            # A made-up zone would poison every time rendered from it, so
-            # only real IANA zones are stored.
-            try:
-                ZoneInfo(zone)
-            except (KeyError, ZoneInfoNotFoundError):
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Unknown timezone '{zone}'. Use an IANA name like Asia/Tokyo.",
-                )
-        current_user.timezone = zone or None
+        # A made-up zone would poison every time rendered from it, so
+        # only real IANA zones are stored.
+        try:
+            current_user.timezone = normalize_zone(payload.timezone)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc))
 
     await db.commit()
     await db.refresh(current_user)

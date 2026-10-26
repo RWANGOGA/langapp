@@ -96,6 +96,16 @@
   cursor: not-allowed;
 }
 
+/* One quiet line under a field: why it is being asked, and where the answer
+   came from. Small and muted so it reads as context rather than a second
+   label competing with the one above the control. */
+.field .hint {
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  color: var(--muted);
+  margin: 0;
+}
+
 .submitBtn {
   margin-top: var(--space-2);
   padding: var(--space-3) var(--space-6);

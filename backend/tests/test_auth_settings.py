@@ -9,6 +9,7 @@ timezone is refused, not stored as a guess) and POST /auth/change-password
 old password stops working the moment the new one is set).
 """
 import pytest
+from sqlalchemy import select
 
 from app.api.auth import get_password_hash, verify_password
 from app.models.user import User, UserRole
@@ -73,6 +74,54 @@ class TestProfileSettings:
         async with make_client(db_session, user) as ac:
             response = await ac.patch("/api/v1/auth/me", json={"full_name": "   "})
         assert response.status_code in (400, 422)
+
+
+class TestRegistrationTimezone:
+    """Sign-up asks for a timezone now, so it has to be held to the same rule
+    as the settings page. A zone invented at registration would be read by
+    every later decision that leans on it, and nothing would ever complain."""
+
+    async def register(self, db_session, email, timezone):
+        # Register is a public route; the signed-in identity in the shared
+        # client is never consulted by it.
+        seed = await make_user(db_session)
+        async with make_client(db_session, seed) as ac:
+            return await ac.post("/api/v1/auth/register", json={
+                "email": email,
+                "password": "at-least-eight",
+                "full_name": "Zone Newcomer",
+                "timezone": timezone,
+            })
+
+    @pytest.mark.asyncio
+    async def test_a_real_zone_is_kept_exactly_as_chosen(self, db_session):
+        response = await self.register(
+            db_session, "zone.keep@example.com", "Africa/Nairobi"
+        )
+        assert response.status_code == 201
+        assert response.json()["timezone"] == "Africa/Nairobi"
+
+    @pytest.mark.asyncio
+    async def test_an_invented_zone_is_refused_rather_than_stored(self, db_session):
+        response = await self.register(
+            db_session, "zone.fake@example.com", "Mars/Olympus_Mons"
+        )
+        assert response.status_code == 400
+
+        found = await db_session.execute(
+            select(User).where(User.email == "zone.fake@example.com")
+        )
+        assert found.scalar_one_or_none() is None, (
+            "a refused registration must not leave an account behind"
+        )
+
+    @pytest.mark.asyncio
+    async def test_signing_up_without_a_zone_is_still_allowed(self, db_session):
+        """Timezone is optional at sign-up; refusing to guess must not be an
+        error, or the form would punish the honest answer of 'unsure'."""
+        response = await self.register(db_session, "zone.none@example.com", None)
+        assert response.status_code == 201
+        assert response.json()["timezone"] is None
 
 
 class TestPasswordChange:

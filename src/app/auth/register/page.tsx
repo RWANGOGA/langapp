@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth, RATE_LIMITED, UNREACHABLE } from "@/lib/auth";
 import { useLanguage } from "@/i18n/LanguageProvider";
+import { useBrowserZone, zoneGroups, zoneOffsetLabel } from "@/lib/timezones";
 import styles from "./page.module.css";
 
 interface FormData {
@@ -16,20 +17,8 @@ interface FormData {
   timezone: string;
 }
 
-const timezones = [
-  "UTC",
-  "America/New_York",
-  "America/Chicago",
-  "America/Denver",
-  "America/Los_Angeles",
-  "Europe/London",
-  "Europe/Paris",
-  "Europe/Berlin",
-  "Asia/Tokyo",
-  "Asia/Shanghai",
-  "Asia/Singapore",
-  "Australia/Sydney",
-];
+// Where a learner can actually be taught from, grouped by region and labelled
+// with the offset it works out to today. See src/lib/timezones.ts.
 
 const languages = [
   "English",
@@ -61,6 +50,14 @@ function RegisterForm() {
   });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // The browser's own zone, known only once the page is live in a browser.
+  const browserZone = useBrowserZone();
+  // A guess fills an empty field and nothing more: once the writer has chosen,
+  // their choice outranks anything the browser thinks it knows.
+  const zone = formData.timezone || browserZone;
+  // Only an unpinned-off-list guess needs its own heading to say where it came
+  // from; a chosen zone belongs to the region the writer recognised it in.
+  const groups = zoneGroups(formData.timezone ? "" : browserZone);
 
   // Arriving from "Become a Tutor" (Step 0). The account is still a student
   // account - tutor status is granted only after an approved application.
@@ -98,7 +95,7 @@ function RegisterForm() {
         // the application process, never chosen at signup.
         intent: tutorIntent ? "tutor" : undefined,
         native_language: formData.native_language || undefined,
-        timezone: formData.timezone || undefined,
+        timezone: zone || undefined,
       });
       router.push(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
       router.refresh();
@@ -192,17 +189,28 @@ function RegisterForm() {
             <select
               id="timezone"
               name="timezone"
-              value={formData.timezone}
+              value={zone}
               onChange={handleChange}
               disabled={isSubmitting}
             >
               <option value="">{t("auth.register.selectTimezone")}</option>
-              {timezones.map((tz) => (
-                <option key={tz} value={tz}>
-                  {tz}
-                </option>
+              {groups.map((group) => (
+                <optgroup key={group.key} label={t(group.key)}>
+                  {group.zones.map((name) => {
+                    const offset = zoneOffsetLabel(name);
+                    return (
+                      <option key={name} value={name}>
+                        {offset ? `${name} · ${offset}` : name}
+                      </option>
+                    );
+                  })}
+                </optgroup>
               ))}
             </select>
+            <p className={styles.hint}>{t("auth.register.timezoneHint")}</p>
+            {!formData.timezone && browserZone && (
+              <p className={styles.hint}>{t("auth.register.timezoneDetected", { zone: browserZone })}</p>
+            )}
           </div>
 
           <div className={styles.field}>
