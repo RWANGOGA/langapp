@@ -1101,6 +1101,8 @@ const en = {
   "auth.login.signingIn": "Signing in...",
   "auth.login.submit": "Sign In",
   "auth.login.failed": "Login failed",
+  "auth.errors.tooMany": "Too many attempts in a row. Wait a minute, then try again.",
+  "auth.errors.offline": "We could not reach the server. Check your connection, then try again.",
   "auth.login.noAccount": "Don't have an account?",
   "auth.login.signup": "Sign up",
   "auth.register.title": "Create Account",

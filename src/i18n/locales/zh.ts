@@ -963,6 +963,8 @@ const zh: Record<string, string> = {
   "auth.login.signingIn": "正在登录……",
   "auth.login.submit": "登录",
   "auth.login.failed": "登录失败",
+  "auth.errors.tooMany": "连续尝试次数过多，请等一分钟后再试。",
+  "auth.errors.offline": "无法连接服务器，请检查网络后重试。",
   "auth.login.noAccount": "还没有账户？",
   "auth.login.signup": "注册",
   "auth.register.title": "创建账户",

@@ -963,6 +963,8 @@ const ja: Record<string, string> = {
   "auth.login.signingIn": "サインイン中…",
   "auth.login.submit": "サインイン",
   "auth.login.failed": "ログインに失敗しました",
+  "auth.errors.tooMany": "試行回数が多すぎます。1分ほど待ってからもう一度お試しください。",
+  "auth.errors.offline": "サーバーに接続できませんでした。通信状況を確認してもう一度お試しください。",
   "auth.login.noAccount": "アカウントをお持ちでないですか？",
   "auth.login.signup": "新規登録",
   "auth.register.title": "アカウント作成",

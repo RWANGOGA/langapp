@@ -3,7 +3,7 @@
 import { useState, Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "@/lib/auth";
+import { useAuth, RATE_LIMITED, UNREACHABLE } from "@/lib/auth";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import styles from "./page.module.css";
 
@@ -42,7 +42,16 @@ function LoginForm() {
       await login(email, password);
       // Redirect is handled by useEffect above
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("auth.login.failed"));
+      // Throttled or offline reads as the edge's problem, not the visitor's.
+      const message =
+        err instanceof Error && err.message === RATE_LIMITED
+          ? t("auth.errors.tooMany")
+          : err instanceof Error && err.message === UNREACHABLE
+            ? t("auth.errors.offline")
+            : err instanceof Error
+              ? err.message
+              : t("auth.login.failed");
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }

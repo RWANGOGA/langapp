@@ -963,6 +963,8 @@ const es: Record<string, string> = {
   "auth.login.signingIn": "Iniciando sesión...",
   "auth.login.submit": "Iniciar sesión",
   "auth.login.failed": "Error al iniciar sesión",
+  "auth.errors.tooMany": "Demasiados intentos seguidos. Espera un minuto e inténtalo de nuevo.",
+  "auth.errors.offline": "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
   "auth.login.noAccount": "¿No tienes una cuenta?",
   "auth.login.signup": "Regístrate",
   "auth.register.title": "Crear cuenta",

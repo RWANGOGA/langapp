@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "@/lib/auth";
+import { useAuth, RATE_LIMITED, UNREACHABLE } from "@/lib/auth";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import styles from "./page.module.css";
 
@@ -103,7 +103,16 @@ function RegisterForm() {
       router.push(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("auth.register.failed"));
+      // Throttled or offline reads as the edge's problem, not the visitor's.
+      const message =
+        err instanceof Error && err.message === RATE_LIMITED
+          ? t("auth.errors.tooMany")
+          : err instanceof Error && err.message === UNREACHABLE
+            ? t("auth.errors.offline")
+            : err instanceof Error
+              ? err.message
+              : t("auth.register.failed");
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }

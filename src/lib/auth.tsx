@@ -54,6 +54,29 @@ interface RegisterData {
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8004/api/v1";
 const PROXY = "/api/v1"; // Use relative URL so requests go through Next.js rewrite (first-party cookies)
 
+/** Sign-in failures that are about the edge, not about the password. The pages
+ * translate these; every other message is the server's own `detail` verbatim. */
+export const RATE_LIMITED = "auth:rate-limited";
+export const UNREACHABLE = "auth:unreachable";
+
+/** FastAPI answers with JSON `detail`; a proxy in front of it (Render's edge,
+ * nginx) answers with plain text such as "Too Many Requests". Parsing both as
+ * JSON turned a readable reason into `Unexpected token 'T', ...`.
+ * Returns a message, never a SyntaxError. */
+async function failureMessage(response: Response, fallback: string): Promise<string> {
+  let detail: unknown = null;
+  try {
+    const body: unknown = await response.json();
+    detail = (body as { detail?: unknown } | null)?.detail ?? null;
+  } catch {
+    // Plain-text or empty body: the status carries the meaning.
+  }
+  if (typeof detail === "string" && detail.trim()) return detail.trim();
+  if (response.status === 429) return RATE_LIMITED;
+  if (response.status >= 500) return UNREACHABLE;
+  return fallback;
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -62,17 +85,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUser = useCallback(async () => {
     try {
-      const response = await fetch(`${PROXY}/auth/me`, {
+      let response = await fetch(`${PROXY}/auth/me`, {
         credentials: "include",
       });
+      // A rate-limited or still-waking edge answers before our API sees the
+      // request. One short retry keeps a signed-in visitor signed in.
+      if (response.status === 429 || response.status >= 500) {
+        await new Promise((resolve) => setTimeout(resolve, 1200));
+        response = await fetch(`${PROXY}/auth/me`, { credentials: "include" });
+      }
       if (response.ok) {
-        const data = await response.json();
-        setUser(data);
-      } else {
+        setUser(await response.json());
+      } else if (response.status === 401 || response.status === 403) {
         setUser(null);
       }
+      // Any other status leaves the session alone: a slow edge is not a logout.
     } catch {
-      setUser(null);
+      // Network hiccup: keep whatever user we already had.
     } finally {
       setIsLoading(false);
     }
@@ -92,8 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || "Login failed");
+      throw new Error(await failureMessage(response, "Login failed"));
     }
 
     await fetchUser();
@@ -111,8 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || "Registration failed");
+      throw new Error(await failureMessage(response, "Registration failed"));
     }
   };
 
