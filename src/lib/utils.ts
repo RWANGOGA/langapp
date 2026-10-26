@@ -32,6 +32,21 @@ export function formatMinor(amountMinor: number, currency: string): string {
 }
 
 /**
+ * The same figure with its small change kept. A tutor's 20-minute lesson is
+ * worth $3.33; the price formatter above would show $3 and understate it.
+ */
+export function formatMinorExact(amountMinor: number, currency: string): string {
+  const units = MINOR_UNITS[currency] ?? 1;
+  const decimals = units === 100 ? 2 : 0;
+  return new Intl.NumberFormat(CURRENCY_LOCALE[currency] ?? "en-US", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(amountMinor / units);
+}
+
+/**
  * The API stores naive UTC instants, so "2026-10-01T09:00:00" is 09:00 UTC.
  * Parsed as written, a browser in another zone reads it as *local* time and
  * every derived label lands hours out by the reader's offset - which is

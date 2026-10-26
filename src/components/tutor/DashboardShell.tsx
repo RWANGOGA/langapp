@@ -13,6 +13,7 @@ export default function DashboardShell({ tutor, children }: { tutor: TutorDashbo
     { href: "/tutor/learners", label: t("nav.myLearners"), icon: "learners" },
     { href: "/tutor/schedule", label: t("nav.schedule"), icon: "schedule" },
     { href: "/tutor/notes", label: t("nav.lessonNotes"), icon: "notes" },
+    { href: "/tutor/earnings", label: t("nav.earnings"), icon: "payments" },
     { href: "/tutor/settings", label: t("nav.settings"), icon: "settings" },
   ];
 

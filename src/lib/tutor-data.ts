@@ -165,3 +165,28 @@ export async function getTutorDashboard(): Promise<TutorDashboard> {
   ]);
   return { ...dashboard, packageSummary };
 }
+
+/** What the school pays: a fixed rate per 60 minutes, pro-rated per lesson. */
+export interface TutorEarnings {
+  rate: { amount_cents: number; currency: string; per_minutes: number };
+  totals: {
+    all_time_cents: number;
+    all_time_lessons: number;
+    all_time_minutes: number;
+    this_month_cents: number;
+    last_month_cents: number;
+  };
+  months: { month: string; lessons: number; minutes: number; amount_cents: number }[];
+  lessons: {
+    id: number;
+    held_at: string;
+    learner: string;
+    topic: string;
+    minutes: number;
+    amount_cents: number;
+  }[];
+}
+
+export async function getTutorEarnings(): Promise<TutorEarnings> {
+  return fetchWithAuth(`${PROXY}/tutor/earnings`);
+}

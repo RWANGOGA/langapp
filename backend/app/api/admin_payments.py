@@ -132,7 +132,15 @@ async def get_ledger(
         .where(*filters)
     )
 
-    total = await db.scalar(select(func.count()).select_from(base.subquery())) or 0
+    # Counted without the PAID_AT column: the correlated subquery in the row
+    # query would otherwise run once per order just to be discarded.
+    total = await db.scalar(
+        select(func.count(Order.id))
+        .select_from(Order)
+        .join(User, User.id == Order.user_id, isouter=True)
+        .join(Package, Package.id == Order.package_id)
+        .where(*filters)
+    ) or 0
     rows = await db.execute(
         base.order_by(desc(Order.created_at), desc(Order.id))
         .offset((page - 1) * page_size)
@@ -154,13 +162,18 @@ async def get_ledger(
         .order_by(currency_expr)
     )
 
-    async def count_where(*conditions) -> int:
-        return await db.scalar(select(func.count(Order.id)).where(*conditions)) or 0
+    # One grouped read for the three headline counts. Three separate COUNTs read
+    # the same rows three times, and each one is a full round trip to the
+    # database.
+    status_rows = await db.execute(
+        select(Order.status, func.count(Order.id)).group_by(Order.status)
+    )
+    status_counts = {state: count for state, count in status_rows.all()}
 
     summary = LedgerSummary(
-        awaiting_payment=await count_where(Order.status == OrderStatus.PENDING),
-        awaiting_match=await count_where(Order.status == OrderStatus.MATCHING_PENDING),
-        paid=await count_where(Order.status.in_(PAID_STATES)),
+        awaiting_payment=status_counts.get(OrderStatus.PENDING, 0),
+        awaiting_match=status_counts.get(OrderStatus.MATCHING_PENDING, 0),
+        paid=sum(status_counts.get(state, 0) for state in PAID_STATES),
         collected=[
             CurrencyTotal(currency=c, amount_minor=int(amount or 0), count=n)
             for c, amount, n in collected_rows.all()
