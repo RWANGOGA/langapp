@@ -2,12 +2,12 @@ from datetime import datetime, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from app.models.package import Package, Order, OrderStatus
 from app.models.payment_tracking import Subscription, SubscriptionStatus
-from app.models.user import TutorProfile, User, UserRole
+from app.models.user import User
 from app.services.notifications import notify_admins, notify_user
+from app.services.tutor_matching import rank_tutors_for_learner, record_placement
 
 
 async def match_paid_student(db: AsyncSession, order: Order) -> bool:
@@ -32,19 +32,13 @@ async def match_paid_student(db: AsyncSession, order: Order) -> bool:
         order.status = OrderStatus.COMPLETED
         return True
 
-    tutor = await db.scalar(
-        select(User)
-        .options(selectinload(User.tutor_profile))
-        .join(TutorProfile, TutorProfile.user_id == User.id)
-        .where(
-            User.role == UserRole.TUTOR,
-            User.is_active.is_(True),
-            TutorProfile.is_approved.is_(True),
-        )
-        .order_by(User.id)
-    )
+    # The engine ranks every eligible tutor on language, subject, shared
+    # working hours and load - the first row the database happened to offer is
+    # not a match, it is a queue position. The runner-up list is what the
+    # admin queue reads when a human wants to see the thinking.
+    ranked = await rank_tutors_for_learner(db, student, order)
 
-    if not tutor:
+    if not ranked:
         order.status = OrderStatus.MATCHING_PENDING
         await notify_user(
             db,
@@ -61,10 +55,20 @@ async def match_paid_student(db: AsyncSession, order: Order) -> bool:
         )
         return False
 
+    best = ranked[0]
+    tutor = best.tutor
     student.tutor_id = tutor.id
     # Auto-matching places the learner too, so it stamps the same fact the
     # admin assignment records - when the placement happened.
     student.tutor_assigned_at = datetime.utcnow()
+    # And the part a manual assignment could skip: the evidence. Who decided
+    # (the engine, nobody), and why, in the sentences the score was built from.
+    record_placement(
+        db, student, tutor,
+        source="auto", decided_by=None,
+        score=best.score, reasons=best.reasons,
+        order_id=order.id,
+    )
     order.status = OrderStatus.COMPLETED
     package = await db.scalar(select(Package).where(Package.id == order.package_id))
     if package:
@@ -81,5 +85,5 @@ async def match_paid_student(db: AsyncSession, order: Order) -> bool:
         ))
     await notify_user(db, student.id, "tutor_assigned", "Your tutor has been assigned", f"{tutor.full_name} is now your Nile Language tutor.")
     await notify_user(db, tutor.id, "learner_assigned", "A learner has been assigned to you", f"{student.full_name} is now one of your Nile Language learners.")
-    await notify_admins(db, "assignment_created", "Automatic tutor assignment completed", f"{student.full_name} was assigned to {tutor.full_name} after order #{order.id}.")
+    await notify_admins(db, "assignment_created", "Automatic tutor assignment completed", f"{student.full_name} was assigned to {tutor.full_name} after order #{order.id}. Reasons: " + "; ".join(best.reasons))
     return True

@@ -16,6 +16,7 @@ import { SubscriptionManagement } from "@/components/admin/SubscriptionManagemen
 import { ActivityLog } from "@/components/admin/ActivityLog";
 import ApplicationReview from "@/components/admin/ApplicationReview";
 import ContactInbox from "@/components/admin/ContactInbox";
+import MatchingQueue from "@/components/admin/MatchingQueue";
 import ClassMonitor from "@/components/admin/ClassMonitor";
 import PaymentLedger from "@/components/admin/PaymentLedger";
 import AccountSettings from "@/components/admin/AccountSettings";
@@ -58,7 +59,12 @@ function SectionContent({ section, data, onReload, t }: { section: Section; data
     case "tutors":
       return <TutorRoster tutors={data.tutors} />;
     case "students":
-      return <StudentRoster students={data.students} tutors={data.tutors} onRefresh={onReload} />;
+      return (
+        <>
+          <MatchingQueue onPlaced={onReload} />
+          <StudentRoster students={data.students} tutors={data.tutors} onRefresh={onReload} />
+        </>
+      );
     case "classes":
       return <ClassMonitor students={data.students} onReload={onReload} />;
     case "meetings":

@@ -300,6 +300,32 @@ export async function unassignStudent(studentId: number): Promise<void> {
   await apiSendClient<void>("DELETE", `/admin/unassign-student/${studentId}`);
 }
 
+/* — Matching queue —
+   Auto-matching places most paid learners the night they pay; this is the
+   remainder it could not decide on, each row carrying the engine's best try
+   and the sentences behind it, so a human finishes the job knowing why. */
+export type MatchingCandidate = {
+  tutor_id: number;
+  tutor_name: string;
+  score: number;
+  reasons: string[];
+};
+
+export type MatchingQueueRow = {
+  order_id: number;
+  student_id: number;
+  student_name: string;
+  subject: string | null;
+  // null when no approved tutor qualifies - the queue saying so honestly.
+  best_candidate: MatchingCandidate | null;
+};
+
+/** GET /admin/matching-queue - paid orders still waiting, with the ranking. */
+export async function getMatchingQueue(): Promise<MatchingQueueRow[]> {
+  const data = await apiGetClient<{ queue: MatchingQueueRow[] }>("/admin/matching-queue");
+  return data?.queue ?? [];
+}
+
 /* — Class monitoring and scheduling —
    The lesson book: every class the school has ever run, plus the admin's
    scheduling action. A class always inherits the learner's assigned tutor -

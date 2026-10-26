@@ -51,6 +51,28 @@
   font-size: 0.9rem;
 }
 
+/* The engine's evidence, one line per scored fact: quieter than the name it
+   explains, never hidden - an unexplained recommendation is one nobody should
+   be asked to press a button on. */
+.reasons {
+  list-style: none;
+  /* The parent row is a grid, and a grid lays out every child element - a
+     nested list would otherwise get one column per reason. */
+  display: block;
+  margin-top: 0.35rem;
+  padding-left: 0.7rem;
+  border-left: 2px solid #dfe6ec;
+  color: #52607a;
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.reasons li {
+  /* ...and the row rule makes every li a grid; a reason is one plain line. */
+  display: block;
+  padding: 0.1rem 0;
+}
+
 @media (max-width: 720px) {
   .controls { justify-content: flex-start; }
   .controls select { min-width: 0; width: 100%; }

@@ -9,6 +9,7 @@ from app.models.tutor_application import TutorApplication, ApplicationStatus, Ve
 from app.models.notification import Notification
 from app.models.payment_tracking import PaymentEvent, Subscription, SubscriptionStatus
 from app.models.contact_message import ContactMessage
+from app.models.match_placement import MatchPlacement
 from app.models.testimonial import Testimonial, TestimonialKind
 
 __all__ = [
@@ -31,6 +32,7 @@ __all__ = [
     "VerificationStatus",
     "Notification",
     "ContactMessage",
+    "MatchPlacement",
     "Testimonial",
     "TestimonialKind",
 ]

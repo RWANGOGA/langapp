@@ -143,6 +143,31 @@ class StudentUnassignResponse(BaseModel):
     unassigned_by: int
 
 
+class MatchingQueueCandidate(BaseModel):
+    """Who the engine would place a learner with, and the evidence behind it.
+    The reasons are the same sentences the audit keeps - the queue is a
+    preview of the decision, not a second opinion invented for display."""
+    tutor_id: int
+    tutor_name: str
+    score: float
+    reasons: List[str]
+
+
+class MatchingQueueRow(BaseModel):
+    order_id: int
+    student_id: int
+    student_name: str
+    subject: Optional[str] = None
+    # None when no approved tutor qualifies - the queue's whole point is to
+    # say "this one needs a human", so it must be able to say it honestly.
+    best_candidate: Optional[MatchingQueueCandidate] = None
+
+
+class MatchingQueueResponse(BaseModel):
+    queue: List[MatchingQueueRow]
+    total: int
+
+
 class ClassScheduleRequest(BaseModel):
     """An admin books the next lesson for a learner who already has a tutor.
     The class inherits that tutor - the request never names one, so a lesson

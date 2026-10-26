@@ -20,9 +20,13 @@ from app.schemas.admin import (
     ClassScheduleRequest,
     AdminClassRow,
     AdminClassListResponse,
+    MatchingQueueCandidate,
+    MatchingQueueRow,
+    MatchingQueueResponse,
 )
 from app.models.notification import Notification
 from app.services.notifications import notify_admins, notify_user
+from app.services.tutor_matching import rank_tutors_for_learner, record_placement
 
 router = APIRouter()
 
@@ -88,6 +92,29 @@ async def assign_student_to_tutor(
     # The placement moment is stamped on the learner, so a later read reports
     # the fact rather than inventing a time.
     student.tutor_assigned_at = utc_now()
+    # And the same placement is audited as a named human's decision. The
+    # engine's reasons do not apply - a person chose - but the fact that a
+    # person chose has to be just as findable as why the machine did.
+    record_placement(
+        db, student, tutor,
+        source="admin", decided_by=current_user.id,
+        score=0.0, reasons=[],
+        order_id=None,
+    )
+    # A paid order waiting for this exact placement leaves the queue now - the
+    # engine's own path closes the order when it places, and a human decision
+    # fulfils it just as well. A stale matching_pending would offer the same
+    # finished job to the next admin who opens the band.
+    waiting = (
+        await db.execute(
+            select(Order).where(
+                Order.user_id == student.id,
+                Order.status == OrderStatus.MATCHING_PENDING,
+            )
+        )
+    ).scalars().all()
+    for waiting_order in waiting:
+        waiting_order.status = OrderStatus.COMPLETED
     await notify_user(
         db, student.id, "tutor_assigned", "Your tutor has been assigned",
         f"{tutor.full_name} is now your Nile Language tutor.",
@@ -208,6 +235,54 @@ async def list_assignments(
             ))
     
     return assignments
+
+
+@router.get("/matching-queue", response_model=MatchingQueueResponse)
+async def matching_queue(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    """Paid orders still waiting for a tutor, each with the engine's best try.
+
+    Auto-matching leaves an order here when no tutor qualified at payment time
+    (or one has since been unassigned). The queue previews the ranking rather
+    than re-running blindly: staff see who would win, on what evidence, and
+    can assign with that in front of them.
+    """
+    orders = (
+        await db.execute(
+            select(Order)
+            .options(joinedload(Order.user))
+            .where(Order.status == OrderStatus.MATCHING_PENDING)
+            .order_by(Order.id)
+        )
+    ).scalars().all()
+
+    rows: list[MatchingQueueRow] = []
+    for order in orders:
+        student = order.user
+        if not student:
+            continue
+        ranked = await rank_tutors_for_learner(db, student, order)
+        best = ranked[0] if ranked else None
+        rows.append(MatchingQueueRow(
+            order_id=order.id,
+            student_id=student.id,
+            student_name=student.full_name,
+            subject=order.subject,
+            best_candidate=(
+                MatchingQueueCandidate(
+                    tutor_id=best.tutor.id,
+                    tutor_name=best.tutor.full_name,
+                    score=best.score,
+                    reasons=best.reasons,
+                )
+                if best
+                else None
+            ),
+        ))
+
+    return MatchingQueueResponse(queue=rows, total=len(rows))
 
 
 def _class_row(cls: Class) -> AdminClassRow:
