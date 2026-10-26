@@ -9,6 +9,7 @@ const en = {
   "nav.features": "Features",
   "nav.pricing": "Pricing",
   "nav.tutors": "Tutors",
+  "nav.testimonials": "Testimonials",
   "nav.resources": "Resources",
   "nav.blog": "Blog",
   "nav.tutorPortal": "Tutor Portal",
@@ -127,6 +128,108 @@ const en = {
     "Create a free account, pick a program, and an approved tutor will be matched to you. Or bring your own classroom experience to a global roster of learners.",
   "home.cta.learn": "Start learning",
   "home.cta.teach": "Become a tutor",
+
+  // Who we teach: the duty stated plainly, then the places it is carried out.
+  // No invented learner counts in here - the list says what the school is built
+  // to teach, not how many people it has taught.
+  "home.reach.kicker": "Who we teach",
+  "home.reach.title": "English, taught to people who did not grow up with it.",
+  "home.reach.pull": "Teaching English to non-native speakers is not one department here. It is the whole school.",
+  "home.reach.p1":
+    "Almost everyone who sits down with us is working in a second language. Their first is Arabic, Japanese, Korean, Mandarin, Hindi, Urdu, Vietnamese, Bahasa, French, Spanish or Portuguese; English is the language they have to make work — for a job, an exam, a university place or a clinic, rarely for a holiday.",
+  "home.reach.p2":
+    "The plan is built from that as well as from the level. Someone in Sharjah presenting to a head office, a nurse in Osaka preparing a clinical exam and an engineer in Bengaluru running a daily stand-up are not walking into the same room, so they are not taught from the same script.",
+  "home.reach.1.name": "Middle East",
+  "home.reach.1.note": "Arabic first language",
+  "home.reach.2.name": "East Asia",
+  "home.reach.2.note": "Japanese · Korean · Mandarin",
+  "home.reach.3.name": "South Asia",
+  "home.reach.3.note": "Hindi · Urdu · Bengali · Tamil",
+  "home.reach.4.name": "Southeast Asia",
+  "home.reach.4.note": "Vietnamese · Bahasa · Thai",
+  "home.reach.5.name": "North Africa",
+  "home.reach.5.note": "Arabic · French",
+  "home.reach.6.name": "Europe & the Americas",
+  "home.reach.6.note": "Spanish · Portuguese · French",
+
+  "home.voices.kicker": "In their words",
+  "home.voices.title": "What it sounds like afterwards.",
+  "home.voices.empty":
+    "The wall is waiting for its first entry. Learners and tutors write theirs from their own dashboards.",
+  "home.voices.more": "Read the whole wall of voices",
+
+  // Testimonials: the public wall, and the panel inside both dashboards that
+  // feeds it. Both read the same table, so what is written here is what rises.
+  "testimonials.hero.kicker": "Voices",
+  "testimonials.hero.title": "The wall, in their own words.",
+  "testimonials.hero.lede":
+    "Learners and tutors write these themselves, from their own dashboards, and each one carries the name and the identity of the account that wrote it. Nobody at the school drafts them, nobody edits them, and an author can take theirs down at any time.",
+  "testimonials.wall.kicker": "The wall",
+  "testimonials.wall.title": "It rises by itself.",
+  "testimonials.wall.lede":
+    "The quotes move upward on their own, so the wall can be read without touching anything. Point at it and it holds still until you move away.",
+  "testimonials.wall.aria": "Testimonials from learners and tutors",
+  "testimonials.wall.pause":
+    "Hover, or tab into the wall, to stop it rising; move away and it starts again. If your device asks for reduced motion, the wall is simply a column of quotes.",
+  "testimonials.empty.title": "Nothing on the wall yet.",
+  "testimonials.empty.body":
+    "The first entries appear as soon as a learner or a tutor writes one from their dashboard.",
+  "testimonials.kind.learner": "Learner",
+  "testimonials.kind.tutor": "Tutor",
+  "testimonials.kind.pilot": "Pilot programme",
+  "testimonials.pilot.badge": "Not a review",
+  "testimonials.pilot.noteTitle": "Three entries are marked as pilot notes.",
+  "testimonials.pilot.noteBody":
+    "They are the school's own recollections from the pilot cohorts — written by us, not by a paying customer — and they keep that mark for as long as they are here. Every other quote on this wall was written by the person named underneath it.",
+  "testimonials.how.kicker": "How we do it",
+  "testimonials.how.title": "Four things that make a quote mean something.",
+  "testimonials.how.1.title": "A person writes it.",
+  "testimonials.how.1.body":
+    "There is no intake form for a marketing team to fill in later. A learner opens their dashboard, a tutor opens theirs, and the words go onto the wall from there.",
+  "testimonials.how.2.title": "The name and the identity come from the account.",
+  "testimonials.how.2.body":
+    "The form has no field for who you are. The school sets the name and whether you are a learner or a tutor from the signed-in account, so the label beside a quote is a fact, not a choice.",
+  "testimonials.how.3.title": "One quote per person, and it can be withdrawn.",
+  "testimonials.how.3.body":
+    "Writing again edits the same entry instead of stacking a second one, and taking it down removes it from the wall on the next visit — no cached copy keeping a sentence up after its author has asked for it gone.",
+  "testimonials.how.4.title": "Nothing is invented, including the beginning.",
+  "testimonials.how.4.body":
+    "The wall did not start empty, and it did not start with invented people. It opened with three notes by the school about its own pilot cohorts, each labelled as that.",
+  "testimonials.cta.title": "Add your voice when you are ready.",
+  "testimonials.cta.body":
+    "Learners write theirs after real lessons with an assigned tutor; tutors write theirs once they are approved and teaching. If that is you now, the box is in your dashboard.",
+  "testimonials.cta.learner": "Open your dashboard",
+  "testimonials.cta.tutor": "Open the tutor portal",
+
+  // The shared panel on the learner dashboard and the tutor portal.
+  "testimonial.box.label": "Your testimonial",
+  "testimonial.box.viewWall": "See the wall",
+  "testimonial.box.helpLearner":
+    "A sentence or two on what changed for you. It goes onto the public wall with your name and “Learner” beside it — both taken from your account, not typed into this form.",
+  "testimonial.box.helpTutor":
+    "Write from what you have actually seen in your lessons. The wall shows this with your name and “Tutor”, taken from your approved account.",
+  "testimonial.box.loading": "Checking whether you have already written one…",
+  "testimonial.box.onWall": "On the wall",
+  "testimonial.box.edit": "Edit",
+  "testimonial.box.remove": "Remove it",
+  "testimonial.box.removing": "Removing…",
+  "testimonial.box.confirmRemove": "Yes, take it down",
+  "testimonial.box.keep": "Keep it",
+  "testimonial.box.cancel": "Cancel",
+  "testimonial.box.quote": "Your words",
+  "testimonial.box.placeholderLearner":
+    "What was different after the lessons? Say the specific thing — the meeting you ran, the exam you passed, the phone call you stopped dreading.",
+  "testimonial.box.placeholderTutor":
+    "What you have seen happen to the people you teach, in your own words.",
+  "testimonial.box.tooShort": "At least {n} characters — one real sentence is usually enough.",
+  "testimonial.box.region": "Where you are writing from (optional)",
+  "testimonial.box.regionPlaceholder": "Sharjah, UAE",
+  "testimonial.box.publish": "Publish to the wall",
+  "testimonial.box.save": "Save changes",
+  "testimonial.box.saving": "Saving…",
+  "testimonial.box.published": "Published. It is on the wall now.",
+  "testimonial.box.removed": "Taken down. It is no longer on the wall.",
+  "testimonial.box.failed": "That did not save. Try again in a moment.",
 
   // Features
   "features.hero.kicker": "The approach",

@@ -37,12 +37,12 @@ export async function apiGetClient<T>(path: string): Promise<T | null> {
   return (await res.json()) as T;
 }
 
-/** Client-side write (PATCH/POST/DELETE) to FastAPI via the Next proxy.
+/** Client-side write (PUT/PATCH/POST/DELETE) to FastAPI via the Next proxy.
  * Returns the parsed body, or throws with the server's `detail` so callers can
  * surface the real reason a change was refused (e.g. an incomplete application
  * that cannot be approved) instead of a generic failure. */
 export async function apiSendClient<T>(
-  method: "PATCH" | "POST" | "DELETE",
+  method: "PUT" | "PATCH" | "POST" | "DELETE",
   path: string,
   body?: unknown,
 ): Promise<T> {

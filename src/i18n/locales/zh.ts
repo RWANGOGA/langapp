@@ -3,6 +3,7 @@ const zh: Record<string, string> = {
   "nav.features": "功能",
   "nav.pricing": "价格",
   "nav.tutors": "导师",
+  "nav.testimonials": "学员与导师的话",
   "nav.resources": "资源",
   "nav.blog": "博客",
   "nav.tutorPortal": "导师门户",
@@ -117,6 +118,99 @@ const zh: Record<string, string> = {
     "创建免费账户，选择一个课程，我们会为你匹配一位认证导师。或者，把你的课堂教学经验带到面向全球学员的导师名册。",
   "home.cta.learn": "开始学习",
   "home.cta.teach": "成为导师",
+
+  "home.reach.kicker": "我们教谁",
+  "home.reach.title": "英语，教给并非在英语中长大的人。",
+  "home.reach.pull": "在这里，向非母语者教授英语不是其中一个部门，而是整所学校存在的理由。",
+  "home.reach.p1":
+    "几乎每一位坐到我们面前的人，都在使用第二语言学习。他们的母语是阿拉伯语、日语、韩语、普通话、印地语、乌尔都语、越南语、印尼语、法语、西班牙语或葡萄牙语；英语是他们必须用得起来的那门语言——为了工作、考试、大学录取或临床工作，很少只是为了度假。",
+  "home.reach.p2":
+    "学习计划的制定同样依据这一点，而不只看水平。在沙迦向总部做汇报的人、在大阪备考临床考试的护士、在班加罗尔主持每日站会的工程师，走进的不是同一个房间，因此不能用同一套讲义来教。",
+  "home.reach.1.name": "中东",
+  "home.reach.1.note": "母语为阿拉伯语",
+  "home.reach.2.name": "东亚",
+  "home.reach.2.note": "日语 · 韩语 · 普通话",
+  "home.reach.3.name": "南亚",
+  "home.reach.3.note": "印地语 · 乌尔都语 · 孟加拉语 · 泰米尔语",
+  "home.reach.4.name": "东南亚",
+  "home.reach.4.note": "越南语 · 印尼语 · 泰语",
+  "home.reach.5.name": "北非",
+  "home.reach.5.note": "阿拉伯语 · 法语",
+  "home.reach.6.name": "欧洲与美洲",
+  "home.reach.6.note": "西班牙语 · 葡萄牙语 · 法语",
+
+  "home.voices.kicker": "他们自己的话",
+  "home.voices.title": "上完课之后，听起来是什么样。",
+  "home.voices.empty": "评价墙还在等待第一条内容。学员和导师都会在自己的控制台中写下他们的话。",
+  "home.voices.more": "阅读整面评价墙",
+
+  "testimonials.hero.kicker": "声音",
+  "testimonials.hero.title": "这面墙，用他们自己的话。",
+  "testimonials.hero.lede":
+    "这些内容都由学员与导师本人从自己的控制台写下，每一条都带着作者账户上的姓名和身份。学校里没有人代笔，也没有人删改，作者随时可以撤下自己的一条。",
+  "testimonials.wall.kicker": "评价墙",
+  "testimonials.wall.title": "它自己向上滚动。",
+  "testimonials.wall.lede":
+    "引文自动向上移动，不用触碰任何东西也能读完。把指针停在上面，直到你移开它都保持静止。",
+  "testimonials.wall.aria": "来自学员与导师的评价",
+  "testimonials.wall.pause":
+    "鼠标悬停或用 Tab 聚焦即可让墙面停止滚动，移开后它会继续上升。若你的设备开启了减少动态效果，评价墙会以一列静止的引文呈现。",
+  "testimonials.empty.title": "墙上还没有内容。",
+  "testimonials.empty.body": "一旦有学员或导师在自己的控制台中写下评价，第一条就会出现。",
+  "testimonials.kind.learner": "学员",
+  "testimonials.kind.tutor": "导师",
+  "testimonials.kind.pilot": "试点期",
+  "testimonials.pilot.badge": "不是客户评价",
+  "testimonials.pilot.noteTitle": "其中三条标注为试点期笔记。",
+  "testimonials.pilot.noteBody":
+    "它们是学校对自己试点班次的回忆，由我们撰写，并非付费客户所写，只要还留在墙上就会一直带着这个标记。此墙上其余每一条都由署名下方的那个人亲自写下。",
+  "testimonials.how.kicker": "我们怎么做",
+  "testimonials.how.title": "让一句评价有意义的四件事。",
+  "testimonials.how.1.title": "由本人撰写。",
+  "testimonials.how.1.body":
+    "没有一张交给市场部门事后加工的表单。学员打开自己的控制台，导师打开他们自己的，文字就从那里上墙。",
+  "testimonials.how.2.title": "姓名与身份来自账户。",
+  "testimonials.how.2.body":
+    "这个表单不填写你是谁。姓名以及你是学员还是导师，均由学校依据登录账户写入，因此引文旁的标签是事实，不是选择。",
+  "testimonials.how.3.title": "一人一条，并且可以撤回。",
+  "testimonials.how.3.body":
+    "再次撰写只会修改同一条，不会堆叠出第二条；撤下之后，下次访问就不在墙上——不会有缓存把一句作者已要求删除的话继续留着。",
+  "testimonials.how.4.title": "不编造，连开头都不编造。",
+  "testimonials.how.4.body":
+    "这面墙不是空白开始的，也不是用虚构人物开始的。它开墙的是学校对自己三个试点班次写的三条笔记，每一条都如此标注。",
+  "testimonials.cta.title": "轮到你时，也写一句。",
+  "testimonials.cta.body":
+    "学员在与分配导师的真实课程之后写下自己的那一条；导师在通过审核并开始授课后可以写。如果你已经在这两种情况里，输入框就在你的控制台中。",
+  "testimonials.cta.learner": "打开我的控制台",
+  "testimonials.cta.tutor": "打开导师门户",
+
+  "testimonial.box.label": "写下你的评价",
+  "testimonial.box.viewWall": "查看评价墙",
+  "testimonial.box.helpLearner":
+    "一两句说明你因此有了什么改变。它会连同你的姓名和“学员”身份一起出现在公开的评价墙上——两者都取自你的账户，不是在这个表单里填写的。",
+  "testimonial.box.helpTutor":
+    "写你在课堂上真正见到的变化。墙上会显示你的姓名和“导师”，取自你已通过审核的账户。",
+  "testimonial.box.loading": "正在确认你是否已经写过……",
+  "testimonial.box.onWall": "已在墙上",
+  "testimonial.box.edit": "修改",
+  "testimonial.box.remove": "撤下它",
+  "testimonial.box.removing": "正在撤下……",
+  "testimonial.box.confirmRemove": "确认撤下",
+  "testimonial.box.keep": "保留",
+  "testimonial.box.cancel": "取消",
+  "testimonial.box.quote": "你的话",
+  "testimonial.box.placeholderLearner":
+    "上课之后有什么不一样了？说具体的那件事——你主持的会议、通过的考试、不再害怕的那通电话。",
+  "testimonial.box.placeholderTutor": "以你自己的话，写下你在所教学员身上看到的改变。",
+  "testimonial.box.tooShort": "至少 {n} 个字符——一句真实的话通常就够了。",
+  "testimonial.box.region": "你所在的地区（可选）",
+  "testimonial.box.regionPlaceholder": "阿联酋 沙迦",
+  "testimonial.box.publish": "发布到评价墙",
+  "testimonial.box.save": "保存修改",
+  "testimonial.box.saving": "保存中……",
+  "testimonial.box.published": "已发布，现在就在墙上。",
+  "testimonial.box.removed": "已撤下，墙上不再显示。",
+  "testimonial.box.failed": "没有保存成功，请稍后再试一次。",
 
   "features.hero.kicker": "我们的方法",
   "features.hero.title": "像工程一样打造流利。",

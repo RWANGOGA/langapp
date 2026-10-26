@@ -8,6 +8,7 @@ import Calendar from "@/components/shared/Calendar";
 import ClassList from "@/components/dashboard/ClassList";
 import Countdown from "@/components/shared/Countdown";
 import PaymentSummary from "@/components/dashboard/PaymentSummary";
+import TestimonialBox from "@/components/shared/TestimonialBox";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import styles from "@/components/dashboard/dashboard.module.css";
 
@@ -92,6 +93,9 @@ export default function DashboardContent({ learner, tutor, nextClass, progress, 
             <h2 id="up-h" className={styles.bandLabel}>{t("learner.dash.upcomingLessons")}</h2>
             <ClassList classes={classes} />
           </section>
+
+          {/* One voice per account, written here and shown on the public wall. */}
+          <TestimonialBox audience="learner" />
         </div>
 
         <aside className={styles.sidePane}>

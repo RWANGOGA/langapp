@@ -3,6 +3,7 @@ const fr: Record<string, string> = {
   "nav.features": "Fonctionnalités",
   "nav.pricing": "Tarifs",
   "nav.tutors": "Tuteurs",
+  "nav.testimonials": "Témoignages",
   "nav.resources": "Ressources",
   "nav.blog": "Blog",
   "nav.tutorPortal": "Espace tuteur",
@@ -117,6 +118,102 @@ const fr: Record<string, string> = {
     "Créez un compte gratuit, choisissez un programme, et un tuteur agréé vous sera associé. Ou apportez votre expérience de la classe à une liste mondiale d'apprenants.",
   "home.cta.learn": "Commencer à apprendre",
   "home.cta.teach": "Devenir tuteur",
+
+  "home.reach.kicker": "À qui nous enseignons",
+  "home.reach.title": "L'anglais, enseigné à qui ne l'a pas reçu en grandissant.",
+  "home.reach.pull":
+    "Enseigner l'anglais à des non-natifs n'est pas ici un service parmi d'autres : c'est toute l'école.",
+  "home.reach.p1":
+    "Presque tous ceux qui s'installent avec nous travaillent dans une seconde langue. La leur est l'arabe, le japonais, le coréen, le mandarin, l'hindi, l'ourdou, le vietnamien, l'indonésien, le français, l'espagnol ou le portugais ; l'anglais est celle qui doit leur servir — pour un poste, un examen, une place à l'université ou une clinique, rarement pour des vacances.",
+  "home.reach.p2":
+    "Le plan se construit aussi là-dessus, pas seulement sur le niveau. Celui qui présente au siège à Charjah, l'infirmière d'Osaka qui prépare un examen clinique et l'ingénieur de Bengalaru qui anime la réunion quotidienne n'entrent pas dans la même salle ; on ne les enseigne donc pas avec le même script.",
+  "home.reach.1.name": "Moyen-Orient",
+  "home.reach.1.note": "Arabe comme langue maternelle",
+  "home.reach.2.name": "Asie de l'Est",
+  "home.reach.2.note": "Japonais · Coréen · Mandarin",
+  "home.reach.3.name": "Asie du Sud",
+  "home.reach.3.note": "Hindi · Ourdou · Bengali · Tamoul",
+  "home.reach.4.name": "Asie du Sud-Est",
+  "home.reach.4.note": "Vietnamien · Indonésien · Thaï",
+  "home.reach.5.name": "Afrique du Nord",
+  "home.reach.5.note": "Arabe · Français",
+  "home.reach.6.name": "Europe et Amériques",
+  "home.reach.6.note": "Espagnol · Portugais · Français",
+
+  "home.voices.kicker": "Leurs mots",
+  "home.voices.title": "Ce que ça donne, après.",
+  "home.voices.empty":
+    "Le mur attend sa première voix. Les apprenants et les tuteurs écrivent la leur depuis leur tableau de bord.",
+  "home.voices.more": "Lire le mur entier",
+
+  "testimonials.hero.kicker": "Voix",
+  "testimonials.hero.title": "Le mur, dans leurs propres mots.",
+  "testimonials.hero.lede":
+    "Apprenants et tuteurs les écrivent eux-mêmes, depuis leur tableau de bord, et chacune porte le nom et l'identité du compte qui l'a écrite. Personne à l'école ne les rédige ni ne les modifie, et leur auteur peut retirer la sienne à tout moment.",
+  "testimonials.wall.kicker": "Le mur",
+  "testimonials.wall.title": "Il monte tout seul.",
+  "testimonials.wall.lede":
+    "Les citations montent d'elles-mêmes : on peut lire le mur sans rien toucher. Pointez-le et il s'arrête jusqu'à ce que vous partiez.",
+  "testimonials.wall.aria": "Témoignages d'apprenants et de tuteurs",
+  "testimonials.wall.pause":
+    "Survolez le mur ou atteignez-le avec Tab pour l'arrêter ; éloignez la souris et il repart. Si votre appareil demande une animation réduite, le mur devient une simple colonne de citations.",
+  "testimonials.empty.title": "Rien sur le mur pour l'instant.",
+  "testimonials.empty.body":
+    "Les premières entrées apparaissent dès qu'un apprenant ou un tuteur écrit la sienne depuis son tableau de bord.",
+  "testimonials.kind.learner": "Apprenant",
+  "testimonials.kind.tutor": "Tuteur",
+  "testimonials.kind.pilot": "Programme pilote",
+  "testimonials.pilot.badge": "Pas un avis client",
+  "testimonials.pilot.noteTitle": "Trois entrées sont marquées comme notes du pilote.",
+  "testimonials.pilot.noteBody":
+    "Ce sont les souvenirs de l'école sur ses propres groupes pilotes, écrits par nous et non par un client payant, et ils garderont cette marque aussi longtemps qu'ils seront là. Toutes les autres citations du mur ont été écrites par la personne nommée en dessous.",
+  "testimonials.how.kicker": "Comment nous faisons",
+  "testimonials.how.title": "Quatre choses qui donnent du poids à une citation.",
+  "testimonials.how.1.title": "Une personne l'écrit.",
+  "testimonials.how.1.body":
+    "Aucun formulaire que l'équipe marketing remplirait plus tard. Un apprenant ouvre son tableau de bord, un tuteur le sien, et les mots vont sur le mur depuis là.",
+  "testimonials.how.2.title": "Le nom et l'identité viennent du compte.",
+  "testimonials.how.2.body":
+    "Le formulaire ne demande pas qui vous êtes. L'école écrit le nom et si vous êtes apprenant ou tuteur à partir de la session ouverte : l'étiquette à côté d'une citation est un fait, pas un choix.",
+  "testimonials.how.3.title": "Une citation par personne, et elle est retirable.",
+  "testimonials.how.3.body":
+    "Écrire de nouveau modifie la même entrée au lieu d'en empiler une seconde, et la retirer l'enlève du mur dès la visite suivante : aucune copie en cache ne laisse en ligne une phrase que son auteur a demandé de faire disparaître.",
+  "testimonials.how.4.title": "Rien d'inventé, pas même le début.",
+  "testimonials.how.4.body":
+    "Le mur n'a pas commencé vide, ni avec des personnes inventées. Il s'est ouvert sur trois notes de l'école sur ses propres groupes pilotes, chacune étiquetée comme telle.",
+  "testimonials.cta.title": "Ajoutez votre voix quand vous serez prêt.",
+  "testimonials.cta.body":
+    "Les apprenants écrivent après de vraies leçons avec un tuteur assigné ; les tuteurs écrivent une fois approuvés et en train d'enseigner. Si c'est votre cas, la zone est dans votre tableau de bord.",
+  "testimonials.cta.learner": "Ouvrir mon tableau de bord",
+  "testimonials.cta.tutor": "Ouvrir le portail tuteur",
+
+  "testimonial.box.label": "Votre témoignage",
+  "testimonial.box.viewWall": "Voir le mur",
+  "testimonial.box.helpLearner":
+    "Une phrase ou deux sur ce qui a changé pour vous. Elle paraît sur le mur public avec votre nom et « Apprenant » à côté, pris de votre compte, pas saisis dans ce formulaire.",
+  "testimonial.box.helpTutor":
+    "Écrivez ce que vous avez vraiment vu dans vos cours. Le mur affiche ceci avec votre nom et « Tuteur », pris de votre compte approuvé.",
+  "testimonial.box.loading": "On vérifie si vous en avez déjà écrit un…",
+  "testimonial.box.onWall": "Sur le mur",
+  "testimonial.box.edit": "Modifier",
+  "testimonial.box.remove": "Le retirer",
+  "testimonial.box.removing": "Retrait…",
+  "testimonial.box.confirmRemove": "Oui, retirez-le",
+  "testimonial.box.keep": "Le garder",
+  "testimonial.box.cancel": "Annuler",
+  "testimonial.box.quote": "Vos mots",
+  "testimonial.box.placeholderLearner":
+    "Qu'avez-vous pu faire après les cours ? Dites le fait précis : la réunion que vous avez menée, l'examen réussi, l'appel que vous ne redoutiez plus.",
+  "testimonial.box.placeholderTutor": "Ce que vous avez vu changer chez les personnes que vous enseignez, avec vos mots.",
+  "testimonial.box.tooShort": "Au moins {n} caractères — une phrase vraie suffit souvent.",
+  "testimonial.box.region": "D'où vous écrivez (facultatif)",
+  "testimonial.box.regionPlaceholder": "Charjah, EAU",
+  "testimonial.box.publish": "Publier sur le mur",
+  "testimonial.box.save": "Enregistrer",
+  "testimonial.box.saving": "Enregistrement…",
+  "testimonial.box.published": "Publié. C'est maintenant sur le mur.",
+  "testimonial.box.removed": "Retiré. Il n'est plus sur le mur.",
+  "testimonial.box.failed": "Ça n'a pas été enregistré. Réessayez dans un instant.",
 
   "features.hero.kicker": "L'approche",
   "features.hero.title": "La fluidité, conçue.",

@@ -3,6 +3,7 @@ const ja: Record<string, string> = {
   "nav.features": "機能",
   "nav.pricing": "料金",
   "nav.tutors": "チューター",
+  "nav.testimonials": "声の壁",
   "nav.resources": "リソース",
   "nav.blog": "ブログ",
   "nav.tutorPortal": "チューターポータル",
@@ -117,6 +118,99 @@ const ja: Record<string, string> = {
     "無料アカウントを作り、プログラムを選ぶと、承認されたチューターがあなたにマッチします。あるいは、あなたの教室での経験を、世界中の学習者の名簿に活かしてください。",
   "home.cta.learn": "学習を始める",
   "home.cta.teach": "チューターになる",
+
+  "home.reach.kicker": "誰に教えているか",
+  "home.reach.title": "英語を、英語で育っていない人々に教える。",
+  "home.reach.pull": "非母語話者に英語を教えることは、ここでの一つの部門ではありません。学校全体の存在理由です。",
+  "home.reach.p1":
+    "私たちのもとへ来る方のほとんどは、第二言語で学んでいます。母語はアラビア語、日本語、韓国語、中国語（標準語）、ヒンディー語、ウルドゥー語、ベトナム語、インドネシア語、フランス語、スペイン語、ポルトガル語。英語は「機能させなければならない」言語です——仕事、試験、大学の入学、あるいは臨床のためであって、休暇のためではありません。",
+  "home.reach.p2":
+    "学習計画はレベルだけでなく、そのことからも作られます。シャルジャで本社に発表する人、大阪で臨床試験を控えた看護師、ベンガルールで毎日のスタンドアップを進行するエンジニアは、同じ部屋に入るわけではないので、同じ脚本では教えません。",
+  "home.reach.1.name": "中東",
+  "home.reach.1.note": "母語：アラビア語",
+  "home.reach.2.name": "東アジア",
+  "home.reach.2.note": "日本語 · 韓国語 · 中国語",
+  "home.reach.3.name": "南アジア",
+  "home.reach.3.note": "ヒンディー語 · ウルドゥー語 · ベンガル語 · タミル語",
+  "home.reach.4.name": "東南アジア",
+  "home.reach.4.note": "ベトナム語 · インドネシア語 · タイ語",
+  "home.reach.5.name": "北アフリカ",
+  "home.reach.5.note": "アラビア語 · フランス語",
+  "home.reach.6.name": "ヨーロッパと南北アメリカ",
+  "home.reach.6.note": "スペイン語 · ポルトガル語 · フランス語",
+
+  "home.voices.kicker": "本人たちの言葉",
+  "home.voices.title": "授業のあと、どう聞こえるか。",
+  "home.voices.empty": "壁はまだ最初の一文を待っています。学習者とチューターは、それぞれのダッシュボードから書き込みます。",
+  "home.voices.more": "声の壁をすべて読む",
+
+  "testimonials.hero.kicker": "声",
+  "testimonials.hero.title": "壁に並ぶ、本人たちの言葉。",
+  "testimonials.hero.lede":
+    "学習者もチューターも、自分のダッシュボードから自ら書き込みます。それぞれの引用には、書いたアカウントの名前と立場が添えられます。学校の誰かが代筆することもなく、手が加えられることもなく、書き手は自分の一文をいつでも下げられます。",
+  "testimonials.wall.kicker": "声の壁",
+  "testimonials.wall.title": "自分で上に昇っていきます。",
+  "testimonials.wall.lede":
+    "引用は自動的に上へ動きます。何も触らずに壁を読めます。指を止めたいところへ持っていくと、離れるまで静止します。",
+  "testimonials.wall.aria": "学習者とチューターからのメッセージ",
+  "testimonials.wall.pause":
+    "マウスを載せるか Tab で移動すると壁は止まり、離れると再び昇ります。デバイスの設定でモーションを抑えている場合は、壁は静止した引用の一列として表示されます。",
+  "testimonials.empty.title": "まだ壁には何もありません。",
+  "testimonials.empty.body": "学習者かチューターが自分のダッシュボードから書いてくれた瞬間に、最初の一文が現れます。",
+  "testimonials.kind.learner": "学習者",
+  "testimonials.kind.tutor": "チューター",
+  "testimonials.kind.pilot": "パイロット期",
+  "testimonials.pilot.badge": "レビューではありません",
+  "testimonials.pilot.noteTitle": "3件はパイロット期のメモとして印を付けています。",
+  "testimonials.pilot.noteBody":
+    "これらは学校が自身のパイロット期を振り返って書いたメモで、有料の顧客による声ではありません。壁にあるあいだ、その印は残り続けます。それ以外の引用はすべて、下にいる名前の人自身が書いたものです。",
+  "testimonials.how.kicker": "私たちのやり方",
+  "testimonials.how.title": "一文に意味を持たせる4つのこと。",
+  "testimonials.how.1.title": "人が書きます。",
+  "testimonials.how.1.body":
+    "マーケティング担当が後で埋める預かりフォームはありません。学習者が自分のダッシュボードを開き、チューターが開き、そこから壁へ昇ります。",
+  "testimonials.how.2.title": "名前と立場はアカウントから来ます。",
+  "testimonials.how.2.body":
+    "このフォームに「あなたは誰か」の入力欄はありません。氏名と、学習者かチューターかは、ログイン中のアカウントから学校が書き込みます。引用の隣にある印は、選択ではなく事実です。",
+  "testimonials.how.3.title": "一人一文、そして下げられます。",
+  "testimonials.how.3.body":
+    "もう一度書くと二文目が増えるのではなく、同じ一文を直します。下げれば次の閲覧では壁から消えます——書き手が削除した文を、キャッシュが残し続けることはありません。",
+  "testimonials.how.4.title": "作り話はありません。最初はなおさら。",
+  "testimonials.how.4.body":
+    "壁は空のまま始めたのでも、架空の人々で埋めたのでもありません。始まりは、学校自身のパイロット期について書いた3つのメモで、それぞれがその旨を明示しています。",
+  "testimonials.cta.title": "準備ができたら、あなたの一文を。",
+  "testimonials.cta.body":
+    "学習者は担当チューターとの実際の授業のあとに、チューターは認定されて教えるようになったあとに書きます。いま該当しているなら、欄はダッシュボードにあります。",
+  "testimonials.cta.learner": "ダッシュボードを開く",
+  "testimonials.cta.tutor": "チューターポータルを開く",
+
+  "testimonial.box.label": "あなたの声",
+  "testimonial.box.viewWall": "壁を見る",
+  "testimonial.box.helpLearner":
+    "何が変わったかを一文か二文で。公開の壁には、あなたの名前と「学習者」の印と共に載ります——どちらもこのフォームに打ち込むのではなく、あなたのアカウントから取られます。",
+  "testimonial.box.helpTutor":
+    "自分の授業で実際に見たことから書いてください。壁には名前と「チューター」の印が、認定済みのアカウントから表示されます。",
+  "testimonial.box.loading": "すでに書かれているかどうか確認しています…",
+  "testimonial.box.onWall": "壁に載っています",
+  "testimonial.box.edit": "編集",
+  "testimonial.box.remove": "下げる",
+  "testimonial.box.removing": "下げています…",
+  "testimonial.box.confirmRemove": "はい、下げます",
+  "testimonial.box.keep": "そのまま",
+  "testimonial.box.cancel": "取り消し",
+  "testimonial.box.quote": "あなたの言葉",
+  "testimonial.box.placeholderLearner":
+    "授業のあと何が変わりましたか。具体的なエピソードを——自分が進行した会議、合格した試験、怖くなくなった電話。",
+  "testimonial.box.placeholderTutor": "教えてきた人々に起きた変化を、あなたの言葉で。",
+  "testimonial.box.tooShort": "少なくとも{n}文字——事実を一文書けばたいてい十分です。",
+  "testimonial.box.region": "書き送る場所（任意）",
+  "testimonial.box.regionPlaceholder": "シャールジャ、UAE",
+  "testimonial.box.publish": "壁へ公開",
+  "testimonial.box.save": "変更を保存",
+  "testimonial.box.saving": "保存中…",
+  "testimonial.box.published": "公開しました。いま壁に載っています。",
+  "testimonial.box.removed": "下げました。壁にはもう載っていません。",
+  "testimonial.box.failed": "保存できませんでした。少しあとにもう一度お試しください。",
 
   "features.hero.kicker": "アプローチ",
   "features.hero.title": "流暢さを設計する。",

@@ -1,0 +1,225 @@
+/* The testimonial panel shared by the learner dashboard and the tutor portal.
+   It lives in its own stylesheet because the two portals style their bands from
+   different modules; the panel has to look identical in both, so it brings its
+   own copy of the house rules: a 2px navy masthead rule, uppercase micro
+   labels, hairline separators, no cards. */
+
+.band {
+  /* The panels it sits between in both portals keep 2rem of air between bands;
+     cross-module sibling selectors cannot enforce that, so the panel carries it. */
+  margin-top: 2rem;
+  padding: 1.15rem 0 1.7rem;
+  border-top: 2px solid #0f1c33;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.label {
+  color: var(--label);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.help {
+  margin-top: 0.7rem;
+  max-width: 62ch;
+  color: var(--body-ink);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+/* What is on the wall right now, set as a quote rather than a form value: it
+   has been published, so it reads like the thing it is on the public page. */
+.current {
+  margin: 1.1rem 0 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--coral);
+  color: #0f1c33;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.currentBy {
+  margin-top: 0.5rem;
+  color: var(--label);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.1rem;
+}
+
+.form label {
+  display: grid;
+  gap: 0.4rem;
+  color: var(--label);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.textarea,
+.input {
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid #dfe6ec;
+  border-radius: 6px;
+  background: #fff;
+  color: #0f1c33;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.textarea {
+  min-height: 104px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.textarea:focus-visible,
+.input:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: -1px;
+  border-color: var(--coral);
+}
+
+.input {
+  max-width: 320px;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  color: var(--label);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.metaWarn {
+  color: #a8501f;
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 1.1rem;
+}
+
+.btn,
+.btnCoral {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid #0f1c33;
+  border-radius: 8px;
+  background: #fff;
+  color: #0f1c33;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #f2f5f8;
+}
+
+.btnCoral {
+  border-color: var(--coral);
+  background: var(--coral);
+  color: #fff;
+}
+
+.btnCoral:hover {
+  background: #d94a17;
+}
+
+.btn:disabled,
+.btnCoral:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Quiet actions for things already published: edit, take down, confirm. */
+.link,
+.linkDanger {
+  background: none;
+  border: 0;
+  padding: 0.2rem 0;
+  color: var(--coral);
+  font: inherit;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.link:hover,
+.linkDanger:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.linkDanger {
+  color: #8b98ab;
+}
+
+.linkDanger:hover {
+  color: #a8501f;
+}
+
+a.link {
+  text-decoration: none;
+}
+
+a.link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.status {
+  margin-top: 0.7rem;
+  font-size: 0.8rem;
+}
+
+.statusOk {
+  composes: status;
+  color: var(--teal-dark);
+}
+
+.statusBad {
+  composes: status;
+  color: #c23b2e;
+  line-height: 1.55;
+}
+
+.empty {
+  margin-top: 0.7rem;
+  color: var(--body-ink);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}

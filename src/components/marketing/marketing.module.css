@@ -643,3 +643,182 @@
     padding: 26px 0;
   }
 }
+
+/* — Who we teach: a duty stated plainly, then the places it is carried out. — */
+.reachGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 56px;
+  align-items: start;
+}
+
+.reachLede {
+  color: #3d4a61;
+  font-size: 1.08rem;
+  line-height: 1.7;
+}
+
+.reachLede + .reachLede { margin-top: 18px; }
+
+.reachLede strong { color: #0f1c33; }
+
+/* A masthead list: the place carries the weight, the note sits beside it in
+   small caps. Hairlines only - no chips, no flags, no map illustration. */
+.regionList {
+  border-top: 2px solid #0f1c33;
+  list-style: none;
+}
+
+.regionItem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 18px;
+  padding: 16px 0;
+  border-bottom: 1px solid #dfe6ec;
+}
+
+.regionName { font-size: 1.02rem; font-weight: 800; letter-spacing: -0.01em; }
+
+.regionNote {
+  color: #52607a;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* — The wall of voices. It rises by itself: a column of quotes on a loop, so a
+   visitor reads the third one without touching anything. The list is rendered
+   three times and the track travels a third of its height, which is what makes
+   the wrap invisible. — */
+.wall {
+   height: clamp(420px, 62vh, 620px);
+   overflow: hidden;
+   /* Quotes dissolve at the edges instead of being cut off mid-word. */
+   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+   mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+ }
+
+.wallTrack {
+  animation-name: rise;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes rise {
+  from { transform: translateY(0); }
+  to { transform: translateY(-33.3333%); }
+}
+
+/* Reading a quote means stopping the wall under it. */
+.wall:hover .wallTrack,
+.wall:focus-within .wallTrack { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wall { height: auto; overflow: visible; -webkit-mask-image: none; mask-image: none; }
+  .wallTrack { animation: none; }
+  /* The repeats exist only to hide the loop's seam. With no loop, they would
+     be the same quotes printed three times over. */
+  .wallRepeat { display: none; }
+}
+
+.voice {
+  margin: 0;
+  /* Room for the hanging quotation mark: the wall clips its overflow, so without
+     this the opening “ would be cut off at the left edge. */
+  padding: 34px 0 34px 30px;
+  border-bottom: 1px solid #dfe6ec;
+}
+
+/* The small print under the wall: how to hold it still, and what the marked
+   entries are. */
+.wallNote {
+  margin-top: 22px;
+  color: #52607a;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  max-width: 68ch;
+}
+
+.wallNote strong { color: #0f1c33; }
+
+.voiceQuote {
+  position: relative;
+  max-width: 66ch;
+  color: #16233c;
+  font-size: clamp(1.05rem, 1.7vw, 1.32rem);
+  line-height: 1.62;
+}
+
+.voiceQuote::before {
+  content: "\201C";
+  position: absolute;
+  left: -0.62em;
+  color: var(--coral);
+  font-size: 2.6em;
+  font-weight: 800;
+  line-height: 1;
+  opacity: 0.5;
+}
+
+.voiceBy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 14px;
+  margin-top: 20px;
+}
+
+.voiceName { font-size: 0.95rem; font-weight: 800; letter-spacing: -0.01em; }
+
+.voiceKind {
+  color: var(--coral);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.voiceRegion { color: #52607a; font-size: 0.82rem; }
+
+/* A pilot note is marked, not hidden: the wall opens with these and they should
+   never be mistaken for a paying customer's review. */
+.voicePilot {
+  display: inline-block;
+  padding: 3px 8px;
+  border: 1px solid #cfd8e1;
+  color: #52607a;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* — Home teaser: three voices, still, with a way into the full wall. — */
+.voiceStrip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 34px;
+  border-top: 2px solid #0f1c33;
+}
+
+.voiceStripItem { padding: 26px 0 4px; }
+
+.voiceStripText {
+  color: #16233c;
+  font-size: 1rem;
+  line-height: 1.62;
+}
+
+.voiceStripBy { margin-top: 14px; color: #52607a; font-size: 0.8rem; }
+
+.voiceStripBy strong { color: #0f1c33; }
+
+@media (max-width: 860px) {
+  .reachGrid { grid-template-columns: 1fr; gap: 34px; }
+  .voiceStrip { grid-template-columns: 1fr; gap: 0; }
+  .voice { padding-left: 0; }
+  .voiceQuote::before { position: static; display: block; line-height: 0.6; }
+}

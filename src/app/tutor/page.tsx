@@ -7,6 +7,7 @@ import { ArrowRight, CalendarDays, PackageCheck, Users, Video } from "lucide-rea
 import Calendar from "@/components/shared/Calendar";
 import Countdown from "@/components/shared/Countdown";
 import DashboardShell from "@/components/tutor/DashboardShell";
+import TestimonialBox from "@/components/shared/TestimonialBox";
 import { useAuth } from "@/lib/auth";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { cancelTutorSession, completeTutorSession, getTutorDashboard, markSessionNoShow, sendSessionFeedback, setSessionMeetingLink, TutorDashboard } from "@/lib/tutor-data";
@@ -362,6 +363,10 @@ export default function TutorPage() {
             <section className={ui.band} aria-label={t("tutor.dash.scheduledClasses")}>
               <Calendar title={t("tutor.dash.scheduledClasses")} events={sessions} />
             </section>
+
+            {/* Same table the public wall reads; a tutor who is not approved yet
+                is refused by the API and the reason is shown in the panel. */}
+            <TestimonialBox audience="tutor" />
 
             <section className={ui.band} aria-labelledby="up-h">
               <h2 id="up-h" className={ui.bandLabel}>{t("tutor.dash.upcoming")}</h2>

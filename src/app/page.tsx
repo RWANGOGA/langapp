@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTestimonials } from "@/lib/testimonials-data";
 import HomeContent from "@/components/marketing/HomeContent";
 
 export const metadata: Metadata = {
@@ -8,6 +9,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-export default function HomePage() {
-  return <HomeContent />;
+export default async function HomePage() {
+  // The voices strip is the real wall, not a curated trio: whatever is newest
+  // is what a visitor sees, which is why this read is uncached.
+  const testimonials = await getTestimonials();
+  return <HomeContent testimonials={testimonials} />;
 }
