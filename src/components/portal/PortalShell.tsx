@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import {
   ArrowUpRight, Banknote, Bell, BookOpen, CalendarDays, ChevronRight, CreditCard,
-  FileBarChart, LayoutDashboard, Menu, NotebookPen, Settings, TrendingUp, UserPlus,
+  FileBarChart, Inbox, LayoutDashboard, Menu, NotebookPen, Settings, TrendingUp, UserPlus,
   Users, Video, X,
 } from "lucide-react";
 import styles from "./portal.module.css";
@@ -23,6 +23,7 @@ import { useLanguage } from "@/i18n/LanguageProvider";
 const ICONS = {
   dashboard: LayoutDashboard,
   applications: UserPlus,
+  messages: Inbox,
   learners: Users,
   students: Users,
   tutors: Users,

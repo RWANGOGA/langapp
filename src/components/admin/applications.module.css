@@ -55,8 +55,10 @@
   cursor: pointer;
 }
 .head:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
-.name { color: #0f1c33; font-size: 1rem; font-weight: 800; letter-spacing: -0.01em; }
-.meta { margin-top: 0.15rem; color: var(--label); font-size: 0.78rem; }
+.name { display: block; color: #0f1c33; font-size: 1rem; font-weight: 800; letter-spacing: -0.01em; }
+/* Both sit inside one grid cell, so the second line has to break on its own —
+   inline spans ran the name straight into the contact address. */
+.meta { display: block; margin-top: 0.15rem; color: var(--label); font-size: 0.78rem; }
 .chevron { color: var(--label); transition: transform 0.15s ease; }
 .chevronOpen { transform: rotate(180deg); }
 

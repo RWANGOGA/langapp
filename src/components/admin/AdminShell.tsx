@@ -21,6 +21,7 @@ export default function AdminShell({
   const NAV: PortalNavItem[] = [
     { href: "/admin", label: t("nav.overview"), icon: "dashboard" },
     { href: "/admin/applications", label: t("nav.applications"), icon: "applications" },
+    { href: "/admin/messages", label: t("nav.messages"), icon: "messages" },
     { href: "/admin/tutors", label: t("nav.tutors"), icon: "tutors" },
     { href: "/admin/students", label: t("nav.students"), icon: "students" },
     { href: "/admin/classes", label: t("nav.classes"), icon: "classes" },

@@ -15,16 +15,18 @@ import { MeetingsPanel } from "@/components/admin/MeetingsPanel";
 import { SubscriptionManagement } from "@/components/admin/SubscriptionManagement";
 import { ActivityLog } from "@/components/admin/ActivityLog";
 import ApplicationReview from "@/components/admin/ApplicationReview";
+import ContactInbox from "@/components/admin/ContactInbox";
 import ClassMonitor from "@/components/admin/ClassMonitor";
 import PaymentLedger from "@/components/admin/PaymentLedger";
 import AccountSettings from "@/components/admin/AccountSettings";
 import ui from "@/components/portal/bands.module.css";
 
-type Section = "dashboard" | "applications" | "tutors" | "students" | "classes" | "meetings" | "payments" | "subscriptions" | "reports" | "settings";
+type Section = "dashboard" | "applications" | "messages" | "tutors" | "students" | "classes" | "meetings" | "payments" | "subscriptions" | "reports" | "settings";
 
 const SECTIONS = new Set<Section>([
   "dashboard",
   "applications",
+  "messages",
   "tutors",
   "students",
   "classes",
@@ -51,6 +53,8 @@ function SectionContent({ section, data, onReload, t }: { section: Section; data
   switch (section) {
     case "applications":
       return <ApplicationReview />;
+    case "messages":
+      return <ContactInbox />;
     case "tutors":
       return <TutorRoster tutors={data.tutors} />;
     case "students":
@@ -98,7 +102,7 @@ export default function AdminSectionPage() {
   // These sections fetch their own data and read nothing from the dashboard
   // aggregate, which takes seconds from the production database. Only the bell
   // number is borrowed, and that is one small read of its own.
-  const needsDashboard = !["payments", "applications", "settings"].includes(section);
+  const needsDashboard = !["payments", "applications", "settings", "messages"].includes(section);
   const [badge, setBadge] = useState(0);
   const copy = {
     kicker: t(`admin.section.${section}.kicker`),

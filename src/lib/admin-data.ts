@@ -360,3 +360,57 @@ export async function scheduleClass(body: {
 }): Promise<AdminClassRow> {
   return apiSendClient<AdminClassRow>("POST", "/admin/classes", body);
 }
+
+/* — The contact inbox —
+   What strangers wrote through the public form, and the answer staff give them.
+   No sending service is configured, so a reply is stored against the thread and
+   delivered to the sender's own notifications when that address turns out to
+   belong to an account. Everyone else is reached from a staff mailbox, which is
+   what the mailto handoff in the panel is for. */
+export interface ContactThread {
+  id: number;
+  name: string;
+  email: string;
+  topic: string;
+  message: string;
+  created_at: string;
+  is_handled: boolean;
+  reply: string | null;
+  replied_at: string | null;
+  replied_by: number | null;
+  replied_by_name: string | null;
+}
+
+export interface ContactInboxPage {
+  messages: ContactThread[];
+  total: number;
+  /** Counted over every thread, not over the filtered view. */
+  open: number;
+  answered: number;
+}
+
+/** GET /admin/messages - the queue, newest first. */
+export async function getContactInbox(params: {
+  state?: "open" | "answered" | "all";
+  topic?: string;
+  limit?: number;
+} = {}): Promise<ContactInboxPage> {
+  const q = new URLSearchParams();
+  if (params.state && params.state !== "all") q.set("state", params.state);
+  if (params.topic) q.set("topic", params.topic);
+  if (params.limit) q.set("limit", String(params.limit));
+  const suffix = q.toString() ? `?${q.toString()}` : "";
+  const data = await apiGetClient<ContactInboxPage>(`/admin/messages${suffix}`);
+  if (!data) throw new Error("Failed to fetch the message queue");
+  return data;
+}
+
+/** POST /admin/messages/{id}/reply - answer the thread and close it. */
+export async function replyToMessage(id: number, reply: string): Promise<ContactThread> {
+  return apiSendClient<ContactThread>("POST", `/admin/messages/${id}/reply`, { reply });
+}
+
+/** POST /admin/messages/{id}/reopen - back on the queue, with what was said kept. */
+export async function reopenMessage(id: number): Promise<ContactThread> {
+  return apiSendClient<ContactThread>("POST", `/admin/messages/${id}/reopen`, {});
+}
