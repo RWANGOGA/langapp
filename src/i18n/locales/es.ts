@@ -994,6 +994,10 @@ const es: Record<string, string> = {
   "nav.earnings": "Ingresos",
   "portal.openMenu": "Abrir el menú",
   "portal.closeMenu": "Cerrar el menú",
+  "portal.notifKicker": "Bandeja",
+  "portal.notifLoading": "Leyendo tus notificaciones…",
+  "portal.notifEmptyBody":
+    "Las novedades sobre tu cuenta, tus clases y las personas con las que trabajas aparecerán en esta bandeja.",
   "admin.section.payments.kicker": "Pagos",
   "admin.section.payments.title": "El dinero, pedido a pedido",
   "admin.section.payments.lede":

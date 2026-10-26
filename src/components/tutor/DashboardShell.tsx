@@ -15,6 +15,7 @@ export default function DashboardShell({ tutor, children }: { tutor: TutorDashbo
     { href: "/tutor/notes", label: t("nav.lessonNotes"), icon: "notes" },
     { href: "/tutor/earnings", label: t("nav.earnings"), icon: "payments" },
     { href: "/tutor/settings", label: t("nav.settings"), icon: "settings" },
+    { href: "/tutor/notifications", label: t("nav.notifications"), icon: "notifications" },
   ];
 
   return (
@@ -25,6 +26,7 @@ export default function DashboardShell({ tutor, children }: { tutor: TutorDashbo
       nav={NAV}
       identity={{ name: tutor.name, meta: tutor.role }}
       unread={tutor.unread}
+      notificationsHref="/tutor/notifications"
       footer={{ href: "/", label: t("portal.backToSite") }}
     >
       {children}

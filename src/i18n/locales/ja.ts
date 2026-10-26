@@ -993,6 +993,9 @@ const ja: Record<string, string> = {
   "nav.earnings": "報酬",
   "portal.openMenu": "メニューを開く",
   "portal.closeMenu": "メニューを閉じる",
+  "portal.notifKicker": "受信箱",
+  "portal.notifLoading": "通知を読み込んでいます…",
+  "portal.notifEmptyBody": "アカウントや授業、関わる方々についてのお知らせがこの受信箱に届きます。",
   "admin.section.payments.kicker": "支払い",
   "admin.section.payments.title": "お金を、注文ごとに",
   "admin.section.payments.lede":

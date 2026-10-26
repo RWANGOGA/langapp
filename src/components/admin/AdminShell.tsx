@@ -29,6 +29,7 @@ export default function AdminShell({
     { href: "/admin/subscriptions", label: t("nav.subscriptions"), icon: "subscriptions" },
     { href: "/admin/reports", label: t("nav.reports"), icon: "reports" },
     { href: "/admin/settings", label: t("nav.settings"), icon: "settings" },
+    { href: "/admin/notifications", label: t("nav.notifications"), icon: "notifications" },
   ];
 
   return (
@@ -39,6 +40,7 @@ export default function AdminShell({
       nav={NAV}
       identity={{ name: adminName || t("portal.administrator"), meta: t("portal.administration") }}
       unread={unread}
+      notificationsHref="/admin/notifications"
       footer={{ href: "/", label: t("portal.backToSite") }}
     >
       {children}

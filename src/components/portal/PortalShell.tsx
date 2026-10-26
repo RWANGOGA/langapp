@@ -184,6 +184,13 @@ export default function PortalShell({
 
         <div className={styles.body}>
           <div className={styles.sidebar}>
+            {/* The way out of the portal. It sits at the head of the rail rather
+                than the foot, where it read as a footnote nobody scrolls to. */}
+            {footer && (
+              <Link className={styles.siteReturn} href={footer.href}>
+                <ArrowUpRight size={14} aria-hidden /> {footer.label}
+              </Link>
+            )}
             <nav className={styles.sideNav} aria-label={navAriaLabel}>
               {nav.map(({ href, label, icon: iconName }) => {
                 const Icon = ICONS[iconName];
@@ -200,11 +207,6 @@ export default function PortalShell({
                 );
               })}
             </nav>
-            {footer && (
-              <Link className={styles.sideFoot} href={footer.href}>
-                {footer.label} <ArrowUpRight size={13} aria-hidden />
-              </Link>
-            )}
           </div>
           <main className={styles.content}>
             <div className={styles.backRow}>

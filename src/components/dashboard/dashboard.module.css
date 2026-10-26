@@ -3,31 +3,34 @@
    components/portal/portal.module.css and is shared with the other portals. */
 
 /* — Page head — */
+/* Centred and set at the marketing pages' scale: a portal head is the same
+   editorial opening as a page on the public site, not a toolbar label. */
 .dashboardWelcome {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1.5rem;
-  padding-bottom: 1.25rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  text-align: center;
+  padding-bottom: 1.4rem;
   border-bottom: 1px solid #dfe6ec;
 }
 
 .dashboardWelcome h1 {
   margin-top: 0.35rem;
   color: #0f1c33;
-  font-size: clamp(1.75rem, 3.2vw, 2.35rem);
+  font-size: clamp(2rem, 3.8vw, 2.8rem);
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  letter-spacing: -0.028em;
+  line-height: 1.06;
 }
 
-.dashboardWelcome p:not(.kicker) { margin-top: 0.45rem; color: var(--body-ink); line-height: 1.6; }
+.dashboardWelcome p:not(.kicker) { margin-top: 0.45rem; color: var(--body-ink); font-size: 1.02rem; font-weight: 500; line-height: 1.65; max-width: 62ch; }
 
 .kicker {
   color: var(--coral);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
@@ -386,21 +389,22 @@
 
 .pageHeading {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1.5rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  text-align: center;
 }
 
 .pageHeading h1 {
   margin-top: 0.35rem;
   color: #0f1c33;
-  font-size: clamp(1.7rem, 3.2vw, 2.3rem);
+  font-size: clamp(2rem, 3.8vw, 2.8rem);
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  letter-spacing: -0.028em;
+  line-height: 1.06;
 }
 
-.pageHeading p { margin-top: 0.4rem; color: var(--body-ink); line-height: 1.6; max-width: 62ch; }
+.pageHeading p { margin-top: 0.4rem; color: var(--body-ink); font-size: 1.02rem; font-weight: 500; line-height: 1.65; max-width: 62ch; }
 
 /* — Tutor detail page — */
 .tutorHead { display: flex; align-items: center; gap: 1.2rem; padding-top: 1.4rem; border-top: 2px solid #0f1c33; }
@@ -563,11 +567,13 @@
 }
 
 @media (max-width: 720px) {
-  .dashboardWelcome { align-items: flex-start; flex-direction: column; }
+  /* Heads stay centred on a phone: the marketing pages centre theirs at every
+     width, and a portal head is the same opening. */
+  .dashboardWelcome { align-items: center; flex-direction: column; }
   .dashboardStats, .paymentDetails, .notificationSummary { grid-template-columns: 1fr; }
   .dashboardStats > div + div, .paymentDetails > div + div, .notificationSummary > div + div { padding-left: 0; border-left: 0; border-top: 1px solid #dfe6ec; }
   .paymentSummaryHead { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
-  .pageHeading { align-items: flex-start; flex-direction: column; }
+  .pageHeading { align-items: center; flex-direction: column; }
   .nextRow { align-items: flex-start; flex-direction: column; gap: 1rem; }
   .miniTutor { border-right: 0; padding-right: 0; }
   .figureRow { align-items: flex-start; flex-direction: column; gap: 0.9rem; }
