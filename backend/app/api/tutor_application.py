@@ -7,7 +7,13 @@ from datetime import datetime
 from math import ceil
 
 from app.db.session import get_db
-from app.models.user import User, UserRole, TutorProfile
+from app.models.user import (
+    TutorProfile,
+    TutorProfileLanguage,
+    TutorProfileSpecialty,
+    User,
+    UserRole,
+)
 from app.models.tutor_application import (
     TutorApplication,
     ApplicationStatus,
@@ -78,6 +84,53 @@ ALLOWED_TRANSITIONS: dict[ApplicationStatus, set[ApplicationStatus]] = {
     ApplicationStatus.APPROVED: set(),
     ApplicationStatus.WITHDRAWN: set(),
 }
+
+
+def _split_application_list(raw: Optional[str], limit: int = 8) -> list[str]:
+    """Turn a comma-joined form answer into the tokens a card can display."""
+    tokens: list[str] = []
+    for part in (raw or "").replace(";", ",").split(","):
+        token = part.strip()[:50]
+        if token and token.lower() not in {seen.lower() for seen in tokens}:
+            tokens.append(token)
+    return tokens[:limit]
+
+
+async def _project_application_facts(
+    db: AsyncSession, profile: TutorProfile, application: TutorApplication
+) -> None:
+    """Copy the applicant's approved answers onto the profile the page publishes.
+
+    Only ever called on a first approval: a tutor who has since edited their own
+    card in Settings must not be reset by a re-approval. Fields they have
+    already filled are left alone; specialties and languages are written only
+    when the profile lists none, because nothing else in the application
+    records them.
+    """
+    if not profile.country:
+        profile.country = application.country
+    if not profile.years_experience:
+        profile.years_experience = application.years_experience or 0
+    if not profile.intro_video_url:
+        profile.intro_video_url = application.intro_video_url
+
+    listed = await db.scalar(
+        select(func.count(TutorProfileSpecialty.id)).where(
+            TutorProfileSpecialty.profile_id == profile.id
+        )
+    )
+    if not listed:
+        for name in _split_application_list(application.specialties):
+            db.add(TutorProfileSpecialty(profile_id=profile.id, specialty=name))
+
+    spoken = await db.scalar(
+        select(func.count(TutorProfileLanguage.id)).where(
+            TutorProfileLanguage.profile_id == profile.id
+        )
+    )
+    if not spoken:
+        for name in _split_application_list(application.languages):
+            db.add(TutorProfileLanguage(profile_id=profile.id, language=name))
 
 
 @router.get("/tutor/requirements", response_model=TutorRequirementsRead)
@@ -206,7 +259,19 @@ async def submit_application(
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
-    if current_user.role != UserRole.STUDENT:
+    # Tutor access is granted only by approving an application (see
+    # review_application below), so applying is open to any account that has
+    # never been through onboarding: students, and the TUTOR-role accounts left
+    # behind when registration still honoured a self-declared role. Those carry
+    # an empty profile, are absent from the public directory, and this endpoint
+    # is their only way back in.
+    if current_user.role == UserRole.TUTOR:
+        already_approved = await db.scalar(
+            select(TutorProfile.is_approved).where(TutorProfile.user_id == current_user.id)
+        )
+        if already_approved:
+            raise HTTPException(status_code=400, detail="You are already an approved tutor")
+    elif current_user.role != UserRole.STUDENT:
         raise HTTPException(status_code=400, detail="Only students can apply to become tutors")
 
     existing = await db.execute(select(TutorApplication).where(TutorApplication.user_id == current_user.id))
@@ -526,8 +591,11 @@ async def review_application(
             user.role = UserRole.TUTOR
             existing_profile = await db.execute(select(TutorProfile).where(TutorProfile.user_id == user.id))
             profile = existing_profile.scalar_one_or_none()
+            # A profile that has never been approved is a placeholder, not a
+            # curated card: filling it is what makes the approval publishable.
+            first_approval = profile is None or profile.approved_at is None
             if not profile:
-                db.add(TutorProfile(
+                profile = TutorProfile(
                     user_id=user.id,
                     headline=None,
                     country=application.country,
@@ -539,7 +607,10 @@ async def review_application(
                     approved_at=datetime.utcnow(),
                     approved_by=current_user.id,
                     intro_video_url=application.intro_video_url,
-                ))
+                )
+                db.add(profile)
+                # The specialty/language rows below need the primary key.
+                await db.flush()
             else:
                 # Re-approval of a previously onboarded tutor: the profile is
                 # the single source of directory truth (see app/api/tutors.py),
@@ -548,6 +619,8 @@ async def review_application(
                 if profile.approved_at is None:
                     profile.approved_at = datetime.utcnow()
                     profile.approved_by = current_user.id
+            if first_approval:
+                await _project_application_facts(db, profile, application)
         await notify_user(
             db, application.user_id, "tutor_application_approved",
             "Your tutor application was approved",

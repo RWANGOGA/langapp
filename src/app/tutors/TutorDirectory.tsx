@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
-import { SPECIALTIES, type DirectoryTutor, type Specialty } from "@/lib/tutors-data";
+import { type DirectoryTutor } from "@/lib/tutors-data";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import styles from "./page.module.css";
 
@@ -12,10 +12,14 @@ type Sort = "rating" | "reviews" | "experience";
 export default function TutorDirectory({ tutors }: { tutors: DirectoryTutor[] }) {
   const { t } = useLanguage();
   const [query, setQuery] = useState("");
-  const [specialty, setSpecialty] = useState<Specialty | "All">("All");
+  const [specialty, setSpecialty] = useState<string>("All");
   const [language, setLanguage] = useState("Any");
   const [sort, setSort] = useState<Sort>("rating");
 
+  // Both filters offer exactly the values the tutors actually listed. A fixed
+  // vocabulary here - "IELTS" against an applicant's "IELTS Prep" - could
+  // never match, so the control looked broken on a page with real data.
+  const goals = useMemo(() => Array.from(new Set(tutors.flatMap((t) => t.specialties))).sort(), [tutors]);
   const languages = useMemo(() => Array.from(new Set(tutors.flatMap((t) => t.speaks))).sort(), [tutors]);
 
   const list = useMemo(() => {
@@ -47,9 +51,9 @@ export default function TutorDirectory({ tutors }: { tutors: DirectoryTutor[] })
         </label>
         <label className={styles.field}>
           <span>{t("tutors.filter.goal")}</span>
-          <select value={specialty} onChange={(e) => setSpecialty(e.target.value as Specialty | "All")} aria-label={t("tutors.filter.goal")}>
+          <select value={specialty} onChange={(e) => setSpecialty(e.target.value)} aria-label={t("tutors.filter.goal")}>
             <option value="All">{t("tutors.filter.all")}</option>
-            {SPECIALTIES.map((s) => <option key={s}>{s}</option>)}
+            {goals.map((s) => <option key={s}>{s}</option>)}
           </select>
         </label>
         <label className={styles.field}>

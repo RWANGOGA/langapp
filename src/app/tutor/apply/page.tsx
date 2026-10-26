@@ -55,12 +55,6 @@ const specialtiesOptions: { value: string; key: string }[] = [
   { value: "General English", key: "apply.spec.general" },
   { value: "English Grammar", key: "apply.spec.grammar" },
   { value: "English Pronunciation", key: "apply.spec.pronunciation" },
-  { value: "Spanish", key: "apply.lang.es" },
-  { value: "French", key: "apply.lang.fr" },
-  { value: "German", key: "apply.lang.de" },
-  { value: "Chinese", key: "apply.lang.zh" },
-  { value: "Japanese", key: "apply.lang.ja" },
-  { value: "Korean", key: "apply.lang.ko" },
 ];
 
 const languagesOptions: { value: string; key: string }[] = [
