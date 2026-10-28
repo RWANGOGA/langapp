@@ -8,6 +8,7 @@ class NotificationRead(BaseModel):
     notification_type: str
     title: str
     message: str
+    link: str | None = None
     is_read: bool
     created_at: datetime
     read_at: datetime | None = None

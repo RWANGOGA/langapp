@@ -517,6 +517,13 @@
 
 .markRead:hover { border-color: var(--p-accent); color: var(--p-accent); }
 
+/* A notification that leads somewhere is a whole-row link: lift the default
+   anchor underline, invite the click, and slide the chevron to the edge. */
+.notificationItem.linked { cursor: pointer; text-decoration: none; transition: background 0.15s ease; }
+.notificationItem.linked:hover { background: var(--p-surface-hover); }
+.notifGo { margin-left: auto; align-self: center; }
+.notificationItem.linked:hover .notifGo { color: var(--p-accent); }
+
 /* — Empty state — */
 .emptyState {
   display: grid;

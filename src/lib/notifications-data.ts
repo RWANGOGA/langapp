@@ -5,6 +5,7 @@ export interface LearnerNotification {
   notification_type: string;
   title: string;
   message: string;
+  link: string | null;
   is_read: boolean;
   created_at: string;
   read_at: string | null;

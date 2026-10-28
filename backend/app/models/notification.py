@@ -14,6 +14,10 @@ class Notification(Base):
     notification_type: Mapped[str] = mapped_column(String(50), nullable=False)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     message: Mapped[str] = mapped_column(Text, nullable=False)
+    # Where a click lands: a relative in-app route (e.g. /admin/messages). Left
+    # null when the event has no dedicated surface, so the row stays plain text
+    # instead of pointing somewhere misleading.
+    link: Mapped[str | None] = mapped_column(String(300), nullable=True)
     is_read: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     read_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
