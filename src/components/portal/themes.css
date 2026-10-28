@@ -31,6 +31,12 @@
   --p-surface: #ffffff;
   --p-surface-hover: #f2f5f8;
   --p-radius: 3px;
+  --p-danger: #b0483f;
+  --p-danger-soft: #fdf1ef;
+  --p-danger-rule: #f0c9c3;
+  --p-success: var(--teal);
+  --p-success-soft: #f0f8f6;
+  --p-success-rule: #bfe0da;
 }
 
 /* — Admin: the MIT language — */
@@ -50,6 +56,12 @@
   --p-surface: #ffffff;
   --p-surface-hover: #f4f5f7;
   --p-radius: 0px;
+  --p-danger: #a31f34;
+  --p-danger-soft: #f7f0f1;
+  --p-danger-rule: #e7ccd0;
+  --p-success: #14612e;
+  --p-success-soft: #eef4ef;
+  --p-success-rule: #cfe0d3;
 }
 
 /* — Tutor: the Stanford language — */
@@ -69,6 +81,12 @@
   --p-surface: #faf7f2;
   --p-surface-hover: #f2ece2;
   --p-radius: 2px;
+  --p-danger: #8c1515;
+  --p-danger-soft: #faf4f2;
+  --p-danger-rule: #e6cdc7;
+  --p-success: #137365;
+  --p-success-soft: #eaf3f0;
+  --p-success-rule: #c7ddd7;
 }
 
 /* — Learner: a friendlier blend — */
@@ -88,4 +106,10 @@
   --p-surface: #ffffff;
   --p-surface-hover: #f2f7f7;
   --p-radius: 12px;
+  --p-danger: #c0392b;
+  --p-danger-soft: #fdeeec;
+  --p-danger-rule: #f2cdc7;
+  --p-success: #2a8c82;
+  --p-success-soft: #e9f1f2;
+  --p-success-rule: #c6dedb;
 }

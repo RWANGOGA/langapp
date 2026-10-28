@@ -11,16 +11,16 @@
   align-items: center;
   gap: 0.45rem;
   padding: 0.4rem 0.8rem;
-  border: 1px solid #dfe6ec;
+  border: 1px solid var(--p-rule);
   border-radius: 999px;
   background: none;
-  color: var(--body-ink);
+  color: var(--p-body);
   font: inherit;
   font-size: 0.82rem;
   cursor: pointer;
 }
-.filter:hover { border-color: #0f1c33; color: #0f1c33; }
-.filterOn { border-color: var(--coral); color: var(--coral); box-shadow: inset 0 0 0 1px var(--coral); }
+.filter:hover { border-color: var(--p-ink); color: var(--p-ink); }
+.filterOn { border-color: var(--p-accent); color: var(--p-accent); box-shadow: inset 0 0 0 1px var(--p-accent); }
 
 .scheduleForm {
   display: grid;
@@ -31,7 +31,7 @@
 .scheduleForm label {
   display: grid;
   gap: 0.4rem;
-  color: var(--label);
+  color: var(--p-label);
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -46,17 +46,17 @@
 .error {
   margin-top: 0.9rem;
   padding: 0.7rem 0.9rem;
-  border: 1px solid #f0c9c3;
-  border-radius: 8px;
-  background: #fdf1ef;
-  color: #b0483f;
+  border: 1px solid var(--p-danger-rule);
+  border-radius: var(--p-radius);
+  background: var(--p-danger-soft);
+  color: var(--p-danger);
   font-size: 0.85rem;
   line-height: 1.5;
 }
 
 .flash {
   margin-top: 0.9rem;
-  color: var(--teal);
+  color: var(--p-success);
   font-size: 0.88rem;
   font-weight: 600;
 }

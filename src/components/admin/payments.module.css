@@ -11,16 +11,16 @@
   align-items: center;
   gap: 0.45rem;
   padding: 0.4rem 0.8rem;
-  border: 1px solid #dfe6ec;
+  border: 1px solid var(--p-rule);
   border-radius: 999px;
   background: none;
-  color: var(--body-ink);
+  color: var(--p-body);
   font: inherit;
   font-size: 0.82rem;
   cursor: pointer;
 }
-.filter:hover { border-color: #0f1c33; color: #0f1c33; }
-.filterOn { border-color: var(--coral); color: var(--coral); box-shadow: inset 0 0 0 1px var(--coral); }
+.filter:hover { border-color: var(--p-ink); color: var(--p-ink); }
+.filterOn { border-color: var(--p-accent); color: var(--p-accent); box-shadow: inset 0 0 0 1px var(--p-accent); }
 
 /* Eleven chips plus a search field do not fit one line at this width; wrapping
    keeps the search box whole instead of clipping it off the right edge. */
@@ -43,9 +43,9 @@
   gap: 1.2rem;
   align-items: start;
   padding: 0.85rem 0;
-  border-top: 1px solid #dfe6ec;
+  border-top: 1px solid var(--p-rule);
 }
-.ledger li:last-child { border-bottom: 1px solid #dfe6ec; }
+.ledger li:last-child { border-bottom: 1px solid var(--p-rule); }
 /* The pill is a grid item, so it would stretch across a phone column; the cell
    keeps it the width of its label at every breakpoint. */
 .pillCell { display: flex; justify-content: flex-end; }
@@ -63,7 +63,7 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--coral);
+  color: var(--p-accent);
   font: inherit;
   font-size: 0.78rem;
   font-weight: 700;
@@ -81,12 +81,12 @@
   align-items: end;
   margin-top: 0.9rem;
   padding-top: 0.9rem;
-  border-top: 1px solid #e6ecf2;
+  border-top: 1px solid var(--p-rule-soft);
 }
 .recordForm label {
   display: grid;
   gap: 0.35rem;
-  color: var(--label);
+  color: var(--p-label);
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -98,7 +98,7 @@
   grid-column: 1 / -1;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid #e6ecf2;
+  border-top: 1px solid var(--p-rule-soft);
 }
 
 .events {
@@ -113,11 +113,11 @@
   grid-template-columns: 8.5rem 1fr;
   gap: 0.9rem;
   font-size: 0.86rem;
-  color: #23304a;
+  color: var(--p-ink);
   line-height: 1.5;
 }
 .eventWhen {
-  color: var(--label);
+  color: var(--p-label);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -126,23 +126,23 @@
 }
 .tally {
   display: block;
-  color: var(--label);
+  color: var(--p-label);
   font-size: 0.78rem;
 }
 
 .error {
   margin-top: 0.9rem;
   padding: 0.7rem 0.9rem;
-  border: 1px solid #f0c9c3;
-  border-radius: 8px;
-  background: #fdf1ef;
-  color: #b0483f;
+  border: 1px solid var(--p-danger-rule);
+  border-radius: var(--p-radius);
+  background: var(--p-danger-soft);
+  color: var(--p-danger);
   font-size: 0.85rem;
   line-height: 1.5;
 }
 .flash {
   margin-top: 0.9rem;
-  color: var(--teal);
+  color: var(--p-success);
   font-size: 0.88rem;
   font-weight: 600;
 }

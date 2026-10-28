@@ -2,20 +2,20 @@
 
 .error {
   padding: 0.7rem 0.9rem;
-  border: 1px solid #f0c9c3;
-  border-radius: 8px;
-  background: #fdf1ef;
-  color: #b0483f;
+  border: 1px solid var(--p-danger-rule);
+  border-radius: var(--p-radius);
+  background: var(--p-danger-soft);
+  color: var(--p-danger);
   font-size: 0.85rem;
   line-height: 1.5;
 }
 
 .flash {
   padding: 0.7rem 0.9rem;
-  border: 1px solid #bfe0da;
-  border-radius: 8px;
-  background: #f0f8f6;
-  color: var(--teal);
+  border: 1px solid var(--p-success-rule);
+  border-radius: var(--p-radius);
+  background: var(--p-success-soft);
+  color: var(--p-success);
   font-size: 0.88rem;
   font-weight: 600;
 }

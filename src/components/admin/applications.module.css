@@ -15,31 +15,31 @@
   align-items: center;
   gap: 0.45rem;
   padding: 0.4rem 0.8rem;
-  border: 1px solid #dfe6ec;
+  border: 1px solid var(--p-rule);
   border-radius: 999px;
   background: none;
-  color: var(--body-ink);
+  color: var(--p-body);
   font: inherit;
   font-size: 0.82rem;
   cursor: pointer;
 }
-.filter:hover { border-color: #0f1c33; color: #0f1c33; }
-.filterOn { border-color: var(--coral); color: var(--coral); box-shadow: inset 0 0 0 1px var(--coral); }
+.filter:hover { border-color: var(--p-ink); color: var(--p-ink); }
+.filterOn { border-color: var(--p-accent); color: var(--p-accent); box-shadow: inset 0 0 0 1px var(--p-accent); }
 .filterCount {
   min-width: 1.1rem;
   padding: 0 0.3rem;
   border-radius: 999px;
-  background: #f2f5f8;
-  color: #33415c;
+  background: var(--p-surface-hover);
+  color: var(--p-label);
   font-size: 0.72rem;
   font-weight: 800;
   text-align: center;
 }
-.filterOn .filterCount { background: var(--coral); color: #fff; }
+.filterOn .filterCount { background: var(--p-accent); color: #fff; }
 
 /* — A single application in the queue — */
-.item { border-top: 1px solid #dfe6ec; }
-.item:last-child { border-bottom: 1px solid #dfe6ec; }
+.item { border-top: 1px solid var(--p-rule); }
+.item:last-child { border-bottom: 1px solid var(--p-rule); }
 
 .head {
   display: grid;
@@ -54,12 +54,12 @@
   font: inherit;
   cursor: pointer;
 }
-.head:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
-.name { display: block; color: #0f1c33; font-size: 1rem; font-weight: 800; letter-spacing: -0.01em; }
+.head:focus-visible { outline: 2px solid var(--p-accent); outline-offset: 2px; }
+.name { display: block; color: var(--p-ink); font-size: 1rem; font-weight: 800; letter-spacing: -0.01em; }
 /* Both sit inside one grid cell, so the second line has to break on its own —
    inline spans ran the name straight into the contact address. */
-.meta { display: block; margin-top: 0.15rem; color: var(--label); font-size: 0.78rem; }
-.chevron { color: var(--label); transition: transform 0.15s ease; }
+.meta { display: block; margin-top: 0.15rem; color: var(--p-label); font-size: 0.78rem; }
+.chevron { color: var(--p-label); transition: transform 0.15s ease; }
 .chevronOpen { transform: rotate(180deg); }
 
 /* — Expanded evidence + decision surface — */
@@ -76,16 +76,16 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.55rem 0;
-  border-bottom: 1px solid #eef2f6;
+  border-bottom: 1px solid var(--p-rule-soft);
 }
-.evidenceLabel { color: var(--label); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-.evidenceValue { color: #0f1c33; font-size: 0.88rem; text-align: right; }
-.evidenceLink { color: var(--teal); font-size: 0.85rem; text-decoration: none; border-bottom: 1px solid currentColor; }
-.evidenceLink:hover { color: var(--coral); }
-.missing { color: #b0483f; }
+.evidenceLabel { color: var(--p-label); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.evidenceValue { color: var(--p-ink); font-size: 0.88rem; text-align: right; }
+.evidenceLink { color: var(--p-secondary); font-size: 0.85rem; text-decoration: none; border-bottom: 1px solid currentColor; }
+.evidenceLink:hover { color: var(--p-accent); }
+.missing { color: var(--p-danger); }
 
 .note { margin-bottom: 1rem; }
-.noteLabel { display: block; margin-bottom: 0.4rem; color: var(--body-ink); font-size: 0.82rem; }
+.noteLabel { display: block; margin-bottom: 0.4rem; color: var(--p-body); font-size: 0.82rem; }
 
 .actions {
   display: flex;
@@ -93,19 +93,19 @@
   align-items: center;
   gap: 0.6rem;
   padding-top: 1rem;
-  border-top: 1px solid #dfe6ec;
+  border-top: 1px solid var(--p-rule);
 }
 .scoreBox { display: flex; align-items: center; gap: 0.4rem; margin-right: auto; }
-.scoreBox label { color: var(--label); font-size: 0.74rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
-.scoreBox input { width: 4.5rem; padding: 0.4rem 0.5rem; border: 1px solid #dfe6ec; border-radius: 6px; font: inherit; font-size: 0.88rem; }
+.scoreBox label { color: var(--p-label); font-size: 0.74rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.scoreBox input { width: 4.5rem; padding: 0.4rem 0.5rem; border: 1px solid var(--p-rule); border-radius: var(--p-radius); font: inherit; font-size: 0.88rem; }
 
 .error {
   margin-top: 0.9rem;
   padding: 0.7rem 0.9rem;
-  border: 1px solid #f0c9c3;
-  border-radius: 8px;
-  background: #fdf1ef;
-  color: #b0483f;
+  border: 1px solid var(--p-danger-rule);
+  border-radius: var(--p-radius);
+  background: var(--p-danger-soft);
+  color: var(--p-danger);
   font-size: 0.85rem;
   line-height: 1.5;
 }
