@@ -156,6 +156,19 @@ export default function TutorPage() {
                   ) : next.meetingUrl ? (
                     <div className={ui.joinRow}>
                       <a className={ui.btnCoral} href={next.meetingUrl} target="_blank" rel="noopener noreferrer">{t("tutor.dash.startClass")}</a>
+                      {callsEnabled && (
+                        // A link is already saved, but the tutor can still switch
+                        // this session to an in-app room; enabling refreshes the
+                        // band into the in-app start state above.
+                        <button
+                          type="button"
+                          className={ui.textLink}
+                          disabled={busy === "room"}
+                          onClick={() => runAction("room", () => enableInAppRoom(classId(next.sessionId)), t("call.roomOpened"))}
+                        >
+                          {busy === "room" ? t("tutor.common.saving") : t("call.openRoom")}
+                        </button>
+                      )}
                     </div>
                   ) : (
                     // The old form posted to /api/tutor/meeting-link, which existed
