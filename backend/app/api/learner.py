@@ -110,11 +110,15 @@ async def get_learner_dashboard(
     if next_class:
         seconds_left = int((next_class.scheduled_at - now).total_seconds())
         next_class_data = {
+            "classId": next_class.id,
             "title": next_class.title,
             "secondsLeft": max(0, seconds_left),
             "startsAt": to_utc_iso(next_class.scheduled_at),
             "zoomUrl": next_class.zoom_url,
             "meetUrl": next_class.meet_url,
+            # When a tutor opened an in-app room, the learner joins inside the
+            # product instead of following an external link.
+            "inAppCall": bool(next_class.room_name),
             "packageName": next_class.package_name,
         }
 

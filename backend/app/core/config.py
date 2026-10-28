@@ -35,6 +35,16 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
     ENVIRONMENT: str = "development"
 
+    # In-app lesson calls (LiveKit). All three must be present for the feature
+    # to light up; without them the app keeps using external Zoom/Meet links.
+    LIVEKIT_URL: Optional[str] = None
+    LIVEKIT_API_KEY: Optional[str] = None
+    LIVEKIT_API_SECRET: Optional[str] = None
+
+    @property
+    def calls_enabled(self) -> bool:
+        return bool(self.LIVEKIT_URL and self.LIVEKIT_API_KEY and self.LIVEKIT_API_SECRET)
+
     def model_post_init(self, __context: object) -> None:
         self.DATABASE_URL = normalize_asyncpg_url(self.DATABASE_URL)
         if self.DATABASE_URL_UNPOOLED:

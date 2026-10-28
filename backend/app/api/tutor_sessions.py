@@ -22,6 +22,7 @@ from app.schemas.tutor_sessions import (
 )
 from app.api.auth import get_current_user
 from app.services.notifications import notify_user
+from app.services.calls import ensure_room
 
 router = APIRouter()
 
@@ -55,6 +56,7 @@ def _respond(cls: Class) -> SessionActionResponse:
         starts_at=to_utc_iso(cls.scheduled_at),
         zoom_url=cls.zoom_url,
         meet_url=cls.meet_url,
+        room_name=cls.room_name,
         notes=cls.notes,
         updated_at=to_utc_iso(cls.updated_at or utc_now()),
     )
@@ -80,6 +82,45 @@ async def set_meeting_link(
         cls.zoom_url = url
     else:
         cls.meet_url = url
+
+    await db.commit()
+    await db.refresh(cls)
+    return _respond(cls)
+
+
+@router.post("/tutor/sessions/{class_id}/room", response_model=SessionActionResponse)
+async def enable_in_app_room(
+    class_id: int,
+    tutor: User = Depends(_require_tutor),
+    db: AsyncSession = Depends(get_db),
+):
+    """Open an in-app room for an upcoming class and tell the learner.
+
+    Idempotent: enabling twice reuses the same `class-{id}` room. The learner
+    is pointed at the call screen through the room_ready notification.
+    """
+    cls = await _get_owned_class(class_id, tutor, db)
+    if cls.status != ClassStatus.SCHEDULED:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Cannot open a room for a '{cls.status.value}' session",
+        )
+
+    first_time = not cls.room_name
+    ensure_room(cls)
+
+    if first_time:
+        await notify_user(
+            db,
+            cls.learner_id,
+            "room_ready",
+            f"Your lesson room is ready: {cls.title}",
+            f"{tutor.full_name} opened an in-app room for your class. "
+            f"Join it from your dashboard when the lesson starts.",
+            # The destination carries the class id, so it is passed explicitly
+            # rather than resolved from the static type->route map.
+            link=f"/class/{cls.id}/call",
+        )
 
     await db.commit()
     await db.refresh(cls)

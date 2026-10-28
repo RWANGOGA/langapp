@@ -10,7 +10,8 @@ import DashboardShell from "@/components/tutor/DashboardShell";
 import TestimonialBox from "@/components/shared/TestimonialBox";
 import { useAuth } from "@/lib/auth";
 import { useLanguage } from "@/i18n/LanguageProvider";
-import { cancelTutorSession, completeTutorSession, getTutorDashboard, markSessionNoShow, sendSessionFeedback, setSessionMeetingLink, TutorDashboard } from "@/lib/tutor-data";
+import { cancelTutorSession, completeTutorSession, enableInAppRoom, getTutorDashboard, markSessionNoShow, sendSessionFeedback, setSessionMeetingLink, TutorDashboard } from "@/lib/tutor-data";
+import { getCallsEnabled } from "@/lib/call-data";
 import ui from "@/components/portal/bands.module.css";
 
 // BCP-47 tags for Intl date formatting, keyed by the app's own locale codes.
@@ -32,6 +33,7 @@ export default function TutorPage() {
   const [actionMsg, setActionMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [linkProvider, setLinkProvider] = useState<"zoom" | "google_meet">("google_meet");
   const [linkUrl, setLinkUrl] = useState("");
+  const [callsEnabled, setCallsEnabled] = useState(false);
   const [fbSessionId, setFbSessionId] = useState("");
   const [fbTopic, setFbTopic] = useState("");
   const [fbText, setFbText] = useState("");
@@ -53,6 +55,8 @@ export default function TutorPage() {
       getTutorDashboard()
         .then(setDashboard)
         .catch((err) => setError(err.message));
+      // The in-app room affordance only appears when the server can back it.
+      getCallsEnabled().then(setCallsEnabled);
     }
   }, [isAuthenticated, isTutor]);
 
@@ -144,7 +148,12 @@ export default function TutorPage() {
                     <Countdown initialSeconds={next.secondsLeft} />
                   </div>
 
-                  {next.meetingUrl ? (
+                  {next.inAppCall ? (
+                    // A room is open: the lesson runs inside the app.
+                    <div className={ui.joinRow}>
+                      <Link className={ui.btnCoral} href={`/class/${classId(next.sessionId)}/call`}>{t("tutor.dash.startClass")}</Link>
+                    </div>
+                  ) : next.meetingUrl ? (
                     <div className={ui.joinRow}>
                       <a className={ui.btnCoral} href={next.meetingUrl} target="_blank" rel="noopener noreferrer">{t("tutor.dash.startClass")}</a>
                     </div>
@@ -180,6 +189,17 @@ export default function TutorPage() {
                         >
                           {busy === "link" ? t("tutor.common.saving") : t("tutor.dash.saveLink")}
                         </button>
+                        {callsEnabled && (
+                          // Only offered when the server actually runs calls.
+                          <button
+                            type="button"
+                            className={ui.btn}
+                            disabled={busy === "room"}
+                            onClick={() => runAction("room", () => enableInAppRoom(classId(next.sessionId)), t("call.roomOpened"))}
+                          >
+                            {busy === "room" ? t("tutor.common.saving") : t("call.openRoom")}
+                          </button>
+                        )}
                       </div>
                     </div>
                   )}
@@ -208,7 +228,11 @@ export default function TutorPage() {
                       </span>
                       <span className={ui.what}>
                         {s.learner} · {s.topic}
-                        {s.meetingUrl && <small><a className={ui.textLink} href={s.meetingUrl} target="_blank" rel="noopener noreferrer">{s.provider ?? t("tutor.dash.meetingLink")}</a></small>}
+                        {s.inAppCall ? (
+                          <small><Link className={ui.textLink} href={`/class/${s.classId}/call`}>{t("call.join")}</Link></small>
+                        ) : s.meetingUrl ? (
+                          <small><a className={ui.textLink} href={s.meetingUrl} target="_blank" rel="noopener noreferrer">{s.provider ?? t("tutor.dash.meetingLink")}</a></small>
+                        ) : null}
                       </span>
                       <span className={ui.actions}>
                         {s.status === "scheduled" && (

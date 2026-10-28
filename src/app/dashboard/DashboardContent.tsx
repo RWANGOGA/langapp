@@ -55,6 +55,10 @@ export default function DashboardContent({ learner, tutor, nextClass, progress, 
                   <Countdown initialSeconds={nextClass.secondsLeft} />
                 </div>
                 <div className={styles.joinRow}>
+                  {nextClass.inAppCall && nextClass.classId != null && (
+                    // The tutor opened an in-app room: join inside the product.
+                    <Link className={styles.btnCoral} href={`/class/${nextClass.classId}/call`}>{t("call.join")}</Link>
+                  )}
                   {nextClass.zoomUrl && <a className={styles.btnCoral} href={nextClass.zoomUrl} target="_blank" rel="noopener noreferrer">{t("learner.dash.joinZoom")}</a>}
                   {nextClass.meetUrl && <a className={styles.btnCoral} href={nextClass.meetUrl} target="_blank" rel="noopener noreferrer">{t("learner.dash.joinMeet")}</a>}
                 </div>

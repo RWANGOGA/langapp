@@ -160,6 +160,10 @@ class Class(Base):
     status: Mapped[ClassStatus] = mapped_column(SQLEnum(ClassStatus), default=ClassStatus.SCHEDULED, nullable=False)
     zoom_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     meet_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    # In-app lesson call (LiveKit). Set only when a tutor enables an in-app
+    # room for the class; the deterministic name is `class-{id}`. Null means
+    # the lesson still runs over an external Zoom/Meet link.
+    room_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
     package_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

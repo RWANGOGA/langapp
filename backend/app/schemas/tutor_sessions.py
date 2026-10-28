@@ -31,4 +31,14 @@ class SessionActionResponse(BaseModel):
     updated_at: str
     zoom_url: Optional[str] = None
     meet_url: Optional[str] = None
+    room_name: Optional[str] = None
     notes: Optional[str] = None
+
+
+class CallResponse(BaseModel):
+    # Everything the browser client needs to connect: the LiveKit server url,
+    # the room, the caller's identity, and a short-lived scoped token.
+    url: str
+    room: str
+    identity: str
+    token: str

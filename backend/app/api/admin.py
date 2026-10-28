@@ -616,7 +616,9 @@ async def get_admin_dashboard(
         learner_name = session.learner.full_name if session.learner else "Unknown"
         time_str = session.scheduled_at.strftime("%H:%M")
         # Determine provider from actual class data
-        if session.zoom_url:
+        if session.room_name:
+            provider = "In-app"
+        elif session.zoom_url:
             provider = "Zoom"
         elif session.meet_url:
             provider = "Google Meet"

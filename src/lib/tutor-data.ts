@@ -1,6 +1,7 @@
-export type Provider = "Zoom" | "Google Meet" | "MS Teams";
+export type Provider = "Zoom" | "Google Meet" | "MS Teams" | "In-app";
 export interface SessionItem {
   id: string;
+  classId: number;
   date: string;
   time: string;
   startsAt: string; // explicit UTC ISO instant - render in viewer's timezone
@@ -9,6 +10,7 @@ export interface SessionItem {
   topic: string;
   provider?: Provider;
   meetingUrl?: string;
+  inAppCall?: boolean;
 }
 export interface LearnerSummary {
   id: string;
@@ -19,7 +21,7 @@ export interface LearnerSummary {
 }
 export interface TutorDashboard {
   tutor: { name: string; role: string; unread: number };
-  next: { sessionId: string; learner: string; topic: string; secondsLeft: number; startsAt?: string; meetingUrl?: string };
+  next: { sessionId: string; classId?: number; learner: string; topic: string; secondsLeft: number; startsAt?: string; meetingUrl?: string; inAppCall?: boolean };
   learners: LearnerSummary[];
   today: string;
   sessions: SessionItem[];
@@ -52,6 +54,7 @@ export interface SessionActionResponse {
   starts_at: string;
   zoom_url: string | null;
   meet_url: string | null;
+  room_name?: string | null;
   notes: string | null;
   updated_at: string;
 }
@@ -66,6 +69,10 @@ async function postSessionAction(classId: number, action: string, body?: unknown
 
 export const setSessionMeetingLink = (classId: number, provider: "zoom" | "google_meet", url: string) =>
   postSessionAction(classId, "meeting-link", { provider, url });
+
+/** Open an in-app room for a scheduled class; the learner is notified to join. */
+export const enableInAppRoom = (classId: number) =>
+  postSessionAction(classId, "room");
 
 export const completeTutorSession = (classId: number) =>
   postSessionAction(classId, "complete");

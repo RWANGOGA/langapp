@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api import packages, tutors, auth, tutor_application, learner, admin, tutor_dashboard, tutor_sessions, tutor_pages, notifications, payment_tracking, admin_payments, tutor_earnings, contact, admin_messages, testimonials
+from app.api import packages, tutors, auth, tutor_application, learner, admin, tutor_dashboard, tutor_sessions, tutor_pages, notifications, payment_tracking, admin_payments, tutor_earnings, contact, admin_messages, testimonials, calls
 from app.db.session import init_db
 
 
@@ -29,6 +29,7 @@ app.include_router(admin.router, prefix=f"{settings.API_V1_STR}/admin", tags=["a
 app.include_router(tutor_dashboard.router, prefix=settings.API_V1_STR, tags=["tutor-dashboard"])
 app.include_router(tutor_earnings.router, prefix=settings.API_V1_STR, tags=["tutor-earnings"])
 app.include_router(tutor_sessions.router, prefix=settings.API_V1_STR, tags=["tutor-sessions"])
+app.include_router(calls.router, prefix=settings.API_V1_STR, tags=["calls"])
 app.include_router(tutor_pages.router, prefix=settings.API_V1_STR, tags=["tutor-pages"])
 app.include_router(notifications.router, prefix=settings.API_V1_STR, tags=["notifications"])
 app.include_router(payment_tracking.router, prefix=settings.API_V1_STR, tags=["payment-tracking"])

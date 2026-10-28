@@ -1395,6 +1395,38 @@ const en = {
   "auth.register.failed": "Registration failed",
   "auth.register.tutorNotice":
     "You are applying to teach on Nile Language. Your account starts as a student account — you become a tutor once your documents are reviewed and your demo lesson is passed.",
+
+  // In-app lesson calls
+  "call.title": "Lesson call",
+  "call.join": "Join class",
+  "call.openRoom": "Open in-app room",
+  "call.roomOpened": "In-app room opened — your learner has been notified.",
+  "call.leave": "Leave",
+  "call.mic": "Mute microphone",
+  "call.micOff": "Unmute microphone",
+  "call.cam": "Turn camera off",
+  "call.camOff": "Turn camera on",
+  "call.you": "You",
+  "call.waiting": "Waiting for the other participant…",
+  "call.connecting": "Connecting…",
+  "call.connected": "Connected",
+  "call.reconnecting": "Reconnecting…",
+  "call.ended": "This call has ended.",
+  "call.back": "Back",
+  "call.backToDashboard": "Back to dashboard",
+  "call.retry": "Try again",
+  "call.permDenied": "We couldn’t reach your microphone or camera. Allow access in your browser, then try again.",
+  "call.unavailable": "The call isn’t available right now.",
+  "call.networkError": "We couldn’t reach the server. Check your connection and try again.",
+  "call.tryAgain": "Something went wrong. Please try again.",
+  "call.notParticipant": "You can’t join this call.",
+  "call.notParticipantBody": "Only the learner and tutor assigned to this lesson can enter its room.",
+  "call.noRoom": "No room has been opened yet.",
+  "call.noRoomBody": "Your tutor hasn’t started an in-app room for this lesson. Check back when class is about to begin.",
+  "call.endedSession": "This lesson is over.",
+  "call.endedSessionBody": "Cancelled, completed, or no-show sessions no longer have a room to join.",
+  "call.disabled": "In-app calls aren’t available here.",
+  "call.disabledBody": "This server isn’t configured for in-app calls, so lessons still run over an external meeting link.",
 } as const;
 
 export type MessageKey = keyof typeof en;

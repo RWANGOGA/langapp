@@ -80,14 +80,19 @@ async def get_tutor_dashboard(
         sessions.append(
             {
                 "id": f"s{cls.id}",
+                "classId": cls.id,
                 "date": cls.scheduled_at.date().isoformat(),
                 "time": cls.scheduled_at.strftime("%H:%M"),
                 "startsAt": to_utc_iso(cls.scheduled_at),
                 "status": cls.status.value,
                 "learner": cls.learner.full_name if cls.learner else "Unknown",
                 "topic": cls.title,
-                "provider": "Zoom" if cls.zoom_url else ("Google Meet" if cls.meet_url else None),
+                "provider": (
+                    "In-app" if cls.room_name
+                    else ("Zoom" if cls.zoom_url else ("Google Meet" if cls.meet_url else None))
+                ),
                 "meetingUrl": cls.zoom_url or cls.meet_url,
+                "inAppCall": bool(cls.room_name),
             }
         )
 
@@ -107,11 +112,13 @@ async def get_tutor_dashboard(
         seconds_left = int((next_class.scheduled_at - now).total_seconds())
         next_session = {
             "sessionId": f"s{next_class.id}",
+            "classId": next_class.id,
             "learner": next_class.learner.full_name if next_class.learner else "Unknown",
             "topic": next_class.title,
             "secondsLeft": max(0, seconds_left),
             "startsAt": to_utc_iso(next_class.scheduled_at),
             "meetingUrl": next_class.zoom_url or next_class.meet_url,
+            "inAppCall": bool(next_class.room_name),
         }
     else:
         next_session = {

@@ -1,0 +1,153 @@
+/* In-app lesson call surface. Self-contained (reads the global --coral/--ink
+   tokens, not a portal theme) because the /class/[id]/call route is standalone
+   chrome, not a portal shell. Layout uses CSS logical properties throughout, so
+   the control bar and captions mirror automatically when the document is RTL. */
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 100%;
+  padding: clamp(1rem, 3vw, 1.75rem);
+  background: #0b1b33;
+  color: #f4f7fb;
+  border-radius: 12px;
+}
+
+.statusBar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  color: #cdd8e6;
+}
+.statusBar .peers {
+  margin-inline-start: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.statusDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #f0b429;
+}
+.statusDot[data-phase="connected"] { background: #37c98f; }
+.statusDot[data-phase="reconnecting"] { background: #f0b429; animation: pulse 1s ease-in-out infinite; }
+.statusDot[data-phase="error"] { background: #e5484d; }
+.statusDot[data-phase="connecting"] { animation: pulse 1s ease-in-out infinite; }
+
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.deviceError {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  background: rgba(229, 72, 77, 0.16);
+  color: #ffd7d9;
+  font-size: 0.88rem;
+}
+
+.grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.9rem;
+  align-content: center;
+}
+
+.tile {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #12243f;
+  border: 1px solid #1e3a5f;
+  aspect-ratio: 4 / 3;
+}
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.tile figcaption {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  padding: 0.4rem 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+}
+.badge {
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--coral, #f2541b);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.emptyTile {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  border: 1px dashed #274a73;
+  border-radius: 10px;
+  color: #9fb2c9;
+  min-height: 200px;
+}
+.emptyTile p { margin: 0; }
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.9rem;
+  padding-block-start: 0.25rem;
+}
+.controlBtn {
+  display: inline-grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid #2a4a70;
+  background: #16294a;
+  color: #dbe6f3;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.controlBtn:hover { background: #1c3560; }
+.controlBtn[data-active="false"] { color: #ff8a8f; border-color: #5a2733; }
+.leaveBtn {
+  background: #c53030;
+  border-color: #a52828;
+  color: #fff;
+  width: 60px;
+}
+.leaveBtn:hover { background: #b02828; }
+
+.notice {
+  flex: 1;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+.noticeTitle { margin: 0; font-size: 1.2rem; font-weight: 700; color: #eaf1f8; }
+.primaryBtn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--coral, #f2541b);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+.primaryBtn:hover { background: var(--coral-hover, #d9470f); }
