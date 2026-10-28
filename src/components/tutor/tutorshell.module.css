@@ -1,0 +1,119 @@
+/* Tutor portal chrome - the Stanford language.
+ * A cardinal rule over a serif masthead, a horizontal editorial nav instead of
+ * a side rail, and a warm paper reading surface. The layout itself differs
+ * from the admin console (top nav vs. left rail) so the two never read alike,
+ * while the content bands inherit the same tokenized vocabulary. */
+
+.page {
+  min-height: 100vh;
+  background: var(--p-surface);
+  color: var(--p-body);
+  font-size: 1rem;
+}
+
+.topRule { height: 4px; background: var(--p-accent); }
+
+.masthead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.35rem clamp(1.2rem, 4vw, 3rem) 1rem;
+  border-bottom: 1px solid var(--p-rule);
+}
+
+.brand { text-decoration: none; color: var(--p-ink); }
+.kicker {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--p-accent);
+  font-family: var(--p-display);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.name {
+  font-family: var(--p-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.right { display: flex; align-items: center; gap: 1.1rem; padding-bottom: 0.25rem; }
+.who { text-align: right; line-height: 1.25; }
+.who strong { display: block; color: var(--p-ink); font-family: var(--p-display); font-size: 1rem; font-weight: 600; }
+.who small { color: var(--p-label); font-size: 0.8rem; font-style: italic; }
+
+.avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1px solid var(--p-rule); }
+.initials {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--p-accent);
+  color: var(--p-accent);
+  font-family: var(--p-display);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.bell { position: relative; padding: 0.25rem; background: none; border: 0; color: var(--p-ink); cursor: pointer; }
+.bell:hover { color: var(--p-accent); }
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background: var(--p-accent);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+
+/* — Horizontal editorial nav — */
+.nav {
+  display: flex;
+  gap: 0.3rem;
+  padding: 0 clamp(1.2rem, 4vw, 3rem);
+  border-bottom: 1px solid var(--p-rule);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav::-webkit-scrollbar { display: none; }
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex: none;
+  padding: 0.95rem 0.85rem;
+  border-bottom: 2px solid transparent;
+  color: var(--p-label);
+  font-family: var(--p-display);
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.link svg { color: var(--p-secondary); flex: none; }
+.link:hover { color: var(--p-ink); }
+.linkOn { color: var(--p-accent); border-bottom-color: var(--p-accent); }
+.linkOn svg { color: var(--p-accent); }
+.link:focus-visible, .bell:focus-visible { outline: 2px solid var(--p-accent); outline-offset: 2px; }
+
+.content { max-width: 1080px; margin: 0 auto; padding: clamp(1.8rem, 4vw, 3rem) clamp(1.2rem, 4vw, 3rem) 4rem; }
+.backRow { margin-bottom: 1rem; }
+
+@media (max-width: 720px) {
+  .masthead { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .right { width: 100%; justify-content: space-between; padding-bottom: 0; }
+  .who { text-align: left; }
+  .name { font-size: 1.5rem; }
+}

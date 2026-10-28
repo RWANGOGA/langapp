@@ -1,0 +1,117 @@
+/* Learner portal chrome - a friendlier blend.
+ * Rounded, teal-forward, and encouraging: a soft top bar with a pill nav that
+ * reads as gentle and human, clearly apart from the admin console (square rail)
+ * and the tutor masthead (serif underline nav). Content bands inherit the same
+ * tokenized vocabulary. */
+
+.page {
+  min-height: 100vh;
+  background: var(--p-surface);
+  color: var(--p-body);
+  font-size: 0.98rem;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem clamp(1rem, 4vw, 2rem);
+  border-bottom: 1px solid var(--p-rule);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--p-ink);
+  font-family: var(--p-display);
+  font-size: 1.02rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.logo {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: var(--p-accent);
+  color: #fff;
+  font-family: var(--p-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.right { margin-left: auto; display: flex; align-items: center; gap: 0.9rem; }
+
+.identity { display: flex; align-items: center; gap: 0.6rem; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--p-rule); }
+.initials {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--p-accent-soft);
+  color: var(--p-accent);
+  font-family: var(--p-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.who { line-height: 1.25; }
+.who strong { display: block; color: var(--p-ink); font-family: var(--p-display); font-size: 0.95rem; font-weight: 700; }
+.who small { color: var(--p-label); font-size: 0.76rem; }
+.who small b { color: var(--p-accent); }
+
+.bell { position: relative; padding: 0.3rem; background: none; border: 0; color: var(--p-ink); cursor: pointer; }
+.bell:hover { color: var(--p-accent); }
+.badge {
+  position: absolute;
+  top: -3px;
+  right: -5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background: var(--p-secondary);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+
+/* — Pill nav — */
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  padding: 0.5rem clamp(1rem, 4vw, 2rem) 1.1rem;
+}
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.95rem;
+  border: 1px solid var(--p-rule);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--p-label);
+  font-family: var(--p-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.link svg { color: var(--p-secondary); flex: none; }
+.link:hover { border-color: var(--p-accent); color: var(--p-ink); }
+.linkOn { background: var(--p-accent); border-color: var(--p-accent); color: #fff; }
+.linkOn svg { color: #fff; }
+.link:focus-visible, .bell:focus-visible { outline: 2px solid var(--p-accent); outline-offset: 2px; }
+
+.content { max-width: 1000px; margin: 0 auto; padding: clamp(1.4rem, 4vw, 2.4rem) clamp(1rem, 4vw, 2rem) 3rem; }
+.backRow { margin-bottom: 1rem; }
+
+@media (max-width: 720px) {
+  .brand span { display: none; }
+  .who { display: none; }
+}

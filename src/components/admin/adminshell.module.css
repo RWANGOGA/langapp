@@ -1,0 +1,183 @@
+/* Admin portal chrome - the MIT language.
+ * A black utility bar carries identity; a compact ruled rail carries
+ * navigation; the content area inherits the tokenized bands. Square corners,
+ * cool-grey hairlines, a single true-red accent, and a grotesque display face
+ * (via --p-display) make this read as an operations console, not a brochure. */
+
+.page {
+  min-height: 100vh;
+  background: var(--p-surface);
+  color: var(--p-body);
+  font-size: 0.95rem;
+}
+
+/* — Black utility bar — */
+.utility {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.5rem 24px;
+  background: #000;
+  color: #fff;
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  background: var(--p-accent);
+  color: #fff;
+  font-family: var(--p-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.wordmark {
+  font-family: var(--p-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.05;
+  color: #fff;
+  text-decoration: none;
+}
+.wordmark small {
+  display: block;
+  color: #b9bec7;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.utilRight { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
+
+.who { text-align: right; line-height: 1.2; }
+.who strong { display: block; color: #fff; font-size: 0.82rem; font-weight: 700; }
+.who small { color: #b9bec7; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+
+.bell {
+  position: relative;
+  padding: 0.25rem;
+  background: none;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+}
+.bell:hover { color: var(--p-accent); }
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background: var(--p-accent);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+
+.langSlot { padding-bottom: 0.1rem; }
+
+/* — Body: rail + content — */
+.body { display: grid; grid-template-columns: 236px minmax(0, 1fr); min-height: calc(100vh - 51px); }
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem 0;
+  border-right: 1px solid var(--p-rule);
+  background: var(--p-surface);
+}
+
+.return {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 18px 1rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--p-rule);
+  color: var(--p-label);
+  font-family: var(--p-display);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.return:hover { border-color: #000; color: #000; }
+
+.nav { display: flex; flex-direction: column; }
+.link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.56rem 22px;
+  border-left: 3px solid transparent;
+  color: var(--p-label);
+  font-family: var(--p-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.link svg { color: #9aa3ad; flex: none; }
+.link:hover { color: #000; }
+.link:hover svg { color: var(--p-accent); }
+.linkOn { color: #000; background: var(--p-accent-soft); border-left-color: var(--p-accent); }
+.linkOn svg { color: var(--p-accent); }
+.link:focus-visible, .bell:focus-visible, .return:focus-visible {
+  outline: 2px solid var(--p-accent);
+  outline-offset: -2px;
+}
+
+.content { padding: clamp(1.6rem, 3vw, 2.6rem) clamp(1.4rem, 3vw, 2.2rem) 3rem; min-width: 0; }
+.backRow { margin: -0.6rem 0 1.1rem; }
+
+/* — Phone: the rail becomes a slide-down panel — */
+.menuBtn {
+  display: none;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  background: none;
+  border: 1px solid #fff;
+  color: #fff;
+  cursor: pointer;
+}
+
+.menuPanel { display: none; border-bottom: 2px solid var(--p-accent); background: #000; }
+.menuLink {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.8rem 20px;
+  border-bottom: 1px solid #1c1c1c;
+  border-left: 3px solid transparent;
+  color: #cfd3d9;
+  font-family: var(--p-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.menuLink svg { color: #7c828b; }
+.menuLinkOn { color: #fff; border-left-color: var(--p-accent); background: #141414; }
+
+@media (max-width: 720px) {
+  .body { grid-template-columns: 1fr; }
+  .rail { display: none; }
+  .menuBtn { display: grid; }
+  .utilRight .langSlot, .utilRight .who { display: none; }
+  .wordmark small { display: none; }
+}

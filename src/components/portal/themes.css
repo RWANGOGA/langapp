@@ -1,0 +1,91 @@
+/* Portal design systems.
+ *
+ * The three signed-in portals no longer share one look. Every content
+ * primitive in bands.module.css reads its color, type and radius from the
+ * --p-* tokens below, and each portal sets those tokens on its root via a
+ * data-portal attribute. The :root defaults reproduce the original editorial
+ * navy/coral system, so any surface that has not opted into a persona keeps
+ * rendering exactly as before - the theming is additive, never a regression.
+ *
+ * admin   -> MIT:    grotesque display, cardinal-free true red, black/white
+ *                    gallery grid, hairline cool-grey rules, square corners.
+ * tutor   -> Stanford: Source Serif headings, cardinal + Palo Alto green,
+ *                    warm paper surfaces, generous editorial measure.
+ * learner -> blend:  humanist sans, teal-forward with a warm coral accent,
+ *                    soft surfaces and gentle rounding.
+ */
+
+:root {
+  --p-display: "Inter", system-ui, sans-serif;
+  --p-accent: var(--coral);
+  --p-accent-hover: var(--coral-hover);
+  --p-accent-soft: #f6f8fa;
+  --p-secondary: var(--teal);
+  --p-secondary-dark: var(--teal-dark);
+  --p-ink: #0f1c33;
+  --p-body: var(--body-ink);
+  --p-label: var(--label);
+  --p-rule: #dfe6ec;
+  --p-rule-strong: #0f1c33;
+  --p-rule-soft: #eef2f6;
+  --p-surface: #ffffff;
+  --p-surface-hover: #f2f5f8;
+  --p-radius: 3px;
+}
+
+/* — Admin: the MIT language — */
+[data-portal="admin"] {
+  --p-display: var(--font-archivo), "Noto Sans JP", system-ui, sans-serif;
+  --p-accent: #a31f34;
+  --p-accent-hover: #7d1728;
+  --p-accent-soft: #f7f0f1;
+  --p-secondary: #0f1c33;
+  --p-secondary-dark: #0b1526;
+  --p-ink: #000000;
+  --p-body: #2b2b2b;
+  --p-label: #4a4a4a;
+  --p-rule: #d8dde3;
+  --p-rule-strong: #000000;
+  --p-rule-soft: #eceff2;
+  --p-surface: #ffffff;
+  --p-surface-hover: #f4f5f7;
+  --p-radius: 0px;
+}
+
+/* — Tutor: the Stanford language — */
+[data-portal="tutor"] {
+  --p-display: var(--font-source-serif), Georgia, "Noto Serif JP", serif;
+  --p-accent: #8c1515;
+  --p-accent-hover: #6f1010;
+  --p-accent-soft: #faf4f2;
+  --p-secondary: #137365;
+  --p-secondary-dark: #0d5a4f;
+  --p-ink: #2e2d29;
+  --p-body: #4a4744;
+  --p-label: #6b665f;
+  --p-rule: #e7ded2;
+  --p-rule-strong: #8c1515;
+  --p-rule-soft: #f0e9df;
+  --p-surface: #faf7f2;
+  --p-surface-hover: #f2ece2;
+  --p-radius: 2px;
+}
+
+/* — Learner: a friendlier blend — */
+[data-portal="learner"] {
+  --p-display: var(--font-figtree), "Noto Sans JP", system-ui, sans-serif;
+  --p-accent: #2a8c82;
+  --p-accent-hover: #1d6d66;
+  --p-accent-soft: #e9f1f2;
+  --p-secondary: #f2541b;
+  --p-secondary-dark: #d9470f;
+  --p-ink: #0b2545;
+  --p-body: #374151;
+  --p-label: #52607a;
+  --p-rule: #dbe4ea;
+  --p-rule-strong: #2a8c82;
+  --p-rule-soft: #eef4f4;
+  --p-surface: #ffffff;
+  --p-surface-hover: #f2f7f7;
+  --p-radius: 12px;
+}

@@ -1,6 +1,6 @@
 /* Learner portal pages - the editorial band system.
-   The shell (top bar, sidebar, content frame) lives in
-   components/portal/portal.module.css and is shared with the other portals. */
+   The shell (top bar, pill nav, content frame) lives in
+   components/dashboard/learnershell.module.css. */
 
 /* — Page head — */
 /* Centred and set at the marketing pages' scale: a portal head is the same
