@@ -107,7 +107,7 @@
 }
 
 .goals {
-  margin-left: 12px;
+  margin-inline-start: 12px;
   color: var(--coral);
   font-size: 0.7rem;
   font-weight: 800;
@@ -285,7 +285,7 @@
 }
 
 .profileSection svg {
-  margin-right: 8px;
+  margin-inline-end: 8px;
   color: var(--teal);
   vertical-align: -3px;
 }

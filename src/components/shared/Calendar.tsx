@@ -13,6 +13,7 @@ const LOCALE_TAG: Record<LocaleCode, string> = {
   ja: "ja-JP",
   es: "es-ES",
   fr: "fr-FR",
+  ar: "ar",
 };
 
 // Bucket each event into the viewer's local calendar day, not the UTC one.

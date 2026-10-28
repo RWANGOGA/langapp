@@ -135,8 +135,8 @@
 }
 
 .step + .step {
-  border-left: 1px solid #dfe6ec;
-  padding-left: 30px;
+  border-inline-start: 1px solid #dfe6ec;
+  padding-inline-start: 30px;
 }
 
 .stepNum {
@@ -447,8 +447,8 @@
   }
 
   .step + .step {
-    border-left: none;
-    padding-left: 0;
+    border-inline-start: none;
+    padding-inline-start: 0;
     border-top: 1px solid #dfe6ec;
   }
 
@@ -585,14 +585,14 @@
 .status {
   padding: 14px 16px;
   border: 1px solid #dfe6ec;
-  border-left: 3px solid var(--coral);
+  border-inline-start: 3px solid var(--coral);
   color: #3d4a61;
   font-size: 0.95rem;
   line-height: 1.6;
 }
 
 .statusOk {
-  border-left-color: #0c7a52;
+  border-inline-start-color: #0c7a52;
   color: #0f1c33;
 }
 
@@ -728,7 +728,8 @@
   margin: 0;
   /* Room for the hanging quotation mark: the wall clips its overflow, so without
      this the opening “ would be cut off at the left edge. */
-  padding: 34px 0 34px 30px;
+  padding-block: 34px;
+  padding-inline: 30px 0;
   border-bottom: 1px solid #dfe6ec;
 }
 
@@ -755,7 +756,7 @@
 .voiceQuote::before {
   content: "\201C";
   position: absolute;
-  left: -0.62em;
+  inset-inline-start: -0.62em;
   color: var(--coral);
   font-size: 2.6em;
   font-weight: 800;
@@ -819,6 +820,6 @@
 @media (max-width: 860px) {
   .reachGrid { grid-template-columns: 1fr; gap: 34px; }
   .voiceStrip { grid-template-columns: 1fr; gap: 0; }
-  .voice { padding-left: 0; }
+  .voice { padding-inline-start: 0; }
   .voiceQuote::before { position: static; display: block; line-height: 0.6; }
 }

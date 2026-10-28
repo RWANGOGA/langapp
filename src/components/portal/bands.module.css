@@ -80,7 +80,7 @@
   border-bottom: 1px solid var(--p-rule);
 }
 .stats > li { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0.95rem 0 1.05rem; }
-.stats > li + li { padding-left: 1.4rem; border-left: 1px solid var(--p-rule); }
+.stats > li + li { padding-inline-start: 1.4rem; border-inline-start: 1px solid var(--p-rule); }
 .stats span { display: grid; gap: 0.15rem; }
 .stats small { color: var(--p-label); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
 .stats b { color: var(--p-ink); font-size: 1.3rem; font-weight: 800; letter-spacing: -0.015em; font-variant-numeric: tabular-nums; line-height: 1.2; }
@@ -92,11 +92,11 @@
 /* — Two-pane composition — */
 .split { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 0 2.6rem; }
 .mainPane { min-width: 0; }
-.sidePane { min-width: 0; padding-left: 2.2rem; border-left: 1px solid var(--p-rule); }
+.sidePane { min-width: 0; padding-inline-start: 2.2rem; border-inline-start: 1px solid var(--p-rule); }
 
 /* — Person rows — */
 .nextRow { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; margin-top: 1.2rem; }
-.miniTutor { display: flex; align-items: center; gap: 0.75rem; padding-right: 1.5rem; border-right: 1px solid var(--p-rule); }
+.miniTutor { display: flex; align-items: center; gap: 0.75rem; padding-inline-end: 1.5rem; border-inline-end: 1px solid var(--p-rule); }
 .avatarSquare {
   display: grid;
   place-items: center;
@@ -204,7 +204,7 @@
 .figureRow { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.8rem; align-items: center; margin-top: 1.1rem; }
 .figureRowAligned { grid-template-columns: 200px minmax(0, 1fr); }
 .figure { color: var(--p-ink); font-family: var(--p-display); font-size: clamp(2.1rem, 4vw, 2.7rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
-.figure span { color: var(--p-label); font-size: 0.9rem; font-weight: 700; margin-left: 0.15rem; }
+.figure span { color: var(--p-label); font-size: 0.9rem; font-weight: 700; margin-inline-start: 0.15rem; }
 .figureBody { min-width: 0; }
 .bar { height: 6px; background: var(--p-rule-soft); overflow: hidden; }
 .bar i { display: block; height: 100%; background: var(--p-secondary); }
@@ -280,7 +280,7 @@
   color: var(--p-body);
   font-size: 0.82rem;
   line-height: 1.55;
-  text-align: left;
+  text-align: start;
 }
 .matrix th, .matrix td { padding: 0.5rem 0.45rem; border-bottom: 1px solid var(--p-rule-soft); text-align: center; }
 .matrix thead th {
@@ -291,14 +291,14 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
-.matrix thead th:first-child, .matrix tbody th { text-align: left; }
+.matrix thead th:first-child, .matrix tbody th { text-align: start; }
 .matrix tbody th {
   position: sticky;
-  left: 0;
+  inset-inline-start: 0;
   z-index: 1;
   min-width: 132px;
   max-width: 160px;
-  border-right: 1px solid var(--p-rule);
+  border-inline-end: 1px solid var(--p-rule);
   background: #fff;
   color: var(--p-ink);
   font-size: 0.82rem;
@@ -330,6 +330,7 @@
 }
 .textLink:hover { text-decoration: underline; text-underline-offset: 3px; }
 .textLink:disabled { color: #b3bdc9; cursor: default; text-decoration: none; }
+[dir="rtl"] .textLink svg { transform: scaleX(-1); }
 
 .statusPill { display: inline-block; padding: 0.2rem 0.45rem; border: 1px solid currentColor; color: var(--p-body); font-size: 0.58rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
 .statusOk { color: var(--p-secondary-dark); }
@@ -383,14 +384,14 @@
 
 @media (max-width: 1050px) {
   .split { grid-template-columns: minmax(0, 1fr); gap: 0; }
-  .sidePane { padding-left: 0; border-left: 0; }
+  .sidePane { padding-inline-start: 0; border-inline-start: 0; }
   .sidePane .band:first-child { margin-top: 2rem; }
 }
 
 @media (max-width: 720px) {
   .pageHeading { gap: 0.7rem; }
   .stats { grid-template-columns: 1fr; }
-  .stats > li + li { padding-left: 0; border-left: 0; border-top: 1px solid var(--p-rule); }
+  .stats > li + li { padding-inline-start: 0; border-inline-start: 0; border-top: 1px solid var(--p-rule); }
   .figureRow, .figureRowAligned { display: flex; flex-direction: column; align-items: flex-start; gap: 0.9rem; }
   .figureBody { width: 100%; }
   .rows > div { grid-template-columns: 1fr; gap: 0.3rem; padding: 0.8rem 0; }

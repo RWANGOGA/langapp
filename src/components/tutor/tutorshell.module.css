@@ -42,7 +42,7 @@
 }
 
 .right { display: flex; align-items: center; gap: 1.1rem; padding-bottom: 0.25rem; }
-.who { text-align: right; line-height: 1.25; }
+.who { text-align: end; line-height: 1.25; }
 .who strong { display: block; color: var(--p-ink); font-family: var(--p-display); font-size: 1rem; font-weight: 600; }
 .who small { color: var(--p-label); font-size: 0.8rem; font-style: italic; }
 
@@ -65,7 +65,7 @@
 .badge {
   position: absolute;
   top: -4px;
-  right: -6px;
+  inset-inline-end: -6px;
   min-width: 16px;
   height: 16px;
   padding: 0 3px;
@@ -114,6 +114,6 @@
 @media (max-width: 720px) {
   .masthead { flex-direction: column; align-items: flex-start; gap: 1rem; }
   .right { width: 100%; justify-content: space-between; padding-bottom: 0; }
-  .who { text-align: left; }
+  .who { text-align: start; }
   .name { font-size: 1.5rem; }
 }

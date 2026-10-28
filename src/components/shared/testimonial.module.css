@@ -39,8 +39,8 @@
    has been published, so it reads like the thing it is on the public page. */
 .current {
   margin: 1.1rem 0 0;
-  padding-left: 1rem;
-  border-left: 2px solid var(--coral);
+  padding-inline-start: 1rem;
+  border-inline-start: 2px solid var(--coral);
   color: #0f1c33;
   font-size: 1rem;
   line-height: 1.6;

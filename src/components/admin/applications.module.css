@@ -50,7 +50,7 @@
   padding: 1rem 0;
   border: 0;
   background: none;
-  text-align: left;
+  text-align: start;
   font: inherit;
   cursor: pointer;
 }
@@ -79,7 +79,7 @@
   border-bottom: 1px solid var(--p-rule-soft);
 }
 .evidenceLabel { color: var(--p-label); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-.evidenceValue { color: var(--p-ink); font-size: 0.88rem; text-align: right; }
+.evidenceValue { color: var(--p-ink); font-size: 0.88rem; text-align: end; }
 .evidenceLink { color: var(--p-secondary); font-size: 0.85rem; text-decoration: none; border-bottom: 1px solid currentColor; }
 .evidenceLink:hover { color: var(--p-accent); }
 .missing { color: var(--p-danger); }
@@ -95,7 +95,7 @@
   padding-top: 1rem;
   border-top: 1px solid var(--p-rule);
 }
-.scoreBox { display: flex; align-items: center; gap: 0.4rem; margin-right: auto; }
+.scoreBox { display: flex; align-items: center; gap: 0.4rem; margin-inline-end: auto; }
 .scoreBox label { color: var(--p-label); font-size: 0.74rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
 .scoreBox input { width: 4.5rem; padding: 0.4rem 0.5rem; border: 1px solid var(--p-rule); border-radius: var(--p-radius); font: inherit; font-size: 0.88rem; }
 

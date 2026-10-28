@@ -78,7 +78,7 @@
   padding: 0.95rem 0 1.05rem;
 }
 
-.dashboardStats > div + div { padding-left: 1.4rem; border-left: 1px solid var(--p-rule); }
+.dashboardStats > div + div { padding-inline-start: 1.4rem; border-inline-start: 1px solid var(--p-rule); }
 
 .dashboardStats span:last-child { display: grid; gap: 0.15rem; }
 .dashboardStats small { color: var(--p-label); font-size: 0.64rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
@@ -129,7 +129,7 @@
 
 .paymentDetails { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--p-rule); border-bottom: 1px solid var(--p-rule); }
 .paymentDetails > div { display: flex; align-items: center; gap: 0.55rem; padding: 0.8rem 0; color: var(--p-label); }
-.paymentDetails > div + div { padding-left: 1.4rem; border-left: 1px solid var(--p-rule); }
+.paymentDetails > div + div { padding-inline-start: 1.4rem; border-inline-start: 1px solid var(--p-rule); }
 .paymentDetails span { display: grid; gap: 0.15rem; }
 .paymentDetails small { color: var(--p-label); font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
 .paymentDetails b { color: var(--p-ink); font-size: 0.9rem; font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -154,7 +154,7 @@
 /* — Two-pane composition — */
 .split { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 0 2.6rem; }
 .mainPane { min-width: 0; }
-.sidePane { min-width: 0; padding-left: 2.2rem; border-left: 1px solid var(--p-rule); }
+.sidePane { min-width: 0; padding-inline-start: 2.2rem; border-inline-start: 1px solid var(--p-rule); }
 
 /* A band is a ruled section: ink top rule, micro-label, content. */
 .band { padding: 1.15rem 0 1.7rem; border-top: 2px solid var(--p-rule-strong); }
@@ -207,8 +207,8 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding-right: 1.6rem;
-  border-right: 1px solid var(--p-rule);
+  padding-inline-end: 1.6rem;
+  border-inline-end: 1px solid var(--p-rule);
   font-size: 0.86rem;
 }
 
@@ -466,7 +466,7 @@
   color: var(--p-accent);
 }
 
-.notificationSummary > div + div { padding-left: 1.4rem; border-left: 1px solid var(--p-rule); }
+.notificationSummary > div + div { padding-inline-start: 1.4rem; border-inline-start: 1px solid var(--p-rule); }
 
 .notificationSummary span { display: grid; gap: 0.15rem; color: var(--p-body); font-size: 0.82rem; }
 .notificationSummary small { color: var(--p-label); font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
@@ -521,8 +521,11 @@
    anchor underline, invite the click, and slide the chevron to the edge. */
 .notificationItem.linked { cursor: pointer; text-decoration: none; transition: background 0.15s ease; }
 .notificationItem.linked:hover { background: var(--p-surface-hover); }
-.notifGo { margin-left: auto; align-self: center; }
+.notifGo { margin-inline-start: auto; align-self: center; }
 .notificationItem.linked:hover .notifGo { color: var(--p-accent); }
+/* Directional glyphs point the way the reader moves, so flip them in RTL. */
+[dir="rtl"] .notifGo,
+[dir="rtl"] .textLink svg { transform: scaleX(-1); }
 
 /* — Empty state — */
 .emptyState {
@@ -569,7 +572,7 @@
 /* — Responsive (shell breakpoints live with the shell) — */
 @media (max-width: 1050px) {
   .split { grid-template-columns: minmax(0, 1fr); gap: 0; }
-  .sidePane { padding-left: 0; border-left: 0; }
+  .sidePane { padding-inline-start: 0; border-inline-start: 0; }
   .sidePane .band:first-child { margin-top: 2rem; }
 }
 
@@ -578,11 +581,11 @@
      width, and a portal head is the same opening. */
   .dashboardWelcome { align-items: center; flex-direction: column; }
   .dashboardStats, .paymentDetails, .notificationSummary { grid-template-columns: 1fr; }
-  .dashboardStats > div + div, .paymentDetails > div + div, .notificationSummary > div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--p-rule); }
+  .dashboardStats > div + div, .paymentDetails > div + div, .notificationSummary > div + div { padding-inline-start: 0; border-inline-start: 0; border-top: 1px solid var(--p-rule); }
   .paymentSummaryHead { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
   .pageHeading { align-items: center; flex-direction: column; }
   .nextRow { align-items: flex-start; flex-direction: column; gap: 1rem; }
-  .miniTutor { border-right: 0; padding-right: 0; }
+  .miniTutor { border-inline-end: 0; padding-inline-end: 0; }
   .figureRow { align-items: flex-start; flex-direction: column; gap: 0.9rem; }
   .figureRowAligned { display: flex; }
   .figureBody { width: 100%; }

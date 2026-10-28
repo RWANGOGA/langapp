@@ -2,7 +2,7 @@
   Nile Language — Global Design System
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   /* — Brand Colors — */
@@ -58,7 +58,7 @@
   --shadow-teal: 0 4px 16px rgba(0, 128, 128, 0.2);
 
   /* — Typography — */
-  --font-primary: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-primary: 'Inter', 'Noto Sans JP', 'Noto Sans Arabic', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-display: 'Inter', sans-serif;
 
   /* — Spacing — */
@@ -398,6 +398,14 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--teal);
   outline: none;
   box-shadow: 0 0 0 3px rgba(0, 128, 128, 0.1);
+}
+
+/* The dropdown chevron is painted at a physical edge, so in right-to-left it
+   has to move to the other side and swap its padding. */
+[dir="rtl"] .form-select {
+  background-position: left 14px center;
+  padding-right: 16px;
+  padding-left: 36px;
 }
 
 /* — Animations — */

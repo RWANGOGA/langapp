@@ -14,7 +14,7 @@ import { cancelTutorSession, completeTutorSession, getTutorDashboard, markSessio
 import ui from "@/components/portal/bands.module.css";
 
 // BCP-47 tags for Intl date formatting, keyed by the app's own locale codes.
-const LOCALE_TAG: Record<string, string> = { en: "en-US", zh: "zh-CN", ja: "ja-JP", es: "es-ES", fr: "fr-FR" };
+const LOCALE_TAG: Record<string, string> = { en: "en-US", zh: "zh-CN", ja: "ja-JP", es: "es-ES", fr: "fr-FR", ar: "ar" };
 
 // Render the backend's explicit UTC instants in the viewer's own timezone.
 const localDay = (iso: string) => new Date(iso).toLocaleDateString("en-CA"); // YYYY-MM-DD, local

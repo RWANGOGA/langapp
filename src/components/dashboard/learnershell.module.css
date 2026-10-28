@@ -42,7 +42,7 @@
   font-weight: 800;
 }
 
-.right { margin-left: auto; display: flex; align-items: center; gap: 0.9rem; }
+.right { margin-inline-start: auto; display: flex; align-items: center; gap: 0.9rem; }
 
 .identity { display: flex; align-items: center; gap: 0.6rem; }
 .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--p-rule); }
@@ -68,7 +68,7 @@
 .badge {
   position: absolute;
   top: -3px;
-  right: -5px;
+  inset-inline-end: -5px;
   min-width: 16px;
   height: 16px;
   padding: 0 3px;

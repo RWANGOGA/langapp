@@ -13,6 +13,7 @@ import {
   DEFAULT_LOCALE,
   LOCALE_COOKIE,
   isLocale,
+  isRtl,
   type LocaleCode,
 } from "./config";
 import { en, messages } from "./locales";
@@ -71,6 +72,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof document !== "undefined") {
       document.documentElement.lang = locale;
+      // Arabic reads right-to-left, so the whole layout mirrors off this one
+      // attribute; every CSS surface uses logical properties that follow it.
+      document.documentElement.dir = isRtl(locale) ? "rtl" : "ltr";
     }
   }, [locale]);
 

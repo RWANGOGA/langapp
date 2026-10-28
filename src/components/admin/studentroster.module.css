@@ -60,8 +60,8 @@
      nested list would otherwise get one column per reason. */
   display: block;
   margin-top: 0.35rem;
-  padding-left: 0.7rem;
-  border-left: 2px solid var(--p-rule);
+  padding-inline-start: 0.7rem;
+  border-inline-start: 2px solid var(--p-rule);
   color: var(--p-label);
   font-size: 0.78rem;
   line-height: 1.55;

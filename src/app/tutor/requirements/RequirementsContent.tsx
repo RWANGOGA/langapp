@@ -15,6 +15,7 @@ const LOCALE_TAG: Record<string, string> = {
   ja: "ja-JP",
   es: "es-ES",
   fr: "fr-FR",
+  ar: "ar",
 };
 
 const RAIL_KEY: Record<ApplicationStatusView["stages"][number]["state"], string> = {
