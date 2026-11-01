@@ -1,3 +1,8 @@
+// Type-only: the exam shapes live in exam-data.ts, whose readers run on the
+// server. Importing anything else from there would pull next/headers into this
+// client-side module.
+import type { ExamActionResult, TutorExamDetail, TutorExamItem } from "@/lib/exam-data";
+
 export type Provider = "Zoom" | "Google Meet" | "MS Teams" | "In-app";
 export interface SessionItem {
   id: string;
@@ -197,3 +202,68 @@ export interface TutorEarnings {
 export async function getTutorEarnings(): Promise<TutorEarnings> {
   return fetchWithAuth(`${PROXY}/tutor/earnings`);
 }
+
+/* — Exams: the tutor authors, marks and releases (the learner side lives in
+   src/lib/exam-data.ts, which reads the same endpoints from the server). — */
+
+/** One row of the builder. `options`/`correct_index` are objective-only, and
+ * the key stays on the tutor side of the API from here on. */
+export interface ExamDraftQuestion {
+  position: number;
+  type: "multiple_choice" | "written";
+  prompt: string;
+  points: number;
+  options?: string[];
+  correct_index?: number | null;
+}
+
+export interface ExamDraft {
+  learner_id: number;
+  title: string;
+  instructions: string | null;
+  duration_minutes: number;
+  /** UTC instant, sent with an explicit offset so the server never guesses. */
+  due_at: string;
+  shuffle_questions: boolean;
+  questions: ExamDraftQuestion[];
+}
+
+export const getTutorExams = (): Promise<TutorExamItem[]> =>
+  fetchWithAuth(`${PROXY}/tutor/exams`);
+
+export const getTutorExam = (examId: number): Promise<TutorExamDetail> =>
+  fetchWithAuth(`${PROXY}/tutor/exams/${examId}`);
+
+/** Publishing is the create action: there is no draft to leave half-written. */
+export const createTutorExam = (draft: ExamDraft): Promise<ExamActionResult> =>
+  fetchWithAuth(`${PROXY}/tutor/exams`, { method: "POST", body: JSON.stringify(draft) });
+
+export const closeTutorExam = (examId: number): Promise<ExamActionResult> =>
+  fetchWithAuth(`${PROXY}/tutor/exams/${examId}/close`, { method: "POST", body: "{}" });
+
+export const gradeTutorExam = (
+  examId: number,
+  attemptId: number,
+  answers: { question_id: number; awarded_points: number; feedback?: string | null }[],
+): Promise<ExamActionResult> =>
+  fetchWithAuth(`${PROXY}/tutor/exams/${examId}/attempts/${attemptId}/grade`, {
+    method: "POST",
+    body: JSON.stringify({ answers }),
+  });
+
+/** The only door to the result. `newLevel` is the tutor's signed CEFR call. */
+export const releaseTutorExam = (
+  examId: number,
+  attemptId: number,
+  newLevel?: string | null,
+): Promise<ExamActionResult> =>
+  fetchWithAuth(`${PROXY}/tutor/exams/${examId}/attempts/${attemptId}/release`, {
+    method: "POST",
+    body: JSON.stringify({ new_level: newLevel || null }),
+  });
+
+export const reopenTutorExam = (examId: number, attemptId: number): Promise<ExamActionResult> =>
+  fetchWithAuth(`${PROXY}/tutor/exams/${examId}/attempts/${attemptId}/reopen`, {
+    method: "POST",
+    body: "{}",
+  });

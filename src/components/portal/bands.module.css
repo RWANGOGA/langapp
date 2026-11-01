@@ -357,6 +357,36 @@
 .input:focus-visible, .select:focus-visible, .textarea:focus-visible { outline: 2px solid var(--p-accent); outline-offset: -1px; border-color: var(--p-accent); }
 .formActions { display: flex; align-items: center; gap: 1rem; }
 
+/* — Exam papers: one question per band, its options as their own rows — */
+/* The options are the learner's only decision surface, so each one is a full
+   row: a radio and its label, sized for a thumb on a phone in a quiet room. */
+.optionRow { display: grid; gap: 0.4rem; margin-top: 0.9rem; }
+.option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--p-rule);
+  border-radius: var(--p-radius);
+  color: var(--p-ink);
+  font-size: 0.92rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.option:hover { background: var(--p-surface-hover); }
+.option input { accent-color: var(--p-accent); }
+
+/* A question the tutor is composing: its own framed block inside the builder. */
+.questionCard {
+  display: grid;
+  gap: 1rem;
+  padding: 1.2rem;
+  border: 1px solid var(--p-rule);
+  border-radius: var(--p-radius);
+  background: var(--p-surface);
+}
+.questionCard > .bandLabel { color: var(--p-label); }
+
 /* — Buttons — */
 .btn {
   display: inline-flex;

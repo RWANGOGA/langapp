@@ -11,6 +11,10 @@ from app.models.payment_tracking import PaymentEvent, Subscription, Subscription
 from app.models.contact_message import ContactMessage
 from app.models.match_placement import MatchPlacement
 from app.models.testimonial import Testimonial, TestimonialKind
+from app.models.exam import (
+    Exam, ExamStatus, ExamQuestion, QuestionType,
+    ExamAttempt, AttemptStatus, ExamAnswer,
+)
 
 __all__ = [
     "Package",
@@ -35,4 +39,11 @@ __all__ = [
     "MatchPlacement",
     "Testimonial",
     "TestimonialKind",
+    "Exam",
+    "ExamStatus",
+    "ExamQuestion",
+    "QuestionType",
+    "ExamAttempt",
+    "AttemptStatus",
+    "ExamAnswer",
 ]

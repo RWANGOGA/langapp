@@ -12,7 +12,7 @@ export default async function DashboardPage() {
   const me = await apiGet<{ role: string }>("/auth/me");
   if (me?.role === "tutor") redirect("/tutor");
   if (me?.role === "admin") redirect("/admin");
-  const [{ learner, tutor, nextClass, progress, classes }, payment] = await Promise.all([getLearnerDashboard(), getPaymentSummary()]);
+  const [{ learner, tutor, nextClass, progress, classes, exams }, payment] = await Promise.all([getLearnerDashboard(), getPaymentSummary()]);
 
   return (
     <DashboardShell learner={learner}>
@@ -22,6 +22,7 @@ export default async function DashboardPage() {
         nextClass={nextClass}
         progress={progress}
         classes={classes}
+        exams={exams}
         payment={payment}
       />
     </DashboardShell>

@@ -7,8 +7,10 @@ from sqlalchemy.orm import selectinload
 
 from app.core.time import utc_now, to_utc_iso
 from app.db.session import get_db
+from app.models.exam import Exam
 from app.models.user import User, Class, ClassStatus
 from app.api.auth import get_current_active_user
+from app.api.exams import is_pending_for_learner
 from app.schemas.learner import LearnerDashboardResponse
 from app.schemas.tutor_sessions import SessionActionResponse
 from app.models.notification import Notification
@@ -97,6 +99,18 @@ async def get_learner_dashboard(
     total = completed + counts.get(ClassStatus.SCHEDULED, 0)
     percent = round(completed * 100 / total) if total else 0
 
+    # Tutor papers still waiting on this learner. Counted here through the same
+    # helper the exam list uses, so a band that says "1 waiting" and the list
+    # that opens cannot disagree because of a deadline crossed between them.
+    exam_rows = (
+        await db.execute(
+            select(Exam)
+            .options(selectinload(Exam.attempts))
+            .where(Exam.learner_id == current_user.id)
+        )
+    ).scalars().all()
+    pending = [e for e in exam_rows if is_pending_for_learner(e, e.attempts[0] if e.attempts else None, now)]
+
     # Build response
     tutor_data = None
     if tutor:
@@ -147,6 +161,12 @@ async def get_learner_dashboard(
             }
             for c in classes
         ],
+        "exams": {
+            "pending": len(pending),
+            # The nearest deadline, not an average of them: the only date a
+            # learner needs on a band is the one they are closest to missing.
+            "dueAt": to_utc_iso(min(e.due_at for e in pending)) if pending else None,
+        },
     }
 
 

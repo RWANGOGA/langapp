@@ -1,6 +1,6 @@
 import {
-  Banknote, Bell, BookOpen, CalendarDays, CreditCard, FileBarChart, Inbox,
-  LayoutDashboard, NotebookPen, TrendingUp, UserPlus, Users, Video, Settings,
+  Banknote, Bell, BookOpen, CalendarDays, CreditCard, ClipboardList, FileBarChart,
+  Inbox, LayoutDashboard, NotebookPen, TrendingUp, UserPlus, Users, Video, Settings,
 } from "lucide-react";
 
 /**
@@ -16,6 +16,7 @@ export const ICONS = {
   students: Users,
   tutors: Users,
   progress: TrendingUp,
+  exams: ClipboardList,
   notifications: Bell,
   schedule: CalendarDays,
   classes: BookOpen,

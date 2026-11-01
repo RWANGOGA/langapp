@@ -16,8 +16,13 @@ interface Props extends LearnerDashboard {
   payment: PaymentSummaryData;
 }
 
-export default function DashboardContent({ learner, tutor, nextClass, progress, classes, payment }: Props) {
+export default function DashboardContent({ learner, tutor, nextClass, progress, classes, exams, payment }: Props) {
   const { t } = useLanguage();
+
+  // The API sends UTC instants; the deadline is shown in the learner's own time.
+  const dueWhen = exams.dueAt
+    ? new Date(exams.dueAt).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
+    : null;
 
   return (
     <>
@@ -70,6 +75,28 @@ export default function DashboardContent({ learner, tutor, nextClass, progress, 
               <div className={styles.bandEmpty}>
                 <p>{t("learner.dash.noClass")}</p>
                 <Link className={styles.textLink} href="/dashboard/tutors">{tutor ? t("learner.dash.seeTutor") : t("learner.dash.browseTutors")} <ArrowRight size={13} /></Link>
+              </div>
+            )}
+          </section>
+
+          <section className={styles.band} aria-labelledby="exam-h">
+            <div className={styles.bandHead}>
+              <h2 id="exam-h" className={styles.bandLabel}>{t("learner.dash.exams")}</h2>
+              <Link className={styles.textLink} href="/dashboard/exams">{t("learner.dash.examsOpen")} <ArrowRight size={13} /></Link>
+            </div>
+            {exams.pending > 0 ? (
+              <>
+                <h3 className={styles.bandTitle}>
+                  {t(exams.pending === 1 ? "learner.dash.examPendingOne" : "learner.dash.examPendingOther", { n: exams.pending })}
+                </h3>
+                <p className={styles.figureMeta}>
+                  {dueWhen && <span>{t("learner.dash.examDue", { when: dueWhen })}</span>}
+                  <span>{t("learner.dash.examNote")}</span>
+                </p>
+              </>
+            ) : (
+              <div className={styles.bandEmpty}>
+                <p>{t("learner.dash.examNone")}</p>
               </div>
             )}
           </section>

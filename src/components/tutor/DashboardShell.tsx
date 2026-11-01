@@ -28,6 +28,7 @@ export default function DashboardShell({
     { href: "/tutor/learners", label: t("nav.myLearners"), icon: "learners" },
     { href: "/tutor/schedule", label: t("nav.schedule"), icon: "schedule" },
     { href: "/tutor/notes", label: t("nav.lessonNotes"), icon: "notes" },
+    { href: "/tutor/exams", label: t("nav.exams"), icon: "exams" },
     { href: "/tutor/earnings", label: t("nav.earnings"), icon: "payments" },
     { href: "/tutor/settings", label: t("nav.settings"), icon: "settings" },
     { href: "/tutor/notifications", label: t("nav.notifications"), icon: "notifications" },

@@ -27,6 +27,7 @@ export default function DashboardShell({
     { href: "/dashboard", label: t("nav.dashboard"), icon: "dashboard" },
     { href: "/dashboard/tutors", label: t("nav.myTutor"), icon: "tutors" },
     { href: "/dashboard/progress", label: t("nav.progress"), icon: "progress" },
+    { href: "/dashboard/exams", label: t("nav.exams"), icon: "exams" },
     { href: "/dashboard/notifications", label: t("nav.notifications"), icon: "notifications" },
   ];
 

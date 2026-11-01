@@ -1,4 +1,5 @@
 import { apiGet } from "@/lib/api";
+import type { ExamsSummary } from "@/lib/exam-data";
 
 export interface ClassItem { id: number; startsAt: string; title: string }
 export interface LearnerDashboard {
@@ -7,6 +8,9 @@ export interface LearnerDashboard {
   nextClass: { classId?: number; title: string; secondsLeft: number; startsAt?: string; zoomUrl?: string; meetUrl?: string; inAppCall?: boolean; packageName?: string } | null;
   progress: { percent: number; level: string; completed: number; total: number };
   classes: ClassItem[];
+  // Tutor papers still waiting: a count and the nearest deadline, so the band
+  // needs no second round trip to the exam endpoints.
+  exams: ExamsSummary;
 }
 
 // Neutral placeholder avatar (inline SVG, so no file or remote host is needed)
