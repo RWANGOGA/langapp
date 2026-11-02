@@ -135,6 +135,9 @@ export interface TutorExamItem {
   duration_minutes: number;
   due_at: string;
   created_at: string;
+  /** Tutor-side wording, read back so the edit form can be seeded from it. */
+  instructions: string | null;
+  shuffle_questions: boolean;
   attempt: TutorAttempt | null;
 }
 

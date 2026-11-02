@@ -161,6 +161,11 @@ class ExamListItemForTutor(BaseModel):
     duration_minutes: int
     due_at: str
     created_at: str
+    # The edit form is seeded from this row, so the two fields it shows that no
+    # learner needs to see again are carried here: the tutor's own instructions
+    # and how the paper was set to run.
+    instructions: Optional[str] = None
+    shuffle_questions: bool = False
     attempt: Optional[AttemptForTutor] = None
 
 

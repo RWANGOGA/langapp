@@ -71,6 +71,9 @@
 }
 .headerAction:hover { background: var(--p-surface-hover); }
 
+/* Two header actions on one paper: the edit sits beside the way back. */
+.headerActions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; }
+
 /* — Stat strip: hairline-ruled cells — */
 .stats {
   display: grid;
@@ -221,6 +224,12 @@
 .what { color: var(--p-ink); font-weight: 600; }
 .what small { display: block; margin-top: 0.2rem; color: var(--p-body); font-weight: 400; font-size: 0.8rem; }
 .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.35rem 0.9rem; }
+
+/* — Record filters: the two questions a tutor asks of a long list, whose paper
+   and what stage it reached. Both narrow the same rows, so they are one row. — */
+.filterBar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.9rem; margin-top: 0.9rem; }
+.filterBar label { display: grid; gap: 0.35rem; color: var(--p-label); font-size: 0.62rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+.filterBar select { min-width: 11rem; }
 
 /* — Roster tools: search and sort — */
 .rosterTools { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1rem; }

@@ -22,6 +22,7 @@ from sqlalchemy import select
 from tests.sqlite_fixtures import db_session, learner_user, tutor_user, other_tutor_user, make_client  # noqa: F401
 from app.core.time import utc_now
 from app.models.exam import Exam, ExamAttempt, AttemptStatus
+from app.models.notification import Notification
 from app.models.user import ProficiencyLevel, User
 
 TUTOR_BASE = "/api/v1/tutor/exams"
@@ -431,3 +432,229 @@ async def test_the_learner_dashboard_counts_a_pending_paper(
         exams = r.json()["exams"]
     assert exams["pending"] == 1
     assert exams["dueAt"]
+
+
+# ---------------------------------------------------------------- editing
+#
+# A deadline is the one field a tutor genuinely needs to move after publishing:
+# "I was away that week, can I do it Monday?" is answered every term. These
+# tests hold the edit to what it cannot touch - a clock a learner is already
+# sitting by, a paper the tutor deliberately closed, and anybody else's paper.
+
+
+async def deadline_of(db_session, exam_id) -> datetime:  # noqa: F811
+    return (await db_session.execute(select(Exam.due_at).where(Exam.id == exam_id))).scalar_one()
+
+
+@pytest.mark.asyncio
+async def test_a_tutor_can_move_the_deadline_of_a_paper_they_published(
+    db_session, tutor_user, learner_user  # noqa: F811
+):
+    await assign(db_session, learner_user, tutor_user)
+    async with make_client(db_session, tutor_user) as tutor:
+        exam_id = await created_exam(tutor, learner_user.id, paper(learner_user.id, due_in_days=1))
+        before = await deadline_of(db_session, exam_id)
+
+        moved = to_utc(datetime.utcnow() + timedelta(days=9))
+        r = await tutor.patch(f"{TUTOR_BASE}/{exam_id}", json={"due_at": moved})
+        assert r.status_code == 200, r.text
+        after = await deadline_of(db_session, exam_id)
+
+    assert after > before
+
+    # The learner reads the new date, not the one they were first given.
+    async with make_client(db_session, learner_user) as learner:
+        rows = (await learner.get(LEARNER_BASE)).json()["exams"]
+    assert rows[0]["due_at"] == after.replace(microsecond=0).isoformat() + "+00:00"
+
+    # And they are told: a deadline that moves in silence is a deadline missed.
+    kinds = (
+        await db_session.execute(
+            select(Notification.notification_type).where(
+                Notification.recipient_id == learner_user.id
+            )
+        )
+    ).scalars().all()
+    assert "exam_deadline_changed" in kinds
+
+
+@pytest.mark.asyncio
+async def test_a_deadline_cannot_be_moved_into_the_past(
+    db_session, tutor_user, learner_user  # noqa: F811
+):
+    """A past date on an open paper would make it unopenable on save."""
+    await assign(db_session, learner_user, tutor_user)
+    async with make_client(db_session, tutor_user) as tutor:
+        exam_id = await created_exam(tutor, learner_user.id)
+        before = await deadline_of(db_session, exam_id)
+
+        r = await tutor.patch(
+            f"{TUTOR_BASE}/{exam_id}",
+            json={"due_at": to_utc(datetime.utcnow() - timedelta(hours=2))},
+        )
+        assert r.status_code == 400, r.text
+        assert (await deadline_of(db_session, exam_id)) == before
+
+
+@pytest.mark.asyncio
+async def test_giving_a_lapsed_paper_a_future_deadline_puts_it_back(
+    db_session, tutor_user, learner_user  # noqa: F811
+):
+    """The window ran out with nobody in it, so the paper is not finished."""
+    await assign(db_session, learner_user, tutor_user)
+    async with make_client(db_session, tutor_user) as tutor:
+        exam_id = await created_exam(tutor, learner_user.id)
+
+    exam = (await db_session.execute(select(Exam).where(Exam.id == exam_id))).scalar_one()
+    exam.due_at = utc_now() - timedelta(minutes=5)
+    await db_session.commit()
+
+    async with make_client(db_session, learner_user) as learner:
+        assert (await learner.get(LEARNER_BASE)).json()["exams"][0]["state"] == "expired"
+        assert (await learner.post(f"{LEARNER_BASE}/{exam_id}/start")).status_code == 409
+
+    async with make_client(db_session, tutor_user) as tutor:
+        r = await tutor.patch(
+            f"{TUTOR_BASE}/{exam_id}",
+            json={"due_at": to_utc(datetime.utcnow() + timedelta(days=4))},
+        )
+        assert r.status_code == 200, r.text
+
+    async with make_client(db_session, learner_user) as learner:
+        rows = (await learner.get(LEARNER_BASE)).json()["exams"]
+        assert rows[0]["state"] == "available"
+        assert (await learner.post(f"{LEARNER_BASE}/{exam_id}/start")).status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_a_paper_the_tutor_closed_stays_closed(
+    db_session, tutor_user, learner_user  # noqa: F811
+):
+    """Closing is a decision; editing the date is not an un-closing."""
+    await assign(db_session, learner_user, tutor_user)
+    async with make_client(db_session, tutor_user) as tutor:
+        exam_id = await created_exam(tutor, learner_user.id)
+        assert (await tutor.post(f"{TUTOR_BASE}/{exam_id}/close", json={})).status_code == 200
+
+        r = await tutor.patch(
+            f"{TUTOR_BASE}/{exam_id}",
+            json={"due_at": to_utc(datetime.utcnow() + timedelta(days=4))},
+        )
+        assert r.status_code == 200, r.text
+        exam = (await db_session.execute(select(Exam).where(Exam.id == exam_id))).scalar_one()
+        assert exam.status.value == "closed"
+
+    async with make_client(db_session, learner_user) as learner:
+        assert (await learner.get(LEARNER_BASE)).json()["exams"][0]["state"] == "expired"
+
+
+@pytest.mark.asyncio
+async def test_a_moved_time_limit_does_not_touch_a_sitting_in_progress(
+    db_session, tutor_user, learner_user  # noqa: F811
+):
+    """The window a learner started with is the window they are timed by."""
+    await assign(db_session, learner_user, tutor_user)
+    async with make_client(db_session, tutor_user) as tutor:
+        exam_id = await created_exam(tutor, learner_user.id)
+
+    async with make_client(db_session, learner_user) as learner:
+        started = (await learner.post(f"{LEARNER_BASE}/{exam_id}/start")).json()
+
+    async with make_client(db_session, tutor_user) as tutor:
+        r = await tutor.patch(
+            f"{TUTOR_BASE}/{exam_id}",
+            json={
+                "duration_minutes": 90,
+                "due_at": to_utc(datetime.utcnow() + timedelta(days=12)),
+            },
+        )
+        assert r.status_code == 200, r.text
+
+    async with make_client(db_session, learner_user) as learner:
+        again = (await learner.post(f"{LEARNER_BASE}/{exam_id}/start")).json()
+    assert again["expires_at"] == started["expires_at"]
+    assert again["duration_minutes"] == 90
+
+
+@pytest.mark.asyncio
+async def test_only_the_tutor_who_wrote_the_paper_can_edit_it(
+    db_session, tutor_user, learner_user, other_tutor_user  # noqa: F811
+):
+    await assign(db_session, learner_user, tutor_user)
+    async with make_client(db_session, tutor_user) as tutor:
+        exam_id = await created_exam(tutor, learner_user.id)
+
+    new_due = to_utc(datetime.utcnow() + timedelta(days=6))
+    async with make_client(db_session, other_tutor_user) as nosy:
+        r = await nosy.patch(f"{TUTOR_BASE}/{exam_id}", json={"due_at": new_due})
+        # 404: another tutor's paper is not confirmed to exist, and not edited.
+        assert r.status_code == 404, r.text
+    async with make_client(db_session, learner_user) as learner:
+        r = await learner.patch(f"{TUTOR_BASE}/{exam_id}", json={"due_at": new_due})
+        assert r.status_code == 403, r.text
+
+    assert await deadline_of(db_session, exam_id) < utc_now() + timedelta(days=3)
+
+
+@pytest.mark.asyncio
+async def test_the_tutor_record_carries_the_marking_clocks(
+    db_session, tutor_user, learner_user  # noqa: F811
+):
+    """The edit form is seeded from the record, so the record must hold it.
+
+    A shuffle switch cannot be shown as a toggle unless the paper says how it
+    was set, and the instructions cannot be corrected unless the tutor can read
+    them back. Both are the tutor's own words.
+    """
+    await assign(db_session, learner_user, tutor_user)
+    async with make_client(db_session, tutor_user) as tutor:
+        drafted = paper(learner_user.id)
+        drafted["shuffle_questions"] = True
+        exam_id = await created_exam(tutor, learner_user.id, drafted)
+        item = next(r for r in (await tutor.get(TUTOR_BASE)).json() if r["id"] == exam_id)
+    assert item["shuffle_questions"] is True
+    assert item["instructions"] == "Answer every question in your own words."
+
+    # And the switch is editable while nobody has sat it.
+    async with make_client(db_session, tutor_user) as tutor:
+        r = await tutor.patch(f"{TUTOR_BASE}/{exam_id}", json={"shuffle_questions": False})
+        assert r.status_code == 200, r.text
+        item = next(r for r in (await tutor.get(TUTOR_BASE)).json() if r["id"] == exam_id)
+    assert item["shuffle_questions"] is False
+
+
+@pytest.mark.asyncio
+async def test_the_tutor_record_holds_the_mark_before_the_learner_sees_it(
+    db_session, tutor_user, learner_user  # noqa: F811
+):
+    """The tutor's own record is not a secret from the tutor.
+
+    The objective part is scored by the server at submission, so a submitted
+    paper already has a number to show the person who set it - while the
+    learner's result stays refused until that number is released.
+    """
+    await assign(db_session, learner_user, tutor_user)
+    async with make_client(db_session, tutor_user) as tutor:
+        exam_id = await created_exam(tutor, learner_user.id)
+
+    async with make_client(db_session, learner_user) as learner:
+        rows = (await learner.post(f"{LEARNER_BASE}/{exam_id}/start")).json()
+        q = {row["prompt"]: row["id"] for row in rows["questions"]}
+        await sit_and_submit(learner, exam_id, [
+            {"question_id": q["She ___ to school yesterday."], "choice_index": 1},
+            {"question_id": q["Which one is plural?"], "choice_index": 1},
+            {"question_id": q["Write two sentences about your weekend."],
+             "text": "I slept late and cooked rice."},
+        ])
+        assert (await learner.get(f"{LEARNER_BASE}/{exam_id}/result")).status_code == 409
+
+    async with make_client(db_session, tutor_user) as tutor:
+        item = next(
+            row for row in (await tutor.get(TUTOR_BASE)).json() if row["id"] == exam_id
+        )
+    attempt = item["attempt"]
+    assert attempt["status"] == "submitted"
+    assert attempt["auto_score"] == 3
+    assert attempt["total_points"] == 8
+    assert attempt["submitted_at"]
+    assert attempt["released_at"] is None

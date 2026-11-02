@@ -307,8 +307,39 @@ def _item_for_tutor(exam: Exam) -> ExamListItemForTutor:
         duration_minutes=exam.duration_minutes,
         due_at=to_utc_iso(exam.due_at),
         created_at=to_utc_iso(exam.created_at),
+        instructions=exam.instructions,
+        shuffle_questions=exam.shuffle_questions,
         attempt=_attempt_for_tutor(attempt, exam) if attempt else None,
     )
+
+
+def _is_released(exam: Exam) -> bool:
+    """Whether this paper's result is already out for the learner to read."""
+    attempt = _attempt_of(exam)
+    return bool(attempt and attempt.status == AttemptStatus.RELEASED)
+
+
+def _moved_clock_message(
+    tutor: User, exam: Exam, due_moved: bool, limit_moved: bool
+) -> str:
+    """Tell the learner what actually changed, in the clock they will use.
+
+    Times are printed in UTC because that is how the paper stores them and the
+    one clock both sides of a tutor and a learner in different countries share.
+    """
+    what = []
+    if due_moved:
+        what.append(f"moved the deadline to {exam.due_at.strftime('%d %b %Y at %H:%M')} UTC")
+    if limit_moved:
+        what.append(f"set the time limit to {exam.duration_minutes} minutes")
+    attempt = _attempt_of(exam)
+    sitting = bool(attempt and attempt.status == AttemptStatus.IN_PROGRESS)
+    tail = (
+        " The clock on a sitting you have already started does not change."
+        if sitting
+        else ""
+    )
+    return f"{tutor.full_name} {' and '.join(what)} for \"{exam.title}\".{tail}"
 
 
 # ---------------------------------------------------------------- tutor side
@@ -478,12 +509,37 @@ async def update_exam(
         exam.title = payload.title.strip()
     if payload.instructions is not None:
         exam.instructions = payload.instructions or None
+    # Two clocks live on a paper: the deadline and the length of a sitting. Both
+    # are the learner's planning information, so moving either one tells them.
+    limit_moved = False
     if payload.duration_minutes is not None:
+        limit_moved = payload.duration_minutes != exam.duration_minutes
         exam.duration_minutes = payload.duration_minutes
+    due_moved = False
     if payload.due_at is not None:
-        exam.due_at = _as_naive_utc(payload.due_at)
+        new_due = _as_naive_utc(payload.due_at)
+        # The create call refuses a deadline that has already gone by, and an
+        # edit that slipped one past the clock would leave a paper the learner
+        # can see but never open - the worst of both.
+        if new_due <= utc_now():
+            raise HTTPException(
+                status_code=400,
+                detail="The deadline must be in the future",
+            )
+        due_moved = new_due != exam.due_at
+        exam.due_at = new_due
     if payload.shuffle_questions is not None:
         exam.shuffle_questions = payload.shuffle_questions
+
+    if (due_moved or limit_moved) and not _is_released(exam):
+        await notify_user(
+            db,
+            exam.learner_id,
+            "exam_deadline_changed",
+            f"Deadline moved: {exam.title}",
+            _moved_clock_message(tutor, exam, due_moved, limit_moved),
+            link="/dashboard/exams",
+        )
 
     await db.commit()
     await db.refresh(exam)

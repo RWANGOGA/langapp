@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Check, Clock, Lock, RotateCcw, Send, X } from "lucide-react";
+import { ArrowLeft, Check, Clock, Lock, Pencil, RotateCcw, Send, X } from "lucide-react";
 import TutorPageShell from "@/components/tutor/TutorPageShell";
 import type { TutorExamDetail, TutorQuestion } from "@/lib/exam-data";
 import {
@@ -174,9 +174,14 @@ export default function TutorExamMarkingPage() {
               {exam.learner_name} · {t("tutor.exam.list.dueBy")} {new Date(exam.due_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
             </p>
           </div>
-          <Link className={ui.headerAction} href="/tutor/exams">
-            <ArrowLeft size={14} aria-hidden /> {t("tutor.exam.mark.backToList")}
-          </Link>
+          <div className={ui.headerActions}>
+            <Link className={ui.headerAction} href={`/tutor/exams/${examId}/edit`}>
+              <Pencil size={14} aria-hidden /> {t("tutor.exam.mark.edit")}
+            </Link>
+            <Link className={ui.headerAction} href="/tutor/exams">
+              <ArrowLeft size={14} aria-hidden /> {t("tutor.exam.mark.backToList")}
+            </Link>
+          </div>
         </header>
 
         <ul className={ui.stats}>

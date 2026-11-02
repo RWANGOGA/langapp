@@ -238,6 +238,30 @@ export const getTutorExam = (examId: number): Promise<TutorExamDetail> =>
 export const createTutorExam = (draft: ExamDraft): Promise<ExamActionResult> =>
   fetchWithAuth(`${PROXY}/tutor/exams`, { method: "POST", body: JSON.stringify(draft) });
 
+/**
+ * An edit of a paper that is already out. Every field is optional because only
+ * what the tutor actually touched is sent: a deadline that has quietly lapsed
+ * must not trip the server's future-date rule just because the form echoed it,
+ * and a paper nobody has sat is the only one whose questions may still move.
+ */
+export interface ExamPatch {
+  title?: string;
+  instructions?: string | null;
+  duration_minutes?: number;
+  due_at?: string;
+  shuffle_questions?: boolean;
+  questions?: ExamDraftQuestion[];
+}
+
+export const updateTutorExam = (
+  examId: number,
+  patch: ExamPatch,
+): Promise<ExamActionResult> =>
+  fetchWithAuth(`${PROXY}/tutor/exams/${examId}`, {
+    method: "PATCH",
+    body: JSON.stringify(patch),
+  });
+
 export const closeTutorExam = (examId: number): Promise<ExamActionResult> =>
   fetchWithAuth(`${PROXY}/tutor/exams/${examId}/close`, { method: "POST", body: "{}" });
 
